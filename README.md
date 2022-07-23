@@ -979,6 +979,10 @@ python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --n
 ## Privilige Escalation
 
 ### sweetpotato
+download exe binary with:
+```
+wget https://raw.githubusercontent.com/uknowsec/SweetPotato/master/SweetPotato-Webshell-new/bin/Release/SweetPotato.exe
+```
 
 ### JuicyPotato
 
