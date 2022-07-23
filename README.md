@@ -1,4 +1,4 @@
-# Windwos-and-Active-Directory-cheat-sheet
+# Windwos and Active Directory cheat sheet
 
 # Table of content
 - [Active Directory](#Active-Directory)
