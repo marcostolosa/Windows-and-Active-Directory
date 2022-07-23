@@ -187,7 +187,10 @@ CME is an enumeration, attack, and post-exploitation toolkit which can help us g
 ```
 https://github.com/byt3bl33d3r/CrackMapExec
 ```
-
+videos and demos:
+```
+https://www.youtube.com/watch?v=I2ctzF1tZX8&ab_channel=HillbillyStorytime
+```
 ### Rubeus 
 Rubeus is a C# tool built for Kerberos Abuse.
 ```
