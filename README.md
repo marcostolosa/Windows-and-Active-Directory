@@ -59,6 +59,8 @@
   - [nsupdate](#nsupdate)
   - [openssl](#openssl)
   - [mslink](#mslink)
+  - [Invoke PowerShellTcp ps1](#Invoke-PowerShellTcp-ps1)
+  - [nishang](#nishang)
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
   - [Meterpreter Tunneling and Port Forwarding](#Meterpreter-Tunneling-and-Port-Forwarding)
   - [sshuttle](#sshuttle)
@@ -543,6 +545,23 @@ This application allow you to create Windows Shortcut files (extension .LNK) wit
 ```
 http://www.mamachine.org/mslink/index.en.html
 ```
+### nishang
+```
+https://github.com/samratashok/nishang
+```
+Nishang is a framework and collection of scripts and payloads which enables usage of PowerShell for offensive security, penetration testing and red teaming. Nishang is useful during all phases of penetration testing.
+```
+ 
+### Invoke PowerShellTcp ps1
+Invoke-PowerShellTcp.ps1 coming from 
+```
+https://github.com/samratashok/nishang
+```
+Nishang is a framework and collection of scripts and payloads which enables usage of PowerShell for offensive security, penetration testing and red teaming. Nishang is useful during all phases of penetration testing.
+```
+wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
+```
+  
 
 
 ## Pivoting Tunneling and Port Forwarding
