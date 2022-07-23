@@ -553,7 +553,7 @@ Nishang is a framework and collection of scripts and payloads which enables usag
 
  
 ### Invoke PowerShellTcp ps1
-Invoke-PowerShellTcp.ps1 coming from 
+Invoke-PowerShellTcp.ps1 script coming from nishang:
 ```
 https://github.com/samratashok/nishang
 ```
