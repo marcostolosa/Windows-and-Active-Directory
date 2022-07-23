@@ -58,6 +58,7 @@
   - [SharpGPOAbuse](#SharpGPOAbuse)
   - [nsupdate](#nsupdate)
   - [openssl](#openssl)
+  - [mslink](#mslink)
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
   - [Meterpreter Tunneling and Port Forwarding](#Meterpreter-Tunneling-and-Port-Forwarding)
   - [sshuttle](#sshuttle)
@@ -71,12 +72,8 @@
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
 - [Enumeration](#Enumeration)
 - [Privilige Escalation](#Privilige-Escalation)
-- [exploits](#exploits)
   - [sweetpotato](#sweetpotato)
   - [JuicyPotato](#JuicyPotato)
-  - [mslink](#mslink)
-
-
 
 
 
@@ -541,6 +538,13 @@ evil-winrm -S -c crt.pem -k key.pem -i 10.10.11.152
 -k, --priv-key PRIVATE_KEY_PATH  Local path to private key certificate
 -S, --ssl                        Enable ssl
 
+### mslink
+This application allow you to create Windows Shortcut files (extension .LNK) without needing a Windows OS.
+```
+http://www.mamachine.org/mslink/index.en.html
+```
+
+
 ## Pivoting Tunneling and Port Forwarding
   
   During a red team engagement, penetration test, or an Active Directory assessment, we will often find ourselves in a situation where we might have already compromised the required credentials, ssh keys, hashes, or access tokens to move onto another host, but there may be no other host directly reachable from our attack host. In such cases, we may need to use a pivot host that we have already compromised to find a way to our next target. One of the most important things to do when landing on a host for the first time is to check our privilege level, network connections, and potential VPN or other remote access software. If a host has more than one network adapter, we can likely use it to move to a different network segment. Pivoting is essentially the idea of moving to other networks through a compromised host to find more targets on different network segments.
@@ -968,3 +972,14 @@ Connecting to a Web Server using HTTP-Proxy & NTLM Auth
 ```
 python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --ntlm-proxy-ip IPaddressofProxy> --ntlm-proxy-port 8081 --domain <nameofWindowsDomain> --username <username> --password <password>
 ```
+
+
+## Enumeration 
+
+## Privilige Escalation
+
+### sweetpotato
+
+### JuicyPotato
+
+
