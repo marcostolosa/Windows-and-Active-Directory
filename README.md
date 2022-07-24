@@ -1491,3 +1491,8 @@ https://github.com/micahvandeusen/GenericPotato
 [+] added user  as local administrator
 [+] deleting payload from C:\Users\Atlas\AppData\Local\Temp\1\nightmare.dll
   ```
+
+  
+Notice that our payload mentions creating a new user called adm1n with a password of P@ssw0rd? This is the default behaviour when using this exploit; however, we could have created our own payload and substituted that in should we have preferred another method of exploitation.
+  
+We could also take the simple option of right-clicking (if we are in a RDP GUI) on PowerShell or cmd.exe and choosing to "Run as Administrator"
