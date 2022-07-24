@@ -82,6 +82,7 @@
   - [lonelypotato](#lonelypotato)
   - [roguepotato](#roguepotato)
   - [genericpotato](#genericpotato)
+  - [printnightmare](#printnightmare)
 
 
 
@@ -1464,3 +1465,4 @@ https://github.com/micahvandeusen/GenericPotato
   -h, --help                 Display this help
 ```
 
+  ## printnightmare CVE-2021-1675
