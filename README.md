@@ -202,6 +202,7 @@ videos and demos:
 https://www.youtube.com/watch?v=I2ctzF1tZX8&ab_channel=HillbillyStorytime
 ```
 #### help section generic
+
 options:
 -h, --help            show this help message and exit
 -t THREADS            set how many concurrent threads to use (default: 100)
@@ -213,11 +214,11 @@ protocols:
 available protocols
 
 {smb,winrm,mssql,ldap,ssh}
-smb                 own stuff using SMB
-winrm               own stuff using WINRM
-mssql               own stuff using MSSQL
-ldap                own stuff using LDAP
-ssh                 own stuff using SSH
+smb - own stuff using SMB
+winrm - own stuff using WINRM
+mssql - own stuff using MSSQL
+ldap - own stuff using LDAP
+ssh - own stuff using SSH
 
 
 
