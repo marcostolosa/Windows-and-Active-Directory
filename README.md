@@ -72,9 +72,12 @@
   - [SSH for Windows plink exe](#SSH-for-Windows-plink-exe)
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
-- [Privilige Escalation](#Privilige-Escalation)
+- [Privilige Escalation and enumeration](#Privilige-Escalation-and-enumeration)
+  - [basic](#basic)
+  - [enum powerview](#enum-powerview)
   - [seatbelt](#seatbelt)
   - [winpeas](#winpeas)
+  - [PrivescCheck](#PrivescCheck)
   - [sweetpotato](#sweetpotato)
   - [JuicyPotato](#JuicyPotato)
   - [hotpotato](#hotpotato)
@@ -1120,9 +1123,35 @@ python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --n
 ```
  
 
-## Privilige Escalation
+## Privilige Escalation and enumeration
   
-## seatbelt
+### basic  
+
+always start checking this two commands: 
+```
+whoami /priv
+```
+```
+whoami /all
+```
+
+you can search in the user folder and automate every folder in the users folder and beyond:
+```
+gci -recurse .
+```
+obs: dont forget the dot since it says from the folder you are on etc. 
+
+use the same command to search for hidden files:
+```
+cgi -hidden .
+```
+you can then after look for files etc under the root folder (C:\ drive) then the same on /temp folder
+
+then go scan with seatbelt, winpeas and PrivescCheck then go over to enum with powerview.
+
+### enum powerview
+
+### seatbelt
 Seatbelt is a C# project that performs a number of security oriented host-survey "safety checks" relevant from both offensive and defensive security perspectives. 
 ```
 https://github.com/GhostPack/Seatbelt
@@ -1327,12 +1356,53 @@ Examples:
     'Seatbelt.exe -group=user -q -outputfile="C:\Temp\out.json"' will run in quiet mode with user checks and output to a .json file.
 
 ## winpeas
+
+ops winpeas can give a bit of false positive so be aware.
+
 Windows Privilege Escalation Awesome Scripts
 ```
 https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS
 ```
 
+### PrivescCheck
+```
+https://github.com/itm4n/PrivescCheck
+```
 
+#### Basic usage
+From a command prompt:
+```
+powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck"
+```
+
+From a PowerShell prompt:
+```
+Set-ExecutionPolicy Bypass -Scope process -Force
+. .\PrivescCheck.ps1; Invoke-PrivescCheck
+```
+
+From a PowerShell prompt without modifying the execution policy:
+```
+Get-Content .\PrivescCheck.ps1 | Out-String | IEX
+Invoke-PrivescCheck
+```
+
+#### Extended mode
+
+By default, the scope is limited to vulnerability discovery but, you can get a lot more information with the -Extended option:
+```
+Invoke-PrivescCheck -Extended
+```
+
+#### Generate report files
+
+You can use the -Report and -Format options to save the results of the script to files in various formats. Accepted formats are TXT, CSV, HTML and XML. If -Format is empty, the default format is TXT, which is a simple copy of what is printed on the terminal.
+
+The value of -Report will be used as the base name for the final report, the extension will be automatically appended depending on the chosen format(s).
+```
+Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME%
+Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME% -Format TXT,CSV,HTML,XML
+```
 
 ### sweetpotato
 ```
