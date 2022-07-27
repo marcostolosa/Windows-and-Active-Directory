@@ -78,6 +78,7 @@
   - [seatbelt](#seatbelt)
   - [winpeas](#winpeas)
   - [PrivescCheck](#PrivescCheck)
+  - [metasploit exploit suggester](#metasploit-exploit-suggester)
   - [Harvesting Passwords from Usual Spots](#Harvesting-Passwords-from-Usual-Spots)
   - [Other Quick Wins](#Other-Quick-Wins)
   - [Abusing Service Misconfigurations](#Abusing-Service-Misconfigurations)
