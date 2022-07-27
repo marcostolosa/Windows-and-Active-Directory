@@ -1398,17 +1398,32 @@ Examples:
 
 ## winpeas
 
-ops winpeas can give a bit of false positive so be aware.
-
+ops: winpeas can give a bit of false positive so be aware.
+  
+WinPEAS is a script developed to enumerate the target system to uncover privilege escalation paths. You can find more information about winPEAS and download either the precompiled executable or a .bat script. WinPEAS will run commands similar to the ones listed in the previous task and print their output. The output from winPEAS can be lengthy and sometimes difficult to read. This is why it would be good practice to always redirect the output to a file, as shown below:
+```
+C:\> winpeas.exe > outputfile.txt
+```
 Windows Privilege Escalation Awesome Scripts
 ```
 https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS
 ```
 
 ### PrivescCheck
+PrivescCheck is a PowerShell script that searches common privilege escalation on the target system. It provides an alternative to WinPEAS without requiring the execution of a binary file.
+  
+PrivescCheck can be downloaded here:
 ```
 https://github.com/itm4n/PrivescCheck
 ```
+
+Reminder: To run PrivescCheck on the target system, you may need to bypass the execution policy restrictions. To achieve this, you can use the Set-ExecutionPolicy cmdlet as shown below.
+```
+PS C:\> Set-ExecutionPolicy Bypass -Scope process -Force
+PS C:\> . .\PrivescCheck.ps1
+PS C:\> Invoke-PrivescCheck
+```
+
 
 #### Basic usage
 From a command prompt:
