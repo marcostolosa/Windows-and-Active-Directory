@@ -1,7 +1,6 @@
 # Windwos and Active Directory cheat sheet
 
 # Table of content 
-- [Active Directory](#Active-Directory)
 - [cheat sheets and resources](#cheat-sheets-and-resources)
 - [tools](#tools)
   - [PowerView/SharpView](#PowerViewSharpView)
@@ -95,11 +94,11 @@
 
 
 
-# Active Directory 
+# Its you versus them
+![image](https://user-images.githubusercontent.com/24814781/181242666-a8e96174-5d60-4369-a588-dc7cd6ca539c.png)
+
 
 ## cheat sheets/resources
-
-### cheat sheets and resources
 ```
 https://github.com/cube0x0/Security-Assessment
 ```
