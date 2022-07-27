@@ -94,8 +94,9 @@
 
 
 
-# Its you versus them
-![image](https://user-images.githubusercontent.com/24814781/181242666-a8e96174-5d60-4369-a588-dc7cd6ca539c.png)
+#           Its you versus them
+![image](https://user-images.githubusercontent.com/24814781/181242943-3a5e94d9-fe81-4004-8c29-facac58d4c64.png)
+
 
 
 ## cheat sheets/resources
