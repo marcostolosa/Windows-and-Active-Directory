@@ -74,7 +74,7 @@
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
 - [Privilige Escalation and enumeration](#Privilige-Escalation-and-enumeration)
   - [basic](#basic)
-  - [enum powerview](#enum-powerview)
+  - [powerview](#powerview)
   - [seatbelt](#seatbelt)
   - [winpeas](#winpeas)
   - [PrivescCheck](#PrivescCheck)
@@ -1190,7 +1190,41 @@ you can then after look for files etc under the root folder (C:\ drive) then the
 
 then go scan with seatbelt, winpeas and PrivescCheck then go over to enum with powerview.
 
-### enum powerview
+### powerview
+its in the powersploit github but donwload here:
+```
+https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1
+```
+
+#### resources
+```
+https://gist.github.com/HarmJ0y/184f9822b195c52dd50c379ed3117993
+```
+```
+https://book.hacktricks.xyz/windows-hardening/basic-powershell-for-pentesters/powerview
+```
+```
+https://zflemingg1.gitbook.io/undergrad-tutorials/powerview/powerview-cheatsheet
+```
+  
+### WES NG Windows Exploit Suggester the Next Generation
+
+Some exploit suggesting scripts (e.g. winPEAS) will require you to upload them to the target system and run them there. This may cause antivirus software to detect and delete them. To avoid making unnecessary noise that can attract attention, you may prefer to use WES-NG, which will run on your attacking machine (e.g. Kali or TryHackMe AttackBox).
+
+WES-NG is a Python script that can be found and downloaded here:
+```
+https://github.com/bitsadmin/wesng
+```
+
+Once installed, and before using it, type the wes.py --update command to update the database. The script will refer to the database it creates to check for missing patches that can result in a vulnerability you can use to elevate your privileges on the target system.
+
+To use the script, you will need to run the systeminfo command on the target system. Do not forget to direct the output to a .txt file you will need to move to your attacking machine.
+
+Once this is done, wes.py can be run as follows;
+```
+wes.py systeminfo.txt
+```
+
 
 ### seatbelt
 Seatbelt is a C# project that performs a number of security oriented host-survey "safety checks" relevant from both offensive and defensive security perspectives. 
