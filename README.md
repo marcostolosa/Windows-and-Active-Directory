@@ -1445,6 +1445,14 @@ Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME%
 Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME% -Format TXT,CSV,HTML,XML
 ```
 
+### metasploit exploit suggester
+
+If you already have a Meterpreter shell on the target system, you can use the multi/recon/local_exploit_suggester module to list vulnerabilities that may affect the target system and allow you to elevate your privileges on the target system.
+
+in a Meterpreter shell
+```
+multi/recon/local_exploit_suggester
+```
 
 ### Harvesting Passwords from Usual Spots
 
