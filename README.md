@@ -75,6 +75,7 @@
 - [Privilige Escalation and enumeration](#Privilige-Escalation-and-enumeration)
   - [basic](#basic)
   - [powerview](#powerview)
+  - [WES NG Windows Exploit Suggester the Next Generation](#WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
   - [seatbelt](#seatbelt)
   - [winpeas](#winpeas)
   - [PrivescCheck](#PrivescCheck)
