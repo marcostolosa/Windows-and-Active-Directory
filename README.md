@@ -1499,9 +1499,7 @@ Here is a quick way to find database connection strings on the file:
 ```
 type C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\web.config | findstr connectionString
 ```
-```
-reg query HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions\ /f "Proxy" /s
-```
+
 
 Note: Simon Tatham is the creator of PuTTY (and his name is part of the path), not the username for which we are retrieving the password. The stored proxy username should also be visible after running the command above.
 
@@ -1514,6 +1512,9 @@ PuTTY is an SSH client commonly found on Windows systems. Instead of having to s
 
 To retrieve the stored proxy credentials, you can search under the following registry key for ProxyPassword with the following command:
 
+```
+reg query HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions\ /f "Proxy" /s
+```
 
 
 ### sweetpotato
