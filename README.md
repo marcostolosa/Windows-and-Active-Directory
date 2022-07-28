@@ -1171,6 +1171,8 @@ python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --n
   
 ### basic  
 
+Several scripts exist to conduct system enumeration in ways similar to the ones seen in the previous task. These tools can shorten the enumeration process time and uncover different potential privilege escalation vectors. However, please remember that automated tools can sometimes miss privilege escalation.
+
 always start checking this two commands: 
 ```
 whoami /priv
