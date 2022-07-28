@@ -1168,7 +1168,14 @@ python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --n
  
 
 ## Privilige Escalation and enumeration
-  
+
+### resources
+here is some basic resources about privilige escalation and enumeration to start with. 
+
+```
+https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation
+```
+
 ### basic  
 
 Several scripts exist to conduct system enumeration in ways similar to the ones seen in the previous task. These tools can shorten the enumeration process time and uncover different potential privilege escalation vectors. However, please remember that automated tools can sometimes miss privilege escalation.
