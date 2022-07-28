@@ -72,6 +72,7 @@
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
 - [Privilige Escalation and enumeration](#Privilige-Escalation-and-enumeration)
+  - [resources](#resources)
   - [basic](#basic)
   - [powerview](#powerview)
   - [WES NG Windows Exploit Suggester the Next Generation](#WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
@@ -1174,6 +1175,9 @@ here is some basic resources about privilige escalation and enumeration to start
 
 ```
 https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation
+```
+```
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md
 ```
 
 ### basic  
