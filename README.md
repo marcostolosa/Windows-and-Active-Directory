@@ -1170,6 +1170,9 @@ python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --n
 
 ## Privilige Escalation and enumeration
 
+![image](https://user-images.githubusercontent.com/24814781/181489538-3f33d6f4-1a7b-4933-a8dd-3d4958aabf14.png)
+
+
 ### resources
 here is some basic resources about privilige escalation and enumeration to start with. 
 
