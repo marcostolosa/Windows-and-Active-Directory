@@ -104,6 +104,9 @@
 
 ## cheat sheets/resources
 ```
+https://hackersploit.org/
+```
+```
 https://github.com/cube0x0/Security-Assessment
 ```
 ```
