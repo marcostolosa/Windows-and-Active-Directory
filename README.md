@@ -60,7 +60,6 @@
   - [mslink](#mslink)
   - [Invoke PowerShellTcp ps1](#Invoke-PowerShellTcp-ps1)
   - [nishang](#nishang)
-  - [Get LAPSPasswords](#Get-LAPSPasswords)
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
   - [Meterpreter Tunneling and Port Forwarding](#Meterpreter-Tunneling-and-Port-Forwarding)
   - [sshuttle](#sshuttle)
@@ -86,6 +85,7 @@
   - [Abusing Service Misconfigurations](#Abusing-Service-Misconfigurations)
   - [Abusing dangerous privileges](#Abusing-dangerous-privileges)
   - [Abusing vulnerable software](#Abusing-vulnerable-software)
+  - [Get LAPSPasswords](#Get-LAPSPasswords)
   - [sweetpotato](#sweetpotato)
   - [JuicyPotato](#JuicyPotato)
   - [hotpotato](#hotpotato)
@@ -740,14 +740,7 @@ Nishang is a framework and collection of scripts and payloads which enables usag
 ```
 wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
 ```
-  
-### Get LAPSPasswords
-  
-Powershell function to pull the local admin passwords from LDAP, stored there by LAPS. 
 
-```
-https://github.com/kfosaaen/Get-LAPSPasswords.git
-```
 
 
 
@@ -2381,7 +2374,13 @@ As a last step, you can run a command prompt as administrator:
 ![image](https://user-images.githubusercontent.com/24814781/181487825-be4765a4-8799-48b0-9545-9340b112579d.png)
   
 
+### Get LAPSPasswords
+  
+Powershell function to pull the local admin passwords from LDAP, stored there by LAPS. 
 
+```
+https://github.com/kfosaaen/Get-LAPSPasswords.git
+```
 
 
 ### sweetpotato
