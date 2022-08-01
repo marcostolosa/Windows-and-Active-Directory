@@ -1554,7 +1554,11 @@ Whenever a user runs a command using Powershell, it gets stored into a file that
 ```
 type %userprofile%\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
 ```
-
+targeting just one user example:
+```
+type c:\users\SULJOV\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+```
+  
 Note: The command above will only work from cmd.exe, as Powershell won't recognize " %userprofile% " as an environment variable. To read the file from Powershell, you'd have to replace " %userprofile% " with " $Env:userprofile ". 
 
 #### Saved Windows Credentials
