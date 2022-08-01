@@ -60,6 +60,7 @@
   - [mslink](#mslink)
   - [Invoke PowerShellTcp ps1](#Invoke-PowerShellTcp-ps1)
   - [nishang](#nishang)
+  - [Get LAPSPasswords](#Get-LAPSPasswords)
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
   - [Meterpreter Tunneling and Port Forwarding](#Meterpreter-Tunneling-and-Port-Forwarding)
   - [sshuttle](#sshuttle)
@@ -740,6 +741,14 @@ Nishang is a framework and collection of scripts and payloads which enables usag
 wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
 ```
   
+### Get LAPSPasswords
+  
+Powershell function to pull the local admin passwords from LDAP, stored there by LAPS. 
+
+```
+https://github.com/kfosaaen/Get-LAPSPasswords.git
+```
+
 
 
 ## Pivoting Tunneling and Port Forwarding
