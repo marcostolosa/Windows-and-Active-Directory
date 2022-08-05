@@ -125,6 +125,9 @@ https://0xdf.gitlab.io/2019/01/28/pwk-notes-tunneling-update1.html
 ```
 https://adepts.of0x.cc/shadowmove-hijack-socket/
 ```
+```
+https://pentestwiki.org/privilege-escalation-in-windows-and-linux/
+```
 
 ## tools
 
