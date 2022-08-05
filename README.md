@@ -1258,7 +1258,7 @@ https://github.com/GhostPack/Seatbelt
 ```
 https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation/seatbelt
 ```
-```
+
 Available commands (+ means remote usage is supported):
 
     + AMSIProviders          - Providers registered for AMSI
@@ -1372,7 +1372,7 @@ Available commands (+ means remote usage is supported):
       WMIEventFilter         - Lists WMI Event Filters
       WMIFilterBinding       - Lists WMI Filter to Consumer Bindings
     + WSUS                   - Windows Server Update Services (WSUS) settings, if applicable
-```
+
 
 Seatbelt has the following command groups: All, User, System, Slack, Chromium, Remote, Misc
 
