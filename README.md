@@ -99,7 +99,8 @@
 
 
 
-#           Its you versus them
+# Its you versus them
+
 ![image](https://user-images.githubusercontent.com/24814781/181242943-3a5e94d9-fe81-4004-8c29-facac58d4c64.png)
 
 
@@ -128,6 +129,9 @@ https://adepts.of0x.cc/shadowmove-hijack-socket/
 ```
 ```
 https://pentestwiki.org/privilege-escalation-in-windows-and-linux/
+```
+```
+https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap
 ```
 
 ## tools
@@ -298,6 +302,16 @@ Built-in interface for interacting with the LDAP protocol.
 ```
 https://linux.die.net/man/1/ldapsearch
 ```
+#### Bypass TLS SNI check
+According to this writeup:
+```
+https://swarm.ptsecurity.com/exploiting-arbitrary-object-instantiations/
+```
+just by accessing the LDAP server with an arbitrary domain name (like company.com) he was able to contact the LDAP service and extract information as an anonymous user:
+```
+ldapsearch -H ldaps://company.com:636/ -x -s base -b '' "(objectClass=*)" "*" +
+```
+
 
 ### windapsearch
 A Python script used to enumerate AD users, groups, and computers using LDAP queries. Useful for automating custom LDAP queries.
