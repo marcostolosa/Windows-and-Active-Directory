@@ -104,7 +104,7 @@
 
 
 
-## cheat sheets/resources
+## cheat sheets and resources
 ```
 https://hackersploit.org/
 ```
