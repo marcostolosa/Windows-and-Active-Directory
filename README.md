@@ -145,6 +145,21 @@ Used to visually map out AD relationships and help plan attack paths that may ot
 ```
 https://github.com/BloodHoundAD/BloodHound
 ```
+#### resources 
+```
+https://www.youtube.com/watch?v=aJqjH3MsbLM
+```
+```
+https://www.youtube.com/watch?v=gXFCiB2KI9M&t
+```
+```
+https://www.youtube.com/watch?v=y3tB-9VBELc&t=255s
+```
+```
+https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/bloodhound
+```
+
+
 ### SharpHound
 
 The C# data collector to gather information from Active Directory about varying AD objects such as users, groups, computers, ACLs, GPOs, user and computer attributes, user sessions, and more. The tool produces JSON files which can then be ingested into the BloodHound GUI tool for analysis.
