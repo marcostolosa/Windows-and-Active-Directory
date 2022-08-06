@@ -86,6 +86,7 @@
   - [Abusing dangerous privileges](#Abusing-dangerous-privileges)
   - [Abusing vulnerable software](#Abusing-vulnerable-software)
   - [Get LAPSPasswords](#Get-LAPSPasswords)
+  - [powerup](#powerup)
   - [sweetpotato](#sweetpotato)
   - [JuicyPotato](#JuicyPotato)
   - [hotpotato](#hotpotato)
@@ -2398,6 +2399,34 @@ Powershell function to pull the local admin passwords from LDAP, stored there by
 
 ```
 https://github.com/kfosaaen/Get-LAPSPasswords.git
+```
+
+### powerup
+PowerUp.ps1 is a program that enables a user to perform quick checks against a Windows machine for any privilege escalation opportunities. It is not a comprehensive check against all known privilege escalation techniques, but it is often a good place to start when you are attempting to escalate local privileges.
+
+The script can be downloaded from here as a packet with the powersploit github under the privesc part: 
+```
+https://github.com/PowerShellMafia/PowerSploit
+```
+Brief Overview
+
+Here is a brief overview of how to use PowerUp.ps1
+
+1.    Download PowerUp.ps1
+2.    Modify the script to bypass anti-virus
+3.    Upload the file to the target Windows machine
+4.    Disable AMSI and bypass PowerShell Execution Policy
+```
+powershell -ep bypass
+```
+5.    Run the program and observe the output
+6.    Select the misconfiguration you want to exploit and run the provided command.
+
+how to use it 
+```
+powershell -ep bypass
+. .\powerup.ps
+Invoke-AllChecks
 ```
 
 
