@@ -84,14 +84,17 @@
   - [groups](#groups)
   - [windows resources](#windows-resources)
   - [ACLs and ACEs](#ACLs-and-ACEs)
+
 - [spawning administrator shells](#spawning-administrator-shells)
   - [msfvenom](#msfvenom)
   - [RDP](#RDP)
+
 - [Privilege Escalation Tools](#Privilege-Escalation-Tools)
   - [PowerUpp and SharpUp](#PowerUpp-and-SharpUp)
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
+
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
   - [Kernel Exploits](#Kernel-Exploits)
   - [Service Exploits](#Service-Exploits)
