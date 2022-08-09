@@ -134,6 +134,7 @@ https://pentestwiki.org/privilege-escalation-in-windows-and-linux/
 https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap
 ```
 
+
 ## tools
 
 ### PowerView/SharpView
@@ -1219,6 +1220,9 @@ https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation
 ```
 ```
 https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md
+```
+```
+https://book.hacktricks.xyz/windows-hardening/checklist-windows-privilege-escalation
 ```
 
 ### basic  
