@@ -79,7 +79,7 @@
 ------------------------------------------------------------------------------------
 ## Local Privilige Escalation
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
-  -[Genereal Concepts](#Genereal-Concepts)
+  - [Genereal Concepts](#Genereal-Concepts)
 - [understanding permissions in windows](#understanding-permissions-in-windows)
   - [user accounts](#user-accounts)
   - [service accounts](#service-accounts)
