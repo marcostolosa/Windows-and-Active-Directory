@@ -74,27 +74,22 @@
   - [SSH for Windows plink exe](#SSH-for-Windows-plink-exe)
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
-  
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
   -[Genereal Concepts](#Genereal-Concepts)
-
 - [understanding permissions in windows](#understanding-permissions-in-windows)
   - [user accounts](#user-accounts)
   - [service accounts](#service-accounts)
   - [groups](#groups)
   - [windows resources](#windows-resources)
   - [ACLs and ACEs](#ACLs-and-ACEs)
-
 - [spawning administrator shells](#spawning-administrator-shells)
   - [msfvenom](#msfvenom)
   - [RDP](#RDP)
-
 - [Privilege Escalation Tools](#Privilege-Escalation-Tools)
   - [PowerUpp and SharpUp](#PowerUpp-and-SharpUp)
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
-
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
   - [Kernel Exploits](#Kernel-Exploits)
   - [Service Exploits](#Service-Exploits)
@@ -1254,9 +1249,9 @@ if a command start with # its from a linux/kali machine.
 if a commmand start with > its from a windows machine but mostly from cmd 
 and if a command start with PS> its from a powershell in windows
 ```
-* # = linux/kali
-* > = windows/cmd
-* PS> = windwos poershell
+# = linux/kali
+> = windows/cmd
+PS> = windwos poershell
 ```
 #### Genereal Concepts
 
