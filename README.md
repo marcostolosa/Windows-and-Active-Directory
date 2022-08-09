@@ -1253,10 +1253,11 @@ in this part we will use different systems for different part of an attack.
 if a command start with # its from a linux/kali machine. 
 if a commmand start with > its from a windows machine but mostly from cmd 
 and if a command start with PS> its from a powershell in windows
-
+```
 * # = linux/kali
 * > = windows/cmd
 * PS> = windwos poershell
+```
 #### Genereal Concepts
 
 Our goal in privilege escalation in windows is to gain a shell running as an administrator or the system user. 
