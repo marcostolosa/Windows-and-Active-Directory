@@ -3,7 +3,7 @@
 # Table of content 
 
 - [cheat sheets and resources](#cheat-sheets-and-resources)
-
+------------------------------------------------------------------------------------
 - [tools](#tools)
   - [PowerView/SharpView](#PowerViewSharpView)
   - [BloodHound](#BloodHound)
@@ -62,7 +62,7 @@
   - [mslink](#mslink)
   - [Invoke PowerShellTcp ps1](#Invoke-PowerShellTcp-ps1)
   - [nishang](#nishang)
-  
+  - ------------------------------------------------------------------------------------
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
   - [Meterpreter Tunneling and Port Forwarding](#Meterpreter-Tunneling-and-Port-Forwarding)
   - [sshuttle](#sshuttle)
@@ -105,7 +105,7 @@
   - [privilege escalation strategy](#privilege-escalation-strategy)
   - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
   - [user privileges](#user-privileges)
-
+------------------------------------------------------------------------------------
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
   - [resources](#resources)
   - [basic](#basic)
@@ -130,7 +130,7 @@
   - [roguepotato](#roguepotato)
   - [genericpotato](#genericpotato)
   - [printnightmare](#printnightmare)
-
+------------------------------------------------------------------------------------
 
 
 
