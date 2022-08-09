@@ -95,6 +95,7 @@
   - [roguepotato](#roguepotato)
   - [genericpotato](#genericpotato)
   - [printnightmare](#printnightmare)
+- [Local Privilige Escalation](#Local-Privilige-Escalation)
 
 
 
@@ -2737,4 +2738,4 @@ Start-Process powershell 'Start-Process cmd -Verb RunAs' -Credential adm1n
   
 Run the command "whoami /groups" in the new window. You should see "BUILTIN\Administrators" in the list of groups, and a line at the bottom of the output containing "Mandatory Label\High Mandatory Level".
   
-
+### Local Privilige Escalation
