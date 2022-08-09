@@ -74,6 +74,7 @@
   - [SSH for Windows plink exe](#SSH-for-Windows-plink-exe)
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
+------------------------------------------------------------------------------------
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
   -[Genereal Concepts](#Genereal-Concepts)
 - [understanding permissions in windows](#understanding-permissions-in-windows)
