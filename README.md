@@ -76,6 +76,36 @@
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
   
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
+  -[Genereal Concepts](#Genereal-Concepts)
+-[understanding permissions in windows](#understanding-permissions-in-windows)
+  -[user accounts](#user-accounts)
+  -[service accounts](#service-accounts)
+  -[groups](#groups)
+  -[windows resources](#windows-resources)
+  -[ACLs and ACEs](#ACLs-and-ACEs)
+-[spawning administrator shells](#spawning-administrator-shells)
+  -[msfvenom](#msfvenom)
+  -[RDP](#RDP)
+-[Privilege Escalation Tools](#Privilege-Escalation-Tools)
+  -[PowerUpp and SharpUp](#PowerUpp-and-SharpUp)
+  -[Seatbelt](#Seatbelt)
+  -[Winpeas](#Winpeas)
+  -[accesschk](#accesschk)
+-[Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
+  -[Kernel Exploits](#Kernel Exploits)
+  -[Service Exploits](#Service Exploits)
+  -[Registry exploits](#Registry-exploits)
+  -[passwords](#passwords)
+  -[scheduled tasks](#scheduled-tasks)
+  -[insecure GUI apps](#insecure-GUI-apps)
+  -[startup apps](#startup-apps)
+  -[installed apps](#installed-apps)
+  -[hot potato](#hot-potato)
+  -[token impersonation](#token-impersonation)
+  -[port forwarding](#port-forwarding)
+  -[privilege escalation strategy](#privilege-escalation-strategy)
+  -[getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
+  -[user privileges](#user-privileges)
 
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
   - [resources](#resources)
@@ -1299,7 +1329,15 @@ example:
 ```
 this reverse shell can be caught using netcat or metasploits own multi/handler
 
-###example:
+if you want to escalate from and admin user to full SYSTEM privileges, you can use the PsExec tool from windows sysinternals.
+```
+https://docs.microsoft.com/en-us/sysinternals/downloads/psexec
+```
+```
+> .\PsExec64.exe -accepteula -i -s <path to example your msfvenom shell.exe> 
+```
+
+### example:
 ![image](https://user-images.githubusercontent.com/24814781/183664949-7ed7f211-2329-48dd-923f-329e30ba530a.png)
 ![image](https://user-images.githubusercontent.com/24814781/183665223-1abb2aa0-74bf-483e-a1da-cdeb01ecac47.png)
 ![image](https://user-images.githubusercontent.com/24814781/183665269-d9f37d7d-b03b-4322-8979-b535edc7b450.png)
@@ -1310,6 +1348,150 @@ alternatively, if RDP is available (or we can enable it), we can add our low pri
 ```
 > net localgroup administrators <sername> /add
 ```
+
+
+### Privilege Escalation Tools
+tools allow us to automate the reconnaisance that can identify potential privilege escalations. 
+
+while it is always important to understand what tools are doing, they are invaluable in a time-limited setting, such as an exam. 
+  
+in this part we will mostly be using winpeas and seatbelt, there also some demo for powerup and sharpup, however you are free to experiment woth other tools and decide wich you like. 
+
+#### PowerUpp and SharpUp
+
+PowerUp & SharpUp are very similar tools that hunt for specific privilege
+escalation misconfigurations.
+
+note: they are very limited enumeration tools, they try to find a sub-set of priv esc methods and are usualy very good at it but should not be the only tools you use. 
+
+PowerUp:
+```
+https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/mast
+er/PowerUp/PowerUp.ps1
+```
+
+SharpUp: 
+```
+https://github.com/GhostPack/SharpUp
+```
+
+Pre-Compiled SharpUp: 
+```
+https://github.com/r3motecontrol/Ghostpack-
+CompiledBinaries/blob/master/SharpUp.exe
+```
+  
+#### PowerUp
+to run PowerUp you first need a powershell session. 
+```
+> powershell -exec bypass
+```
+then: 
+```
+PS> . .\PowerUp.ps1
+```
+and lastly:
+```
+Invoke-Allchecks
+```
+PowerUp also have a number of exploit functions, wich can be used to perform the actuall priv esc but we will in this part be doing it manualy but its a good thing to remember. 
+
+#### SharpUp
+we can run SharpUp either from a poaershell session or cmd. 
+```
+.\SharpUp.exe
+```
+the output is similar to PowerUp.
+
+#### seabelt
+
+Seatbelt is an enumeration tool. It contains a number of enumeration
+checks.
+It does not actively hunt for privilege escalation misconfigurations, but
+provides related information for further investigation.
+
+obs: unlike PowerUp and SharpUp, by default it will output alot of info about the system
+
+Code: 
+```
+https://github.com/GhostPack/Seatbelt
+```
+
+Pre-Compiled: 
+```
+https://github.com/r3motecontrol/Ghostpack-CompiledBinaries/blob/master/Seatbelt.exe
+```
+
+execute seatbelt with no options it will print out the help text
+  
+if you run seatbelt with the flag "all" it will run all enumeration checks
+```
+.\SeatBelt.exe all
+```
+
+#### Winpeas
+winPEAS is a very powerful tool that not only actively
+hunts for privilege escalation misconfigurations, but
+highlights them for the user in the results.
+```
+https://github.com/carlospolop/privilege-escalation-
+awesome-scripts-suite/tree/master/winPEAS
+```
+
+if possible write this and then open up a new cmd
+```
+add HKCU\console /v VirtualTerminalLevel /t REG_DWORD /d 1 
+```
+open up a new cmd and start it 
+```
+.\winpeas.sh
+```
+obs: we do this because we enable colors wich makes it easier to find missconfoguration. 
+
+if you cant add the registration key you may still being able to view colors by running the script in a reverse shell on a kali machin. 
+
+winpeas runns a number of checks in different categories but not specifying any will execute all the checks. 
+
+
+#### accesschk
+AccessChk is an old but still trustworthy tool for checking user access
+control rights.
+You can use it to check whether a user or group has access to files,
+directories, services, and registry keys.
+The downside is more recent versions of the program spawn a GUI
+“accept EULA” popup window. When using the command line, we have
+to use an older version which still has an /accepteula command line
+option.
+
+## Privilege Escalation Techniques
+
+### Kernel Exploits
+
+### Service Exploits
+
+### Registry exploits
+
+### passwords
+
+### scheduled tasks
+
+### insecure GUI apps
+
+### startup apps
+
+### installed apps
+
+### hot potato
+
+### token impersonation
+
+### port forwarding
+
+### privilege escalation strategy
+
+### getsystem Named Pipes and Token Duplication
+
+### user privileges
 
 
 
