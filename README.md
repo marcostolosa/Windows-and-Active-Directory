@@ -4,6 +4,7 @@
 
 - [cheat sheets and resources](#cheat-sheets-and-resources)
 ------------------------------------------------------------------------------------
+## tools
 - [tools](#tools)
   - [PowerView/SharpView](#PowerViewSharpView)
   - [BloodHound](#BloodHound)
@@ -63,6 +64,7 @@
   - [Invoke PowerShellTcp ps1](#Invoke-PowerShellTcp-ps1)
   - [nishang](#nishang)
   - ------------------------------------------------------------------------------------
+## Pivoting Tunneling and Port Forwarding
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
   - [Meterpreter Tunneling and Port Forwarding](#Meterpreter-Tunneling-and-Port-Forwarding)
   - [sshuttle](#sshuttle)
@@ -75,6 +77,7 @@
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
 ------------------------------------------------------------------------------------
+## Local Privilige Escalation
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
   -[Genereal Concepts](#Genereal-Concepts)
 - [understanding permissions in windows](#understanding-permissions-in-windows)
@@ -107,6 +110,7 @@
   - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
   - [user privileges](#user-privileges)
 ------------------------------------------------------------------------------------
+## AD focused Privilige Escalation and enumeration
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
   - [resources](#resources)
   - [basic](#basic)
