@@ -174,7 +174,7 @@ https://pentestwiki.org/privilege-escalation-in-windows-and-linux/
 ```
 https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap
 ```
-
+-------------------------------------------------------------------------------------
 
 ## tools
 
@@ -816,7 +816,7 @@ Nishang is a framework and collection of scripts and payloads which enables usag
 wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
 ```
 
-
+-------------------------------------------------------------------------------------
 
 
 ## Pivoting Tunneling and Port Forwarding
@@ -1247,6 +1247,8 @@ Connecting to a Web Server using HTTP-Proxy & NTLM Auth
 python client.py --server-ip <IPaddressofTargetWebServer> --server-port 8080 --ntlm-proxy-ip IPaddressofProxy> --ntlm-proxy-port 8081 --domain <nameofWindowsDomain> --username <username> --password <password>
 ```
  
+-------------------------------------------------------------------------------------
+
 ## Local Privilige Escalation
 in this part we will use different systems for different part of an attack. 
 
@@ -1498,7 +1500,7 @@ option.
 
 ### user privileges
 
-
+-------------------------------------------------------------------------------------
 
 ## AD focused Privilige Escalation and enumeration
 
@@ -3030,4 +3032,4 @@ Start-Process powershell 'Start-Process cmd -Verb RunAs' -Credential adm1n
   
 Run the command "whoami /groups" in the new window. You should see "BUILTIN\Administrators" in the list of groups, and a line at the bottom of the output containing "Mandatory Label\High Mandatory Level".
   
-### Local Privilige Escalation
+
