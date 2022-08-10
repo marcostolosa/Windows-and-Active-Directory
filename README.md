@@ -98,6 +98,11 @@
 - [Kernel Exploits](#Kernel-Exploits)
   - [Services](#Services)
   - [Service Misconfigurations](#Service-Misconfigurations)
+  - [Insecure Service Permissions](#Insecure-Service-Permissions)
+  - [Unquoted Service Path](#Unquoted-Service-Path)
+  - [Weak Registry Permissions](#Weak-Registry-Permissions)
+  - [Insecure Service Executables](#Insecure-Service-Executables)
+  - [DLL Hijacking](#DLL-Hijacking)
 - [Service Exploits](#Service-Exploits)
 - [Registry exploits](#Registry-exploits)
 - [passwords](#passwords)
@@ -1554,7 +1559,7 @@ the following commands are usefull when dealing with services.
 
 Service Commands
 Query the configuration of a service:
-``´
+```
 > sc.exe qc <name>
 ```
 Query the current status of a service:
@@ -1571,7 +1576,7 @@ Start/Stop a service:
 ```
 
 
-#### 1. Service Misconfigurations
+#### Service Misconfigurations
   
 1. Insecure Service Properties
 2. Unquoted Service Path
