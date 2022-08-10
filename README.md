@@ -1539,8 +1539,9 @@ SYSTEM privileges:
 ```
 
 ### Service Exploits
+### Services
 
-Services are simply programs that run in the
+  Services are simply programs that run in the
 background, accepting input or performing regular
 tasks.
 
