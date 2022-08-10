@@ -102,7 +102,7 @@
   - [Unquoted Service Path](#Unquoted-Service-Path)
   - [Weak Registry Permissions](#Weak-Registry-Permissions)
   - [Insecure Service Executables](#Insecure-Service-Executables)
-  - [DLL Hijacking](#DLL-Hijacking)
+  - [DLL Hijacking.](#DLL-Hijacking.)
 - [Service Exploits](#Service-Exploits)
 - [Registry exploits](#Registry-exploits)
 - [passwords](#passwords)
@@ -1761,7 +1761,7 @@ exploit:
 > net start filepermsvc
 ```
 
-#### DLL Hijacking
+###  DLL Hijacking.
 
 Often a service will try to load functionality from a library
 called a DLL (dynamic-link library). Whatever functionality the
