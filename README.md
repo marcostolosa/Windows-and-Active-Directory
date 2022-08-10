@@ -95,7 +95,7 @@
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
-- [Kernel Exploits](#Kernel-Exploits)
+  - [Kernel Exploits](#Kernel-Exploits)
     - [Services](#Services)
     - [Service Misconfigurations](#Service-Misconfigurations)
     - [Insecure Service Permissions](#Insecure-Service-Permissions)
