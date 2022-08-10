@@ -97,7 +97,7 @@
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
 - [Kernel Exploits](#Kernel-Exploits)
   - [Services](#Services)
-  - [Service Misconfigurations](#Service-Misconfigurations)
+  - [1. Service Misconfigurations](#1.-Service-Misconfigurations)
   - [Insecure Service Permissions](#Insecure-Service-Permissions)
   - [Unquoted Service Path](#Unquoted-Service-Path)
   - [Weak Registry Permissions](#Weak-Registry-Permissions)
@@ -1576,7 +1576,7 @@ Start/Stop a service:
 ```
 
 
-#### Service Misconfigurations
+#### 1. Service Misconfigurations
   
 1. Insecure Service Properties
 2. Unquoted Service Path
