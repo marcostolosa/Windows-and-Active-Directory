@@ -1577,6 +1577,7 @@ Start/Stop a service:
 
 
 #### Service Misconfigurations
+  
 1. Insecure Service Properties
 2. Unquoted Service Path
 3. Weak Registry Permissions
