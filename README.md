@@ -368,6 +368,10 @@ A Python script used to enumerate AD users, groups, and computers using LDAP que
 ```
 https://github.com/ropnop/windapsearch
 ```
+pre compiled binary wich acatualy works (for me) 
+```
+https://github.com/ropnop/go-windapsearch/releases
+```
 
 ### DomainPasswordSpray ps1
 DomainPasswordSpray is a tool written in PowerShell to perform a password spray attack against users of a domain.
