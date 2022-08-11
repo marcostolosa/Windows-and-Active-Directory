@@ -372,6 +372,62 @@ pre compiled binary wich acatualy works (for me)
 ```
 https://github.com/ropnop/go-windapsearch/releases
 ```
+windapsearch is a tool to assist in Active Directory Domain enumeration through LDAP queries. It contains several modules to enumerate users, groups, computers, as well as perform searching and unauthenticated information gathering.
+
+For usage examples of each of the modules, view the modules README
+```
+https://github.com/ropnop/go-windapsearch/blob/master/pkg/modules/README.md
+```
+In addition to performing common LDAP searches, windapsearch now also has the option to convert LDAP results to JSON format for easy parsing. When performing JSON encoding, windapsearch will automatically convert certain LDAP attributes to a more human friendly format as well (e.g. timestamps, GUIDs, enumerations, etc)
+```
+./windapsearch -h
+windapsearch: a tool to perform Windows domain enumeration through LDAP queries
+Version: dev (9f91330) | Built: 03/04/21 (go1.16) | Ronnie Flathers @ropnop
+
+Usage: ./windapsearch [options] -m [module] [module options]
+
+Options:
+  -d, --domain string            The FQDN of the domain (e.g. 'lab.example.com'). Only needed if dc not provided
+      --dc string                The Domain Controller to query against
+  -u, --username string          The full username with domain to bind with (e.g. 'ropnop@lab.example.com' or 'LAB\ropnop')
+                                  If not specified, will attempt anonymous bind
+      --bindDN string            Full DN to use to bind (as opposed to -u for just username)
+                                  e.g. cn=rflathers,ou=users,dc=example,dc=com
+  -p, --password string          Password to use. If not specified, will be prompted for
+      --hash string              NTLM Hash to use instead of password (i.e. pass-the-hash)
+      --ntlm                     Use NTLM auth (automatic if hash is set)
+      --port int                 Port to connect to (if non standard)
+      --secure                   Use LDAPS. This will not verify TLS certs, however. (default: false)
+      --proxy string             SOCKS5 Proxy to use (e.g. 127.0.0.1:9050)
+      --full                     Output all attributes from LDAP
+      --ignore-display-filters   Ignore any display filters set by the module and always output every entry
+  -o, --output string            Save results to file
+  -j, --json                     Convert LDAP output to JSON
+      --page-size int            LDAP page size to use (default 1000)
+      --version                  Show version info and exit
+  -v, --verbose                  Show info logs
+      --debug                    Show debug logs
+  -h, --help                     Show this help
+  -m, --module string            Module to use
+
+Available modules:
+    admin-objects       Enumerate all objects with protected ACLs (i.e admins)
+    computers           Enumerate AD Computers
+    custom              Run a custom LDAP syntax filter
+    dns-names           List all DNS Names
+    dns-zones           List all DNS Zones
+    domain-admins       Recursively list all users objects in Domain Admins group
+    gpos                Enumerate Group Policy Objects
+    groups              List all AD groups
+    members             Query for members of a group
+    metadata            Print LDAP server metadata
+    privileged-users    Recursively list members of all highly privileged groups
+    search              Perform an ANR Search and return the results
+    unconstrained       Find objects that allow unconstrained delegation
+    user-spns           Enumerate all users objects with Service Principal Names (for kerberoasting)
+    users               List all user objects
+```
+
 
 ### DomainPasswordSpray ps1
 DomainPasswordSpray is a tool written in PowerShell to perform a password spray attack against users of a domain.
