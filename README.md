@@ -128,6 +128,15 @@
   - [winpeas](#winpeas)
   - [PrivescCheck](#PrivescCheck)
   - [metasploit exploit suggester](#metasploit-exploit-suggester)
+  - [powershell](#powershell)
+    - [Powershell Overview](#Powershell-Overview)
+    - [Using Get-Help](#Using-Get-Help)
+    - [Using Get-Command](#Using-Ge-Command)
+    - [Object Manipulation](#Object-Manipulation)
+    - [Creating Objects From Previous cmdlets](#Creating-Objects-From-Previous-cmdlets)
+    - [Filtering Objects](#Filtering-Objects)
+    - [Sort Object](#Sort-Object)
+    - [Introduction to Offensive Powershell](#Introduction-to-Offensive-Powershell)
 ------------------------------------------------------------------------------------------------
   - [Harvesting Passwords from Usual Spots](#Harvesting-Passwords-from-Usual-Spots)
   - [Other Quick Wins](#Other-Quick-Wins)
@@ -2284,6 +2293,187 @@ in a Meterpreter shell
 ```
 multi/recon/local_exploit_suggester
 ```
+
+### powershell
+#### Powershell Overview
+Powershell is the Windows Scripting Language and shell environment that is built using the .NET framework.
+
+This also allows Powershell to execute .NET functions directly from it's shell. Most Powershell commands, called cmdlets, are written in .NET. Unlike other scripting languages and shell environments, the output of these cmdlets and objects - making Powershell somewhat object oriented. This also means that running cmdlets allows you to perform actions on the output object (which makes it convenient to pass output from one cmdlet to another). The normal format of a cmdlet is represented using Verb-Noun; for example the cmdlet to list commands is Get-Command.
+
+Common verbs to include
+
+    Get
+
+    Start
+
+    Stop
+
+    Read
+
+    Write
+
+    New
+
+    Out
+    
+
+Now that we've understood how cmdlets works - let's explore how to use them! The main thing to remember here is that Get-Command and Get-Help are your best friends!
+
+#### Using Get-Help
+
+Get-Help displays information about a cmdlet. To get help about a particular command, run the following.
+```
+Get-Help Command-Name
+```
+You can also understand how exactly to use the command by passing in the -examples flag. This would return output like the following
+
+![image](https://user-images.githubusercontent.com/24814781/184435826-117b6f0d-3e55-4966-9593-2f06b4319014.png)
+
+#### Using Get-Command
+
+Get-Command gets all the cmdlets installed on the current device. The great thing about this cmdlet is that it allows for pattern matching like the following.
+```
+Get-Command Verb-* 
+```
+or 
+```
+Get-Command *-Noun
+```
+
+Running the Get-Command New-* to view all the cmdlets for the verb new displays the following.
+
+![image](https://user-images.githubusercontent.com/24814781/184435903-c3dde93d-432c-4a75-95e9-cebb0a0ca20d.png)
+
+
+#### Object Manipulation
+
+In the previous task, we saw how the output of every cmdlet is an object. If we want to actually manipulate the output, we need to figure out a few things.
+
+    Passing ouput to other cmdlets
+
+    Using specific object cmdlets to extract information
+
+The Pipeline(|) is used to pass output from one cmdlet to another. A major difference compared to other shells is that instead of passing text or string to the command after the pipe, powershell passes an object to the next cmdlet. Like every object in object oriented frameworks, an object will contain methods and properties. You can think of methods as functions that can be applied to output from the cmdlet and you can think of properties as variables in the output from a cmdlet. To view these details, pass the output of a cmdlet to the Get-Member cmdlet.
+```
+Verb-Noun | Get-Member    
+```
+An example of running to view the members for Get-Command.
+```
+Get-Command | Get-Member -MemberType Method    
+```
+![image](https://user-images.githubusercontent.com/24814781/184436024-fff57cdf-b2c3-49d7-ad25-6d86235ac124.png)
+
+From the above flag in the command, you can see that you can also select between methods and properties.
+
+
+#### Creating Objects From Previous cmdlets
+
+One way of manipulating objects is pulling out the properties from the output of a cmdlet and creating a new object. This is done using the Select-Object cmdlet.
+
+Here's an example of listing the directories and just selecting the mode and the name.
+
+![image](https://user-images.githubusercontent.com/24814781/184436063-0b9a73f7-9bd5-4ede-a571-654dc59ec00b.png)
+
+You can also use the following flags to select particular information.
+
+first - gets the first x object
+
+last - gets the last x object
+
+unique - shows the unique objects
+
+skip - skips x objects
+
+#### Filtering Objects
+
+When retrieving output objects, you may want to select objects that match a very specific value. You can do this using the Where-Object to filter based on the value of properties.
+
+The general format using this cmdlet is
+```
+Verb-Noun | Where-Object -Property PropertyName -operator Value
+```
+```
+Verb-Noun | Where-Object {$_.PropertyName -operator Value}
+```
+
+The second version uses the $_ operator to iterate through every object passed to the Where-Object cmdlet.
+
+Where -operator is a list of the of the following operators.
+
+    Contains - If any item in the property value is an exact match for the specified value/
+
+    EQ - If the property value is the same as the specified value.
+
+    GT - If the property value is greater than the specified value
+
+For a full list of operators, use this link.
+```
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/where-object?view=powershell-7.2&viewFallbackFrom=powershell-6
+```
+
+Here's an example of checking the stopped processes:
+
+![image](https://user-images.githubusercontent.com/24814781/184436240-b3d76a83-3b38-4d76-964d-8e789ad44e43.png)
+
+
+#### Sort Object
+
+When a cmdlet outputs a lot of information, you may need to sort it to extract the information more efficiently. You do this by pipe lining the output of a cmdlet to the Sort-Object cmdlet.
+
+The format of the command would be 
+```
+Verb-Noun | Sort-Object
+```
+Here's an example of sorting the list of directories.
+
+![image](https://user-images.githubusercontent.com/24814781/184436288-d6cf9435-faeb-455c-a19c-36985dfa999f.png)
+
+#### Introduction to Offensive Powershell
+
+Well we have all this information now how can we apply it to attacking a windows network? We can utilize offensive powershell to enumerate and attack Windows and Windows Active Directory.
+
+Basic Offensive Powershell
+
+A majority of offensive Powershell will come from using Modules like ActiveDirectory and PowerView to enumerate and exploit however powershell also has a few cmdlets that you can use to your offensively.
+
+Powershell has the ability to import modules such as ActiveDirectory and PowerView to expand the list of cmdlets available. To import a module you can either use Import-Module <Module> or you can use dot space dot backslash <Module> (. .\Module).
+
+Examples of importing modules
+```
+Import-Module Module
+```
+```
+. .\Module.ps1    
+```
+Note: . .\ will only work with powershell script files. All other modules will need to be imported with Import-Module for example ActiveDirectory can only be imported with Import-Module.
+
+#### Get-ADDomain
+
+Get-ADDomain is a commandlet that pulls a large majority of the information about the Domain you’re attacking. It can list all of the Domain Controllers for a given environment, tell you the NetBIOS Domain name, the FQDN (Fully Qualified Domain name) and much more. Using the Select-Object command, we can filter out some of the unnecessary objects that may be displayed (like COntainers, Group Policy Objects, and much more)
+```
+Get-ADDomain | Select-Object NetBIOSName, DNSRoot, InfrastructureMaster
+```
+![image](https://user-images.githubusercontent.com/24814781/184438202-37ba4f39-8315-4fa1-8cd0-ac7320a82ae7.png)
+
+#### Get-ADForest
+
+Get-ADForest is another commandlet that pulls all the Domains within a Forest and lists them out to the user. This may be useful if a bidirectional trust is setup, it may allow you to gain a foothold in another domain on the LAN. Just like Get-ADDomain, there is a lot of output, so we will be using Select-Object to trim the output down.
+```
+Get-ADForest | Select-Object Domains
+```
+![image](https://user-images.githubusercontent.com/24814781/184438332-af74d157-6002-4ae0-a3c3-235eaa52c849.png)
+
+
+#### Get-ADTrust 
+
+Get-ADTrust is the last built in Powershell commandlet that we will be discussing, after this, we will move over to Powerview. Get-ADTrust provides a ton of information about the Trusts within the AD Domain. It can tell you if it’s a one way or bidirectional trust, who the source is, who the target is, and much more. One required field is -Filter, this is required in the event that you want to filter on a specific Domain/Trust, if you do not (like in most circumstances), you can simply provide a * to wildcard the results.
+```
+Get-ADTrust -Filter * | Select-Object Direction,Source,Target
+```
+![image](https://user-images.githubusercontent.com/24814781/184438764-ed7e7928-4100-419f-91ab-d3fa401a16a1.png)
+
+
+
 
 ### Harvesting Passwords from Usual Spots
 
