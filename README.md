@@ -94,6 +94,7 @@
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
+------------------------------------------------------------------------------------------------
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
 - [Kernel Exploits](#Kernel-Exploits)
   - [Services](#Services)
