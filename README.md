@@ -123,6 +123,11 @@
   - [resources](#resources)
   - [basic](#basic)
   - [powerview](#powerview)
+    - [Introduction to PowerView](#Introduction-to-PowerView)
+    - [Get-NetDomain](#Get-NetDomain)
+    - [Get-NetDomainController](#Get-NetDomainController)
+    - [Get-NetForest](#Get-NetForest)
+    - [Get-NetDomainTrust](#Get-NetDomainTrust)
   - [WES NG Windows Exploit Suggester the Next Generation](#WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
   - [seatbelt AD](#seatbelt-AD)
   - [winpeas](#winpeas)
@@ -1987,7 +1992,49 @@ https://book.hacktricks.xyz/windows-hardening/basic-powershell-for-pentesters/po
 ```
 https://zflemingg1.gitbook.io/undergrad-tutorials/powerview/powerview-cheatsheet
 ```
-  
+#### Introduction to PowerView
+
+Powerview (part of PowerSploit by PowerShellMafia) is an excellent suite of tools that can be used for enumeration, and exploitation of an AD Domain, today we’re only going to cover Powerview’s ability to enumerate information about the domain and their associated trusts.
+
+
+#### Get-NetDomain
+
+Get-NetDomain is similar to the ActiveDirectory module’s Get-ADDomain but contains a lot less information, which can be better. Basic info such as the Forest, Domain Controllers, and Domain Name are enumerated.
+```
+Get-NetDomain
+```
+![image](https://user-images.githubusercontent.com/24814781/184441594-ffa9935c-7c7a-4862-8590-3c75510128e0.png)
+
+#### Get-NetDomainController 
+
+Get-NetDomainController is another useful cmdlet that will list all of the Domain Controllers within the network. This is incredibly useful for initial reconnaissance, especially if you do not have a Windows device that’s joined to the domain.
+```
+Get-NetDomainController    
+```
+![image](https://user-images.githubusercontent.com/24814781/184442195-b2251ed7-7c81-4828-bd1b-fbdb733f333f.png)
+
+#### Get-NetForest
+
+Get-NetForest is similar to Get-ADForest, and provides similar output. It provides all the associated Domains, the root domain, as well as the Domain Controllers for the root domain.
+```
+Get-NetForest      
+```
+![image](https://user-images.githubusercontent.com/24814781/184442205-9f67bada-211e-497f-823a-6375f000197b.png)
+
+
+
+#### Get-NetDomainTrust
+
+Get-NetDomainTrust is similar to Get-ADTrust with our SelectObject filter applied to it. It’s short, sweet and to the point!
+```
+Get-NetDomainTrust
+```
+![image](https://user-images.githubusercontent.com/24814781/184442213-10de5e2e-7ef7-4344-933a-52c7682f3ccb.png)
+
+
+
+
+
 ### WES NG Windows Exploit Suggester the Next Generation
 
 Some exploit suggesting scripts (e.g. winPEAS) will require you to upload them to the target system and run them there. This may cause antivirus software to detect and delete them. To avoid making unnecessary noise that can attract attention, you may prefer to use WES-NG, which will run on your attacking machine (e.g. Kali or TryHackMe AttackBox).
