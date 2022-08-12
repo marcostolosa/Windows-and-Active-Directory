@@ -124,7 +124,7 @@
   - [basic](#basic)
   - [powerview](#powerview)
   - [WES NG Windows Exploit Suggester the Next Generation](#WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
-  - [seatbelt](#seatbelt)
+  - [seatbelt AD](#seatbelt-AD)
   - [winpeas](#winpeas)
   - [PrivescCheck](#PrivescCheck)
   - [metasploit exploit suggester](#metasploit-exploit-suggester)
@@ -2008,7 +2008,7 @@ of Privilege' --exploits-only | less
 ```
 
 
-### seatbelt
+### seatbelt AD
 Seatbelt is a C# project that performs a number of security oriented host-survey "safety checks" relevant from both offensive and defensive security perspectives. 
 ```
 https://github.com/GhostPack/Seatbelt
