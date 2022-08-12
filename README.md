@@ -1479,7 +1479,7 @@ we can run SharpUp either from a poaershell session or cmd.
 ```
 the output is similar to PowerUp.
 
-#### seabelt
+#### Seabelt
 
 Seatbelt is an enumeration tool. It contains a number of enumeration
 checks.
