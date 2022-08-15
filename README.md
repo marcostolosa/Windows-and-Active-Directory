@@ -506,8 +506,15 @@ https://github.com/ParrotSec/mimikatz
 ```
 https://book.hacktricks.xyz/windows-hardening/stealing-credentials/credentials-mimikatz
 ```
+you'll want to type privilege::debug which will then put you in Debug mode, a mode that can only be granted by an Administrator. From there, we will want to elevate privileges to NT Authority (if you don't have it already) with token::elevate. This will grant you the highest level access that Microsoft has to offer, which will allow you to do basically anything on the system. It's close to the Root user account in Linux.
 
-#### example: dump hashes
+1.) privilege::debug
+
+2.) token::elevate  
+
+#### Dumping Password Hashes
+
+Mimikatz has a few options for dumping password hashes on Non-DC Endpoints well only be covering a few of the many commands and modules Mimikatz has. Mimikatz has a general template syntax most commands have the Mimikatz module first, followed by two colons, the command to be run, and any parameters that need to be specified at the end. for example
 ```
 privilege::debug
 ```
@@ -517,18 +524,14 @@ token::elevate
 ```
 -- simply put, this takes us from our administrative shell with high privileges into a SYSTEM level shell with maximum privileges. This is something that we have a right to do as an administrator, but that is not usually possible using normal Windows operations.
 
-There are a variety of commands we could use here, all of which do slightly different things. The command that we will use is: lsadump::sam.
-When executed, this will provide us with a list of password hashes for every account on the machine (with some extra information thrown in as well). The Administrator account password hash should be fairly near the top of the list.
 
-execute: 
-```
-lsadump::sam
-```
 
 lsadump::sam dumps the local Security Account Manager (SAM) NT hashes (cf. SAM secrets dump). It can operate directly on the target system, or offline with registry hives backups (for SAM and SYSTEM ). It has the following command line arguments: /sam : the offline backup of the SAM hive.
 
+#### Dumping from LSA
+The LSA (Local Security Authority) also handles credentials used by the system, from everything to basic password changes to creation of access tokens, it's another ideal candidate for us to dump hashes from. The output is not as large as lsadump::lsa which makes it much easier to work with.
 
-#### example 2:
+lsadump::sam dumps the local Security Account Manager (SAM) NT hashes (cf. SAM secrets dump). It can operate directly on the target system, or offline with registry hives backups (for SAM and SYSTEM ). It has the following command line arguments: /sam : the offline backup of the SAM hive.
 ```
 lsadump::lsa /patch
 ```
@@ -538,6 +541,33 @@ lsadump::lsa
 ```
 
 This is used to dump all local credentials on a Windows computer. LSADUMP::Trust – Ask LSA Server to retrieve Trust Auth Information (normal or patch on the fly).
+
+#### Dumping SAM Hashes
+
+There are a variety of commands we could use here, all of which do slightly different things. The command that we will use is: lsadump::sam.
+When executed, this will provide us with a list of password hashes for every account on the machine (with some extra information thrown in as well). The Administrator account password hash should be fairly near the top of the list.
+
+The SAM (Security Account Manager) holds a copy of all the user's passwords which makes it a valuable file for us to dump. The output can be convoluted and large, so you should transport it onto your Kali machine for further analysis.
+
+1.) lsadump::sam 
+
+execute: 
+```
+lsadump::sam
+```
+
+#### Dumping Creds from Logged In Users
+
+Another method of attacking lsass through Mimikatz is with the sekurlsa module. It will attempt to retrieve the credentials/hashes of currently logged in users. This being the least preferred method for dumping credentials in Mimikatz.
+
+1.) sekurlsa::logonPasswords 
+
+
+#### other examples
+```
+sekurlsa::tickets /export
+```
+
 
 
 #### golden ticket example:
