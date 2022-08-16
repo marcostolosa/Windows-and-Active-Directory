@@ -105,6 +105,13 @@
   - [Insecure Service Executables](#Insecure-Service-Executables)
   - [DLL Hijacking](#DLL-Hijacking)
 - [Service Exploits](#Service-Exploits)
+  - [Services](#Services)
+  - [Service Misconfigurations](#Service-Misconfigurations)
+  - [Insecure Service Permissions](#Insecure-Service-Permissions)
+  - [Unquoted Service Path](#Unquoted-Service-Path)
+  - [Weak Registry Permissions](#Weak-Registry-Permissions)
+  - [Insecure Service Executables](#Insecure-Service-Executables)
+  - [DLL Hijacking ](#DLL Hijacking )
 - [Registry exploits](#Registry-exploits)
 - [passwords](#passwords)
 - [scheduled tasks](#scheduled-tasks)
@@ -1653,7 +1660,7 @@ SYSTEM privileges:
 ### Service Exploits
 ### Services
 
-  Services are simply programs that run in the
+Services are simply programs that run in the
 background, accepting input or performing regular
 tasks.
 
@@ -1704,8 +1711,6 @@ Some may be useful (e.g. SERVICE_STOP, SERVICE_START).
 Some are dangerous (e.g. SERVICE_CHANGE_CONFIG,
 SERVICE_ALL_ACCESS)
 
-
-#### Insecure Service Permissions
 
 If our user has permission to change the configuration of a
 service which runs with SYSTEM privileges, we can change
