@@ -129,7 +129,7 @@
 - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
 - [user privileges](#user-privileges)
 ------------------------------------------------------------------------------------
-## 4. AD focused Privilige Escalation and enumeration
+## 4. AD focused Privilige Escalation
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
   - [resources](#resources)
   - [basic](#basic)
@@ -2273,7 +2273,7 @@ spawn a command prompt using the admin user’s hash.
 
 -------------------------------------------------------------------------------------
 
-## AD focused Privilige Escalation and enumeration
+## AD focused Privilige Escalation
 
 ![image](https://user-images.githubusercontent.com/24814781/181489538-3f33d6f4-1a7b-4933-a8dd-3d4958aabf14.png)
 
