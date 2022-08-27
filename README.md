@@ -471,6 +471,22 @@ https://github.com/leoloobeek/LAPSToolkit
 ### AD smbmap
 SMB share enumeration across a domain.
 
+examples:
+```
+smbmap -H <ip>
+```
+```
+smbmap -R <path you want to look in> -H <ip>
+```
+
+(look for a file and then download it)
+```
+smbmap -R <path> -H <ip> -A <file> -q 
+
+
+
+```
+
 ```
 https://github.com/ShawnDEvans/smbmap
 ```
