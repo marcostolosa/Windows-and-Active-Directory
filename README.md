@@ -24,7 +24,8 @@
   - [windapsearch](#windapsearch)
   - [DomainPasswordSpray-ps1](#DomainPasswordSpray-ps1)
   - [LAPSToolkit](#LAPSToolkit)
-  - [AD smbmap](#AD-smbmap)
+  - [smbmap](#AD-smbmap)
+  - [smbclient](#smbclient)
   - [psexec-py](#psexec-py)
   - [wmiexec-py](#wmiexec-py)
   - [Snaffler](#Snaffler)
@@ -468,7 +469,7 @@ LAPSToolkit 	The toolkit includes functions written in PowerShell that leverage 
 https://github.com/leoloobeek/LAPSToolkit
 ```
 
-### AD smbmap
+### smbmap
 SMB share enumeration across a domain.
 
 examples:
@@ -482,14 +483,53 @@ smbmap -R <path you want to look in> -H <ip>
 (look for a file and then download it)
 ```
 smbmap -R <path> -H <ip> -A <file> -q 
-
-
-
 ```
 
 ```
 https://github.com/ShawnDEvans/smbmap
 ```
+
+obs: files like Groups.xml in shares like sysvol etc is an old way now laps is used but if Groups.xlm is used its a good find. in there is a name/user and password witch is an ecrypted password but ban be cracked using ggp-decrypt
+
+example:
+```
+ggp-decrypt <the encrypted password>
+```
+
+### smbclient
+Samba is an implementation of the SMB/CIFS protocol for Unix systems, providing support for cross-platform file and printer sharing with Microsoft Windows, OS X, and other Unix systems.
+
+This package contains command-line utilities for accessing Microsoft Windows and Samba servers, including smbclient, smbtar, and smbspool. Utilities for mounting shares locally are found in the package cifs-utils.
+
+examples:
+```
+smbclient -L //<ip>/
+```
+
+```
+smbclient //<ip>/<path>
+```
+
+obs: if you want to download either the whole folder/share or file you can do this:
+```
+RECURSE ON
+```
+```
+PROMPT OFF
+```
+```
+mget *
+```
+mget can be used just to download files to
+
+
+obs: files like Groups.xml in shares like sysvol etc is an old way now laps is used but if Groups.xlm is used its a good find. in there is a name/user and password witch is an ecrypted password but ban be cracked using ggp-decrypt
+
+example:
+```
+ggp-decrypt <the encrypted password>
+```
+
 ### psexec-py
 Part of the Impacket toolkit, it provides us with Psexec-like functionality in the form of a semi-interactive shell.
 ```
