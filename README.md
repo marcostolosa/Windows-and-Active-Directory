@@ -484,6 +484,11 @@ smbmap -R <path you want to look in> -H <ip>
 ```
 smbmap -R <path> -H <ip> -A <file> -q 
 ```
+obs depending where you are in terminal etc you might wanna type 
+```
+sudo updatedb
+```
+and it will come in the dir you are in if not it will be in "/usr/share/smbmap"
 
 ```
 https://github.com/ShawnDEvans/smbmap
