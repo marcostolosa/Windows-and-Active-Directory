@@ -24,7 +24,7 @@
   - [windapsearch](#windapsearch)
   - [DomainPasswordSpray-ps1](#DomainPasswordSpray-ps1)
   - [LAPSToolkit](#LAPSToolkit)
-  - [smbmap](#AD-smbmap)
+  - [smbmap](#smbmap)
   - [smbclient](#smbclient)
   - [psexec-py](#psexec-py)
   - [wmiexec-py](#wmiexec-py)
