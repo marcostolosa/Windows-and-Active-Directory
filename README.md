@@ -459,6 +459,25 @@ Available modules:
     users               List all user objects
 ```
 
+Windapsearch can also be used to dump all attributes from LDAP. This way we can check for
+passwords stored in descriptions or other fields.
+
+
+Let's check if LDAP anonymous binds are allowed and attempt to retrieve a list of users. To do
+this, we can use Windapsearch.
+examples: 
+```
+windapsearch.py -d <domain> --dc-ip <ip> -U
+```
+
+
+Windapsearch can also be used to dump all attributes from LDAP. This way we can check for
+passwords stored in descriptions or other fields.
+```
+windapsearch.py -d <domain> --dc-ip <ip> -U --full |
+grep Password
+```
+
 
 ### DomainPasswordSpray ps1
 DomainPasswordSpray is a tool written in PowerShell to perform a password spray attack against users of a domain.
