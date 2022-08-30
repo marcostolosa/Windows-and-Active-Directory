@@ -99,12 +99,16 @@
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
+  
   ------------------------------------------------------------------------------------------------
+  
 - [basic local machine enumeration](#basic-local-machine-enumeration)
   -[System](#System)
   -[Users](#Users)
   -[Networking](#Networking)
+  
 ------------------------------------------------------------------------------------------------
+
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
 - [Kernel Exploits](#Kernel-Exploits)
 - [Service Exploits](#Service-Exploits)
