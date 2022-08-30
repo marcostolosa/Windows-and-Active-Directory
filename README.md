@@ -100,10 +100,10 @@
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
   ------------------------------------------------------------------------------------------------
-  - [basic local enumeration](#basic-local-enumeration)
-    -[System](#System)
-    -[Users](#Users)
-    -[Networking](#Networking)
+- [basic local machine enumeration](#basic-local-machine-enumeration)
+  -[System](#System)
+  -[Users](#Users)
+  -[Networking](#Networking)
 ------------------------------------------------------------------------------------------------
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
 - [Kernel Exploits](#Kernel-Exploits)
@@ -1803,7 +1803,7 @@ if you cant add the registration key you may still being able to view colors by 
 winpeas runns a number of checks in different categories but not specifying any will execute all the checks. 
 
   
-### basic local enumeration
+### basic local machine enumeration
 
 ### System
 One command that can give us detailed information about the system, such as its build number and installed patches, would be systeminfo. In the example below, we can see which hotfixes have been installed.
