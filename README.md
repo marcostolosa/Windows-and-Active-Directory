@@ -99,6 +99,11 @@
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
+  ------------------------------------------------------------------------------------------------
+  - [basic local enumeration](#basic-local-enumeration)
+    -[System](#System)
+    -[Users](#Users)
+    -[Networking](#Networking)
 ------------------------------------------------------------------------------------------------
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
 - [Kernel Exploits](#Kernel-Exploits)
@@ -1796,6 +1801,71 @@ obs: we do this because we enable colors wich makes it easier to find missconfog
 if you cant add the registration key you may still being able to view colors by running the script in a reverse shell on a kali machin. 
 
 winpeas runns a number of checks in different categories but not specifying any will execute all the checks. 
+
+  
+### basic local enumeration
+
+### System
+One command that can give us detailed information about the system, such as its build number and installed patches, would be systeminfo. In the example below, we can see which hotfixes have been installed.
+
+![image](https://user-images.githubusercontent.com/24814781/187422939-915beccf-29b3-433b-84ec-a3b2c0bc331e.png)
+
+You can check installed updates using wmic qfe get Caption, Description. This information will give you an idea of how quickly systems are being patched and updated.
+
+![image](https://user-images.githubusercontent.com/24814781/187423036-e84e9af9-b62f-4470-b6ca-b08c922b60b4.png)
+
+You can check the installed and started Windows services using net start. Expect to get a long list; the output below has been snipped.
+
+![image](https://user-images.githubusercontent.com/24814781/187423167-f0231e59-38ae-4f77-bc98-2e0c39f65c70.png)
+
+If you are only interested in installed apps, you can issue wmic product get name,version,vendor. If you run this command on the attached virtual machine, you will get something similar to the following output.
+
+![image](https://user-images.githubusercontent.com/24814781/187423264-e28727d2-ce0d-46eb-8636-073846405caf.png)
+
+### Users
+
+To know who you are, you can run whoami; moreover, to know what you are capable of, i.e., your privileges, you can use whoami /priv. An example is shown in the terminal output below.
+
+![image](https://user-images.githubusercontent.com/24814781/187423377-07c34f7e-b227-4608-864b-4c5b2e28f490.png)
+
+Moreover, you can use whoami /groups to know which groups you belong to. The terminal output below shows that this user belongs to the NT AUTHORITY\Local account and member of Administrators group among other groups.
+
+
+![image](https://user-images.githubusercontent.com/24814781/187423478-4ec076c6-c7e6-4f72-bb01-a45d5542b67d.png)
+
+You can view users by running net user.
+
+![image](https://user-images.githubusercontent.com/24814781/187423592-e79b829d-33ce-40a3-bf35-755c9f51574d.png)
+
+You can discover the available groups using net group if the system is a Windows Domain Controller or net localgroup otherwise, as shown in the terminal below.
+
+![image](https://user-images.githubusercontent.com/24814781/187423688-7e89cd8c-0847-4954-af9c-b56718ddc429.png)
+
+You can list the users that belong to the local administrators’ group using the command net localgroup administrators.
+
+![image](https://user-images.githubusercontent.com/24814781/187423772-6bc3bfa6-b90a-40f8-941d-e279e6e0c650.png)
+
+Use net accounts to see the local settings on a machine; moreover, you can use net accounts /domain if the machine belongs to a domain. This command helps learn about password policy, such as minimum password length, maximum password age, and lockout duration.
+
+
+### Networking
+
+You can use the ipconfig command to learn about your system network configuration. If you want to know all network-related settings, you can use ipconfig /all. The terminal output below shows the output when using ipconfig. For instance, we could have used ipconfig /all if we wanted to learn the DNS servers.
+
+![image](https://user-images.githubusercontent.com/24814781/187423900-1a34657c-80d0-4f9f-9d92-43f6152c6aa7.png)
+
+On MS Windows, we can use netstat to get various information, such as which ports the system is listening on, which connections are active, and who is using them. In this example, we use the options -a to display all listening ports and active connections. The -b lets us find the binary involved in the connection, while -n is used to avoid resolving IP addresses and port numbers. Finally, -o display the process ID (PID).
+
+In the partial output shown below, we can see that netstat -abno showed that the server is listening on TCP ports 22, 135, 445 and 3389. The processessshd.exe, RpcSs, and TermService are on ports 22, 135, and 3389, respectively. Moreover, we can see two established connections to the SSH server as indicated by the state ESTABLISHED.
+
+![image](https://user-images.githubusercontent.com/24814781/187424208-ab6bbd63-103e-4c95-bbde-005eb15e1fbf.png)
+
+You might think that you can get an identical result by port scanning the target system; however, this is inaccurate for two reasons. A firewall might be blocking the scanning host from reaching specific network ports. Moreover, port scanning a system generates a considerable amount of traffic, unlike netstat, which makes zero noise.
+
+Finally, it is worth mentioning that using arp -a helps you discover other systems on the same LAN that recently communicated with your system. ARP stands for Address Resolution Protocol; arp -a shows the current ARP entries, i.e., the physical addresses of the systems on the same LAN that communicated with your system. An example output is shown below. This indicates that these IP addresses have communicated somehow with our system; the communication can be an attempt to connect or even a simple ping. Note that 10.10.255.255 does not represent a system as it is the subnet broadcast address.
+  
+![image](https://user-images.githubusercontent.com/24814781/187424350-ec45e0b2-38a9-42b5-ba72-bca022a4b9d4.png)
+
 
 
 #### accesschk
