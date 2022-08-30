@@ -106,6 +106,9 @@
   - [System](#System)
   - [Users](#Users)
   - [Networking](#Networking)
+  - [DNS](#DNS)
+  - [SMB](#SMB)
+  - [SNMP](#SNMP)
   
 ------------------------------------------------------------------------------------------------
 
@@ -1870,7 +1873,32 @@ Finally, it is worth mentioning that using arp -a helps you discover other syste
   
 ![image](https://user-images.githubusercontent.com/24814781/187424350-ec45e0b2-38a9-42b5-ba72-bca022a4b9d4.png)
 
+### DNS
+We are all familiar with Domain Name System (DNS) queries where we can look up A, AAAA, CName, and TXT records, among others.
+If we can get a “copy” of all the records that a DNS server is responsible for answering, we might discover hosts we didn’t know existed.
 
+One easy way to try DNS zone transfer is via the dig command.
+
+Depending on the DNS server configuration, DNS zone transfer might be restricted. If it is not restricted, it should be achievable using 
+```
+dig -t AXFR DOMAIN_NAME @DNS_SERVER
+```
+The -t AXFR indicates that we are requesting a zone transfer, while @ precedes the DNS_SERVER that we want to query regarding the records related to the specified DOMAIN_NAME.
+
+
+### SMB
+
+Server Message Block (SMB) is a communication protocol that provides shared access to files and printers. We can check shared folders using net share. Here is an example of the output. We can see that C:\Internal Files is shared under the name Internal.
+
+![image](https://user-images.githubusercontent.com/24814781/187435886-2cf6ba25-0b84-4b41-8666-cea49a0e246c.png)
+
+
+### SNMP
+
+Simple Network Management Protocol (SNMP) was designed to help collect information about different devices on the network. It lets you know about various network events, from a server with a faulty disk to a printer out of ink. Consequently, SNMP can hold a trove of information for the attacker. One simple tool to query servers related to SNMP is snmpcheck. You can find it on the AttackBox at the /opt/snmpcheck/ directory; the syntax is quite simple: /opt/snmpcheck/snmpcheck.rb 10.10.215.169 -c COMMUNITY_STRING.
+If you would like to install snmpcheck on your local Linux box, consider the following commands. 
+
+![image](https://user-images.githubusercontent.com/24814781/187435981-6446e39a-c9b5-4810-8989-e6f16d3cc9f8.png)
 
 #### accesschk
 AccessChk is an old but still trustworthy tool for checking user access
