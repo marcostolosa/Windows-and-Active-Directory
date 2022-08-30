@@ -103,9 +103,9 @@
   ------------------------------------------------------------------------------------------------
   
 - [basic local machine enumeration](#basic-local-machine-enumeration)
-  -[System](#System)
-  -[Users](#Users)
-  -[Networking](#Networking)
+  - [System](#System)
+  - [Users](#Users)
+  - [Networking](#Networking)
   
 ------------------------------------------------------------------------------------------------
 
