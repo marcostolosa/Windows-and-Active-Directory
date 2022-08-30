@@ -135,7 +135,7 @@
 ------------------------------------------------------------------------------------
 ## 4. AD focused Privilige Escalation
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
-  - [resources](#resources)
+  - [AD resources](#AD-resources)
   - [basic](#basic)
   - [powerview](#powerview)
     - [Introduction to PowerView](#Introduction-to-PowerView)
@@ -2469,7 +2469,7 @@ spawn a command prompt using the admin user’s hash.
 ![image](https://user-images.githubusercontent.com/24814781/181489538-3f33d6f4-1a7b-4933-a8dd-3d4958aabf14.png)
 
 
-### resources
+### AD resources
 here is some basic resources about privilige escalation and enumeration to start with. 
 
 ```
