@@ -155,20 +155,18 @@
   - [Enumeration through winpeas](#Enumeration-through-winpeas)
   - [Enumeration through seatbelt](#Enumeration-through-seatbelt)
   - [Enumeration through powerview](#Enumeration-through-powerview)
+    - [Introduction to PowerView](#Introduction-to-PowerView)
+    - [Get-NetDomain](#Get-NetDomain)
+    - [Get-NetDomainController](#Get-NetDomainController)
+    - [Get-NetForest](#Get-NetForest)
+    - [Get-NetDomainTrust](#Get-NetDomainTrust)
   - [Enumeration through other automated scans](#Enumeration-through-other-automated-scans)
 ------------------------------------------------------------------------------------
 ## 5. AD focused Privilige Escalation
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
   - [AD resources](#AD-resources)
   - [basic](#basic)
-  - [powerview](#powerview)
-    - [Introduction to PowerView](#Introduction-to-PowerView)
-    - [Get-NetDomain](#Get-NetDomain)
-    - [Get-NetDomainController](#Get-NetDomainController)
-    - [Get-NetForest](#Get-NetForest)
-    - [Get-NetDomainTrust](#Get-NetDomainTrust)
   - [WES NG Windows Exploit Suggester the Next Generation](#WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
-  - [seatbelt AD](#seatbelt-AD)
   - [winpeas](#winpeas)
   - [PrivescCheck](#PrivescCheck)
   - [metasploit exploit suggester](#metasploit-exploit-suggester)
@@ -3186,147 +3184,6 @@ Drawbacks
 ### Enumeration through winpeas
 
 ### Enumeration through seatbelt
-
-### Enumeration through powerview
-
-### Enumeration through other automated scans
-
--------------------------------------------------------------------------------------
-
-## AD focused Privilige Escalation and enumeration
-
-![image](https://user-images.githubusercontent.com/24814781/181489538-3f33d6f4-1a7b-4933-a8dd-3d4958aabf14.png)
-
-
-### AD resources
-here is some basic resources about privilige escalation and enumeration to start with. 
-
-```
-https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation
-```
-```
-https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md
-```
-```
-https://book.hacktricks.xyz/windows-hardening/checklist-windows-privilege-escalation
-```
-
-
-### basic  
-
-Several scripts exist to conduct system enumeration in ways similar to the ones seen in the previous task. These tools can shorten the enumeration process time and uncover different potential privilege escalation vectors. However, please remember that automated tools can sometimes miss privilege escalation.
-
-always start checking this two commands: 
-```
-whoami /priv
-```
-```
-whoami /all
-```
-
-you can search in the user folder and automate every folder in the users folder and beyond:
-```
-gci -recurse .
-```
-obs: dont forget the dot since it says from the folder you are on etc. 
-
-use the same command to search for hidden files:
-```
-cgi -hidden .
-```
-you can then after look for files etc under the root folder (C:\ drive) then the same on /temp folder
-
-then go scan with seatbelt, winpeas and PrivescCheck then go over to enum with powerview.
-
-### powerview
-its in the powersploit github but donwload here:
-```
-https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1
-```
-
-#### resources
-```
-https://gist.github.com/HarmJ0y/184f9822b195c52dd50c379ed3117993
-```
-```
-https://book.hacktricks.xyz/windows-hardening/basic-powershell-for-pentesters/powerview
-```
-```
-https://zflemingg1.gitbook.io/undergrad-tutorials/powerview/powerview-cheatsheet
-```
-#### Introduction to PowerView
-
-Powerview (part of PowerSploit by PowerShellMafia) is an excellent suite of tools that can be used for enumeration, and exploitation of an AD Domain, today we’re only going to cover Powerview’s ability to enumerate information about the domain and their associated trusts.
-
-
-#### Get-NetDomain
-
-Get-NetDomain is similar to the ActiveDirectory module’s Get-ADDomain but contains a lot less information, which can be better. Basic info such as the Forest, Domain Controllers, and Domain Name are enumerated.
-```
-Get-NetDomain
-```
-![image](https://user-images.githubusercontent.com/24814781/184441594-ffa9935c-7c7a-4862-8590-3c75510128e0.png)
-
-#### Get-NetDomainController 
-
-Get-NetDomainController is another useful cmdlet that will list all of the Domain Controllers within the network. This is incredibly useful for initial reconnaissance, especially if you do not have a Windows device that’s joined to the domain.
-```
-Get-NetDomainController    
-```
-![image](https://user-images.githubusercontent.com/24814781/184442195-b2251ed7-7c81-4828-bd1b-fbdb733f333f.png)
-
-#### Get-NetForest
-
-Get-NetForest is similar to Get-ADForest, and provides similar output. It provides all the associated Domains, the root domain, as well as the Domain Controllers for the root domain.
-```
-Get-NetForest      
-```
-![image](https://user-images.githubusercontent.com/24814781/184442205-9f67bada-211e-497f-823a-6375f000197b.png)
-
-
-
-#### Get-NetDomainTrust
-
-Get-NetDomainTrust is similar to Get-ADTrust with our SelectObject filter applied to it. It’s short, sweet and to the point!
-```
-Get-NetDomainTrust
-```
-![image](https://user-images.githubusercontent.com/24814781/184442213-10de5e2e-7ef7-4344-933a-52c7682f3ccb.png)
-
-
-
-
-
-### WES NG Windows Exploit Suggester the Next Generation
-
-Some exploit suggesting scripts (e.g. winPEAS) will require you to upload them to the target system and run them there. This may cause antivirus software to detect and delete them. To avoid making unnecessary noise that can attract attention, you may prefer to use WES-NG, which will run on your attacking machine (e.g. Kali or TryHackMe AttackBox).
-
-WES-NG is a Python script that can be found and downloaded here:
-```
-https://github.com/bitsadmin/wesng
-```
-
-Once installed, and before using it, type the wes.py --update command to update the database. The script will refer to the database it creates to check for missing patches that can result in a vulnerability you can use to elevate your privileges on the target system.
-
-To use the script, you will need to run the systeminfo command on the target system. Do not forget to direct the output to a .txt file you will need to move to your attacking machine.
-
-Once this is done, wes.py can be run as follows;
-```
-wes.py systeminfo.txt
-```
-or like this
-```
-# python wes.py systeminfo.txt -i 'Elevation
-of Privilege' --exploits-only | less
-```
-same but if you have it installed do this and you have it on the same folder shared over smb you can do this in your own kali machin
-```
-# wes systeminfo.txt -i 'Elevation
-of Privilege' --exploits-only | less
-```
-
-
-### seatbelt AD
 Seatbelt is a C# project that performs a number of security oriented host-survey "safety checks" relevant from both offensive and defensive security perspectives. 
 ```
 https://github.com/GhostPack/Seatbelt
@@ -3529,6 +3386,149 @@ Examples:
     'Seatbelt.exe -group=remote -computername=COMPUTER.DOMAIN.COM [-username=DOMAIN\USER -password=PASSWORD]' will run remote specific checks
     'Seatbelt.exe -group=system -outputfile="C:\Temp\out.txt"' will run system checks and output to a .txt file.
     'Seatbelt.exe -group=user -q -outputfile="C:\Temp\out.json"' will run in quiet mode with user checks and output to a .json file.
+
+### Enumeration through powerview
+### powerview
+its in the powersploit github but donwload here:
+```
+https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1
+```
+
+#### resources
+```
+https://gist.github.com/HarmJ0y/184f9822b195c52dd50c379ed3117993
+```
+```
+https://book.hacktricks.xyz/windows-hardening/basic-powershell-for-pentesters/powerview
+```
+```
+https://zflemingg1.gitbook.io/undergrad-tutorials/powerview/powerview-cheatsheet
+```
+#### Introduction to PowerView
+
+Powerview (part of PowerSploit by PowerShellMafia) is an excellent suite of tools that can be used for enumeration, and exploitation of an AD Domain, today we’re only going to cover Powerview’s ability to enumerate information about the domain and their associated trusts.
+
+
+#### Get-NetDomain
+
+Get-NetDomain is similar to the ActiveDirectory module’s Get-ADDomain but contains a lot less information, which can be better. Basic info such as the Forest, Domain Controllers, and Domain Name are enumerated.
+```
+Get-NetDomain
+```
+![image](https://user-images.githubusercontent.com/24814781/184441594-ffa9935c-7c7a-4862-8590-3c75510128e0.png)
+
+#### Get-NetDomainController 
+
+Get-NetDomainController is another useful cmdlet that will list all of the Domain Controllers within the network. This is incredibly useful for initial reconnaissance, especially if you do not have a Windows device that’s joined to the domain.
+```
+Get-NetDomainController    
+```
+![image](https://user-images.githubusercontent.com/24814781/184442195-b2251ed7-7c81-4828-bd1b-fbdb733f333f.png)
+
+#### Get-NetForest
+
+Get-NetForest is similar to Get-ADForest, and provides similar output. It provides all the associated Domains, the root domain, as well as the Domain Controllers for the root domain.
+```
+Get-NetForest      
+```
+![image](https://user-images.githubusercontent.com/24814781/184442205-9f67bada-211e-497f-823a-6375f000197b.png)
+
+### Enumeration through other automated scans
+
+-------------------------------------------------------------------------------------
+
+## AD focused Privilige Escalation and enumeration
+
+![image](https://user-images.githubusercontent.com/24814781/181489538-3f33d6f4-1a7b-4933-a8dd-3d4958aabf14.png)
+
+
+### AD resources
+here is some basic resources about privilige escalation and enumeration to start with. 
+
+```
+https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation
+```
+```
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md
+```
+```
+https://book.hacktricks.xyz/windows-hardening/checklist-windows-privilege-escalation
+```
+
+
+### basic  
+
+Several scripts exist to conduct system enumeration in ways similar to the ones seen in the previous task. These tools can shorten the enumeration process time and uncover different potential privilege escalation vectors. However, please remember that automated tools can sometimes miss privilege escalation.
+
+always start checking this two commands: 
+```
+whoami /priv
+```
+```
+whoami /all
+```
+
+you can search in the user folder and automate every folder in the users folder and beyond:
+```
+gci -recurse .
+```
+obs: dont forget the dot since it says from the folder you are on etc. 
+
+use the same command to search for hidden files:
+```
+cgi -hidden .
+```
+you can then after look for files etc under the root folder (C:\ drive) then the same on /temp folder
+
+then go scan with seatbelt, winpeas and PrivescCheck then go over to enum with powerview.
+
+
+
+
+
+#### Get-NetDomainTrust
+
+Get-NetDomainTrust is similar to Get-ADTrust with our SelectObject filter applied to it. It’s short, sweet and to the point!
+```
+Get-NetDomainTrust
+```
+![image](https://user-images.githubusercontent.com/24814781/184442213-10de5e2e-7ef7-4344-933a-52c7682f3ccb.png)
+
+
+
+
+
+### WES NG Windows Exploit Suggester the Next Generation
+
+Some exploit suggesting scripts (e.g. winPEAS) will require you to upload them to the target system and run them there. This may cause antivirus software to detect and delete them. To avoid making unnecessary noise that can attract attention, you may prefer to use WES-NG, which will run on your attacking machine (e.g. Kali or TryHackMe AttackBox).
+
+WES-NG is a Python script that can be found and downloaded here:
+```
+https://github.com/bitsadmin/wesng
+```
+
+Once installed, and before using it, type the wes.py --update command to update the database. The script will refer to the database it creates to check for missing patches that can result in a vulnerability you can use to elevate your privileges on the target system.
+
+To use the script, you will need to run the systeminfo command on the target system. Do not forget to direct the output to a .txt file you will need to move to your attacking machine.
+
+Once this is done, wes.py can be run as follows;
+```
+wes.py systeminfo.txt
+```
+or like this
+```
+# python wes.py systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
+```
+same but if you have it installed do this and you have it on the same folder shared over smb you can do this in your own kali machin
+```
+# wes systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
+```
+
+
+
+
 
 ## winpeas
 
