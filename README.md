@@ -160,15 +160,13 @@
     - [Get-NetDomainController](#Get-NetDomainController)
     - [Get-NetForest](#Get-NetForest)
     - [Get-NetDomainTrust](#Get-NetDomainTrust)
-  - [Enumeration through other automated scans](#Enumeration-through-other-automated-scans)
+  - [Enumeration through PrivescCheck](#Enumeration-through-PrivescCheck)
+  - [Enumeration through WES NG Windows Exploit Suggester the Next Generation](#Enumeration-through-WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
 ------------------------------------------------------------------------------------
 ## 5. AD focused Privilige Escalation
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
   - [AD resources](#AD-resources)
   - [basic](#basic)
-  - [WES NG Windows Exploit Suggester the Next Generation](#WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
-  - [winpeas](#winpeas)
-  - [PrivescCheck](#PrivescCheck)
   - [metasploit exploit suggester](#metasploit-exploit-suggester)
   - [powershell](#powershell)
     - [Powershell Overview](#Powershell-Overview)
@@ -3162,9 +3160,22 @@ Drawbacks
 *    Requires the execution of Sharphound, which is noisy and can often be detected by AV or EDR solutions.
   
 ### Enumeration through winpeas
+## winpeas
+
+ops: winpeas can give a bit of false positive so be aware.
+
 winPEAS is a very powerful tool that not only actively
 hunts for privilege escalation misconfigurations, but
 highlights them for the user in the results.
+
+WinPEAS is a script developed to enumerate the target system to uncover privilege escalation paths. You can find more information about winPEAS and download either the precompiled executable or a .bat script. WinPEAS will run commands similar to the ones listed in the previous task and print their output. The output from winPEAS can be lengthy and sometimes difficult to read. This is why it would be good practice to always redirect the output to a file, as shown below:
+```
+C:\> winpeas.exe > outputfile.txt
+```
+Windows Privilege Escalation Awesome Scripts
+```
+https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS
+```
 ```
 https://github.com/carlospolop/privilege-escalation-
 awesome-scripts-suite/tree/master/winPEAS
@@ -3446,8 +3457,83 @@ Get-NetDomainTrust
 ```
 ![image](https://user-images.githubusercontent.com/24814781/184442213-10de5e2e-7ef7-4344-933a-52c7682f3ccb.png)
 
-### Enumeration through other automated scans
+### Enumeration through PrivescCheck
+PrivescCheck is a PowerShell script that searches common privilege escalation on the target system. It provides an alternative to WinPEAS without requiring the execution of a binary file.
+  
+PrivescCheck can be downloaded here:
+```
+https://github.com/itm4n/PrivescCheck
+```
 
+Reminder: To run PrivescCheck on the target system, you may need to bypass the execution policy restrictions. To achieve this, you can use the Set-ExecutionPolicy cmdlet as shown below.
+```
+PS C:\> Set-ExecutionPolicy Bypass -Scope process -Force
+PS C:\> . .\PrivescCheck.ps1
+PS C:\> Invoke-PrivescCheck
+```
+
+
+#### Basic usage
+From a command prompt:
+```
+powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck"
+```
+
+From a PowerShell prompt:
+```
+Set-ExecutionPolicy Bypass -Scope process -Force
+. .\PrivescCheck.ps1; Invoke-PrivescCheck
+```
+
+From a PowerShell prompt without modifying the execution policy:
+```
+Get-Content .\PrivescCheck.ps1 | Out-String | IEX
+Invoke-PrivescCheck
+```
+
+#### Extended mode
+
+By default, the scope is limited to vulnerability discovery but, you can get a lot more information with the -Extended option:
+```
+Invoke-PrivescCheck -Extended
+```
+
+#### Generate report files
+
+You can use the -Report and -Format options to save the results of the script to files in various formats. Accepted formats are TXT, CSV, HTML and XML. If -Format is empty, the default format is TXT, which is a simple copy of what is printed on the terminal.
+
+The value of -Report will be used as the base name for the final report, the extension will be automatically appended depending on the chosen format(s).
+```
+Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME%
+Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME% -Format TXT,CSV,HTML,XML
+
+
+### Enumeration through WES NG Windows Exploit Suggester the Next Generation
+Some exploit suggesting scripts (e.g. winPEAS) will require you to upload them to the target system and run them there. This may cause antivirus software to detect and delete them. To avoid making unnecessary noise that can attract attention, you may prefer to use WES-NG, which will run on your attacking machine (e.g. Kali or TryHackMe AttackBox).
+
+WES-NG is a Python script that can be found and downloaded here:
+```
+https://github.com/bitsadmin/wesng
+```
+
+Once installed, and before using it, type the wes.py --update command to update the database. The script will refer to the database it creates to check for missing patches that can result in a vulnerability you can use to elevate your privileges on the target system.
+
+To use the script, you will need to run the systeminfo command on the target system. Do not forget to direct the output to a .txt file you will need to move to your attacking machine.
+
+Once this is done, wes.py can be run as follows;
+```
+wes.py systeminfo.txt
+```
+or like this
+```
+# python wes.py systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
+```
+same but if you have it installed do this and you have it on the same folder shared over smb you can do this in your own kali machin
+```
+# wes systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
+```
 -------------------------------------------------------------------------------------
 
 ## AD focused Privilige Escalation and enumeration
@@ -3498,101 +3584,6 @@ then go scan with seatbelt, winpeas and PrivescCheck then go over to enum with p
 
 
 
-
-### WES NG Windows Exploit Suggester the Next Generation
-
-Some exploit suggesting scripts (e.g. winPEAS) will require you to upload them to the target system and run them there. This may cause antivirus software to detect and delete them. To avoid making unnecessary noise that can attract attention, you may prefer to use WES-NG, which will run on your attacking machine (e.g. Kali or TryHackMe AttackBox).
-
-WES-NG is a Python script that can be found and downloaded here:
-```
-https://github.com/bitsadmin/wesng
-```
-
-Once installed, and before using it, type the wes.py --update command to update the database. The script will refer to the database it creates to check for missing patches that can result in a vulnerability you can use to elevate your privileges on the target system.
-
-To use the script, you will need to run the systeminfo command on the target system. Do not forget to direct the output to a .txt file you will need to move to your attacking machine.
-
-Once this is done, wes.py can be run as follows;
-```
-wes.py systeminfo.txt
-```
-or like this
-```
-# python wes.py systeminfo.txt -i 'Elevation
-of Privilege' --exploits-only | less
-```
-same but if you have it installed do this and you have it on the same folder shared over smb you can do this in your own kali machin
-```
-# wes systeminfo.txt -i 'Elevation
-of Privilege' --exploits-only | less
-```
-
-
-
-
-
-## winpeas
-
-ops: winpeas can give a bit of false positive so be aware.
-  
-WinPEAS is a script developed to enumerate the target system to uncover privilege escalation paths. You can find more information about winPEAS and download either the precompiled executable or a .bat script. WinPEAS will run commands similar to the ones listed in the previous task and print their output. The output from winPEAS can be lengthy and sometimes difficult to read. This is why it would be good practice to always redirect the output to a file, as shown below:
-```
-C:\> winpeas.exe > outputfile.txt
-```
-Windows Privilege Escalation Awesome Scripts
-```
-https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS
-```
-
-### PrivescCheck
-PrivescCheck is a PowerShell script that searches common privilege escalation on the target system. It provides an alternative to WinPEAS without requiring the execution of a binary file.
-  
-PrivescCheck can be downloaded here:
-```
-https://github.com/itm4n/PrivescCheck
-```
-
-Reminder: To run PrivescCheck on the target system, you may need to bypass the execution policy restrictions. To achieve this, you can use the Set-ExecutionPolicy cmdlet as shown below.
-```
-PS C:\> Set-ExecutionPolicy Bypass -Scope process -Force
-PS C:\> . .\PrivescCheck.ps1
-PS C:\> Invoke-PrivescCheck
-```
-
-
-#### Basic usage
-From a command prompt:
-```
-powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck"
-```
-
-From a PowerShell prompt:
-```
-Set-ExecutionPolicy Bypass -Scope process -Force
-. .\PrivescCheck.ps1; Invoke-PrivescCheck
-```
-
-From a PowerShell prompt without modifying the execution policy:
-```
-Get-Content .\PrivescCheck.ps1 | Out-String | IEX
-Invoke-PrivescCheck
-```
-
-#### Extended mode
-
-By default, the scope is limited to vulnerability discovery but, you can get a lot more information with the -Extended option:
-```
-Invoke-PrivescCheck -Extended
-```
-
-#### Generate report files
-
-You can use the -Report and -Format options to save the results of the script to files in various formats. Accepted formats are TXT, CSV, HTML and XML. If -Format is empty, the default format is TXT, which is a simple copy of what is printed on the terminal.
-
-The value of -Report will be used as the base name for the final report, the extension will be automatically appended depending on the chosen format(s).
-```
-Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME%
-Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME% -Format TXT,CSV,HTML,XML
 ```
 
 ### metasploit exploit suggester
