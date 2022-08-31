@@ -1796,28 +1796,8 @@ if you run seatbelt with the flag "all" it will run all enumeration checks
 .\SeatBelt.exe all
 ```
 
-#### Winpeas
-winPEAS is a very powerful tool that not only actively
-hunts for privilege escalation misconfigurations, but
-highlights them for the user in the results.
-```
-https://github.com/carlospolop/privilege-escalation-
-awesome-scripts-suite/tree/master/winPEAS
-```
 
-if possible write this and then open up a new cmd
-```
-add HKCU\console /v VirtualTerminalLevel /t REG_DWORD /d 1 
-```
-open up a new cmd and start it 
-```
-.\winpeas.sh
-```
-obs: we do this because we enable colors wich makes it easier to find missconfoguration. 
 
-if you cant add the registration key you may still being able to view colors by running the script in a reverse shell on a kali machin. 
-
-winpeas runns a number of checks in different categories but not specifying any will execute all the checks. 
 
   
 ### basic local machine enumeration
@@ -3182,6 +3162,32 @@ Drawbacks
 *    Requires the execution of Sharphound, which is noisy and can often be detected by AV or EDR solutions.
   
 ### Enumeration through winpeas
+winPEAS is a very powerful tool that not only actively
+hunts for privilege escalation misconfigurations, but
+highlights them for the user in the results.
+```
+https://github.com/carlospolop/privilege-escalation-
+awesome-scripts-suite/tree/master/winPEAS
+```
+
+if possible write this and then open up a new cmd
+```
+add HKCU\console /v VirtualTerminalLevel /t REG_DWORD /d 1 
+```
+open up a new cmd and start it 
+linux:
+```
+.\winpeas.sh
+```
+either from ps or cmd windows: (the executable may be called something else but this is the basic)
+```
+.\winpeas.exe
+```
+obs: we do this because we enable colors wich makes it easier to find missconfoguration. 
+
+if you cant add the registration key you may still being able to view colors by running the script in a reverse shell on a kali machin. 
+
+winpeas runns a number of checks in different categories but not specifying any will execute all the checks. 
 
 ### Enumeration through seatbelt
 Seatbelt is a C# project that performs a number of security oriented host-survey "safety checks" relevant from both offensive and defensive security perspectives. 
@@ -3388,7 +3394,6 @@ Examples:
     'Seatbelt.exe -group=user -q -outputfile="C:\Temp\out.json"' will run in quiet mode with user checks and output to a .json file.
 
 ### Enumeration through powerview
-### powerview
 its in the powersploit github but donwload here:
 ```
 https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1
