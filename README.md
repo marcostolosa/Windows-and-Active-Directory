@@ -3438,6 +3438,14 @@ Get-NetForest
 ```
 ![image](https://user-images.githubusercontent.com/24814781/184442205-9f67bada-211e-497f-823a-6375f000197b.png)
 
+#### Get-NetDomainTrust
+
+Get-NetDomainTrust is similar to Get-ADTrust with our SelectObject filter applied to it. It’s short, sweet and to the point!
+```
+Get-NetDomainTrust
+```
+![image](https://user-images.githubusercontent.com/24814781/184442213-10de5e2e-7ef7-4344-933a-52c7682f3ccb.png)
+
 ### Enumeration through other automated scans
 
 -------------------------------------------------------------------------------------
@@ -3486,18 +3494,6 @@ cgi -hidden .
 you can then after look for files etc under the root folder (C:\ drive) then the same on /temp folder
 
 then go scan with seatbelt, winpeas and PrivescCheck then go over to enum with powerview.
-
-
-
-
-
-#### Get-NetDomainTrust
-
-Get-NetDomainTrust is similar to Get-ADTrust with our SelectObject filter applied to it. It’s short, sweet and to the point!
-```
-Get-NetDomainTrust
-```
-![image](https://user-images.githubusercontent.com/24814781/184442213-10de5e2e-7ef7-4344-933a-52c7682f3ccb.png)
 
 
 
