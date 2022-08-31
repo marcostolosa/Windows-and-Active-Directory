@@ -104,7 +104,8 @@
 - [Abusing Service Misconfigurations](#Abusing-Service-Misconfigurations)
 - [Abusing dangerous privileges](#Abusing-dangerous-privileges)
 - [Abusing vulnerable software](#Abusing-vulnerable-software)
-  ------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------
   
 - [basic local machine enumeration](#basic-local-machine-enumeration)
   - [System](#System)
