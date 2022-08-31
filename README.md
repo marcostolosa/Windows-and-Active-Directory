@@ -145,7 +145,7 @@
 - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
 - [user privileges](#user-privileges)
 ------------------------------------------------------------------------------------
-
+## 4. Basic AD machine Enumeration
 - [Basic AD machine Enumeration](#Basic-AD-machine-Enumeration)
   - [Credential Injection](#Credential-Injection)
   - [Enumeration through Microsoft Management Console](#Enumeration-through-Microsoft-Management-Console)
