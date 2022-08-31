@@ -99,11 +99,6 @@
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
-- [Harvesting Passwords from Usual Spots](#Harvesting-Passwords-from-Usual-Spots)
-- [Other Quick Wins](#Other-Quick-Wins)
-- [Abusing Service Misconfigurations](#Abusing-Service-Misconfigurations)
-- [Abusing dangerous privileges](#Abusing-dangerous-privileges)
-- [Abusing vulnerable software](#Abusing-vulnerable-software)
 
 ------------------------------------------------------------------------------------------------
   
@@ -118,6 +113,11 @@
 ------------------------------------------------------------------------------------------------
 
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
+- [Harvesting Passwords from Usual Spots](#Harvesting-Passwords-from-Usual-Spots)
+- [Other Quick Wins](#Other-Quick-Wins)
+- [Abusing Service Misconfigurations](#Abusing-Service-Misconfigurations)
+- [Abusing dangerous privileges](#Abusing-dangerous-privileges)
+- [Abusing vulnerable software](#Abusing-vulnerable-software)
 - [Kernel Exploits](#Kernel-Exploits)
 - [Service Exploits](#Service-Exploits)
   - [Services](#Services)
@@ -1794,6 +1794,109 @@ if you run seatbelt with the flag "all" it will run all enumeration checks
 .\SeatBelt.exe all
 ```
 
+  
+### basic local machine enumeration
+
+### System
+One command that can give us detailed information about the system, such as its build number and installed patches, would be systeminfo. In the example below, we can see which hotfixes have been installed.
+
+![image](https://user-images.githubusercontent.com/24814781/187422939-915beccf-29b3-433b-84ec-a3b2c0bc331e.png)
+
+You can check installed updates using wmic qfe get Caption, Description. This information will give you an idea of how quickly systems are being patched and updated.
+
+![image](https://user-images.githubusercontent.com/24814781/187423036-e84e9af9-b62f-4470-b6ca-b08c922b60b4.png)
+
+You can check the installed and started Windows services using net start. Expect to get a long list; the output below has been snipped.
+
+![image](https://user-images.githubusercontent.com/24814781/187423167-f0231e59-38ae-4f77-bc98-2e0c39f65c70.png)
+
+If you are only interested in installed apps, you can issue wmic product get name,version,vendor. If you run this command on the attached virtual machine, you will get something similar to the following output.
+
+![image](https://user-images.githubusercontent.com/24814781/187423264-e28727d2-ce0d-46eb-8636-073846405caf.png)
+
+### Users
+
+To know who you are, you can run whoami; moreover, to know what you are capable of, i.e., your privileges, you can use whoami /priv. An example is shown in the terminal output below.
+
+![image](https://user-images.githubusercontent.com/24814781/187423377-07c34f7e-b227-4608-864b-4c5b2e28f490.png)
+
+Moreover, you can use whoami /groups to know which groups you belong to. The terminal output below shows that this user belongs to the NT AUTHORITY\Local account and member of Administrators group among other groups.
+
+
+![image](https://user-images.githubusercontent.com/24814781/187423478-4ec076c6-c7e6-4f72-bb01-a45d5542b67d.png)
+
+You can view users by running net user.
+
+![image](https://user-images.githubusercontent.com/24814781/187423592-e79b829d-33ce-40a3-bf35-755c9f51574d.png)
+
+You can discover the available groups using net group if the system is a Windows Domain Controller or net localgroup otherwise, as shown in the terminal below.
+
+![image](https://user-images.githubusercontent.com/24814781/187423688-7e89cd8c-0847-4954-af9c-b56718ddc429.png)
+
+You can list the users that belong to the local administrators’ group using the command net localgroup administrators.
+
+![image](https://user-images.githubusercontent.com/24814781/187423772-6bc3bfa6-b90a-40f8-941d-e279e6e0c650.png)
+
+Use net accounts to see the local settings on a machine; moreover, you can use net accounts /domain if the machine belongs to a domain. This command helps learn about password policy, such as minimum password length, maximum password age, and lockout duration.
+
+
+### Networking
+
+You can use the ipconfig command to learn about your system network configuration. If you want to know all network-related settings, you can use ipconfig /all. The terminal output below shows the output when using ipconfig. For instance, we could have used ipconfig /all if we wanted to learn the DNS servers.
+
+![image](https://user-images.githubusercontent.com/24814781/187423900-1a34657c-80d0-4f9f-9d92-43f6152c6aa7.png)
+
+On MS Windows, we can use netstat to get various information, such as which ports the system is listening on, which connections are active, and who is using them. In this example, we use the options -a to display all listening ports and active connections. The -b lets us find the binary involved in the connection, while -n is used to avoid resolving IP addresses and port numbers. Finally, -o display the process ID (PID).
+
+In the partial output shown below, we can see that netstat -abno showed that the server is listening on TCP ports 22, 135, 445 and 3389. The processessshd.exe, RpcSs, and TermService are on ports 22, 135, and 3389, respectively. Moreover, we can see two established connections to the SSH server as indicated by the state ESTABLISHED.
+
+![image](https://user-images.githubusercontent.com/24814781/187424208-ab6bbd63-103e-4c95-bbde-005eb15e1fbf.png)
+
+You might think that you can get an identical result by port scanning the target system; however, this is inaccurate for two reasons. A firewall might be blocking the scanning host from reaching specific network ports. Moreover, port scanning a system generates a considerable amount of traffic, unlike netstat, which makes zero noise.
+
+Finally, it is worth mentioning that using arp -a helps you discover other systems on the same LAN that recently communicated with your system. ARP stands for Address Resolution Protocol; arp -a shows the current ARP entries, i.e., the physical addresses of the systems on the same LAN that communicated with your system. An example output is shown below. This indicates that these IP addresses have communicated somehow with our system; the communication can be an attempt to connect or even a simple ping. Note that 10.10.255.255 does not represent a system as it is the subnet broadcast address.
+  
+![image](https://user-images.githubusercontent.com/24814781/187424350-ec45e0b2-38a9-42b5-ba72-bca022a4b9d4.png)
+
+### DNS
+We are all familiar with Domain Name System (DNS) queries where we can look up A, AAAA, CName, and TXT records, among others.
+If we can get a “copy” of all the records that a DNS server is responsible for answering, we might discover hosts we didn’t know existed.
+
+One easy way to try DNS zone transfer is via the dig command.
+
+Depending on the DNS server configuration, DNS zone transfer might be restricted. If it is not restricted, it should be achievable using 
+```
+dig -t AXFR DOMAIN_NAME @DNS_SERVER
+```
+The -t AXFR indicates that we are requesting a zone transfer, while @ precedes the DNS_SERVER that we want to query regarding the records related to the specified DOMAIN_NAME.
+
+
+### SMB
+
+Server Message Block (SMB) is a communication protocol that provides shared access to files and printers. We can check shared folders using net share. Here is an example of the output. We can see that C:\Internal Files is shared under the name Internal.
+
+![image](https://user-images.githubusercontent.com/24814781/187435886-2cf6ba25-0b84-4b41-8666-cea49a0e246c.png)
+
+
+### SNMP
+
+Simple Network Management Protocol (SNMP) was designed to help collect information about different devices on the network. It lets you know about various network events, from a server with a faulty disk to a printer out of ink. Consequently, SNMP can hold a trove of information for the attacker. One simple tool to query servers related to SNMP is snmpcheck. You can find it on the AttackBox at the /opt/snmpcheck/ directory; the syntax is quite simple: /opt/snmpcheck/snmpcheck.rb 10.10.215.169 -c COMMUNITY_STRING.
+If you would like to install snmpcheck on your local Linux box, consider the following commands. 
+
+![image](https://user-images.githubusercontent.com/24814781/187435981-6446e39a-c9b5-4810-8989-e6f16d3cc9f8.png)
+
+#### accesschk
+AccessChk is an old but still trustworthy tool for checking user access
+control rights.
+You can use it to check whether a user or group has access to files,
+directories, services, and registry keys.
+The downside is more recent versions of the program spawn a GUI
+“accept EULA” popup window. When using the command line, we have
+to use an older version which still has an /accepteula command line
+option.
+
+## Privilege Escalation Techniques
+
 ### Harvesting Passwords from Usual Spots
 
 #### Unattended Windows Installations
@@ -2639,110 +2742,6 @@ net user pwnd
 As a last step, you can run a command prompt as administrator:
 
 ![image](https://user-images.githubusercontent.com/24814781/181487825-be4765a4-8799-48b0-9545-9340b112579d.png)
-
-
-  
-### basic local machine enumeration
-
-### System
-One command that can give us detailed information about the system, such as its build number and installed patches, would be systeminfo. In the example below, we can see which hotfixes have been installed.
-
-![image](https://user-images.githubusercontent.com/24814781/187422939-915beccf-29b3-433b-84ec-a3b2c0bc331e.png)
-
-You can check installed updates using wmic qfe get Caption, Description. This information will give you an idea of how quickly systems are being patched and updated.
-
-![image](https://user-images.githubusercontent.com/24814781/187423036-e84e9af9-b62f-4470-b6ca-b08c922b60b4.png)
-
-You can check the installed and started Windows services using net start. Expect to get a long list; the output below has been snipped.
-
-![image](https://user-images.githubusercontent.com/24814781/187423167-f0231e59-38ae-4f77-bc98-2e0c39f65c70.png)
-
-If you are only interested in installed apps, you can issue wmic product get name,version,vendor. If you run this command on the attached virtual machine, you will get something similar to the following output.
-
-![image](https://user-images.githubusercontent.com/24814781/187423264-e28727d2-ce0d-46eb-8636-073846405caf.png)
-
-### Users
-
-To know who you are, you can run whoami; moreover, to know what you are capable of, i.e., your privileges, you can use whoami /priv. An example is shown in the terminal output below.
-
-![image](https://user-images.githubusercontent.com/24814781/187423377-07c34f7e-b227-4608-864b-4c5b2e28f490.png)
-
-Moreover, you can use whoami /groups to know which groups you belong to. The terminal output below shows that this user belongs to the NT AUTHORITY\Local account and member of Administrators group among other groups.
-
-
-![image](https://user-images.githubusercontent.com/24814781/187423478-4ec076c6-c7e6-4f72-bb01-a45d5542b67d.png)
-
-You can view users by running net user.
-
-![image](https://user-images.githubusercontent.com/24814781/187423592-e79b829d-33ce-40a3-bf35-755c9f51574d.png)
-
-You can discover the available groups using net group if the system is a Windows Domain Controller or net localgroup otherwise, as shown in the terminal below.
-
-![image](https://user-images.githubusercontent.com/24814781/187423688-7e89cd8c-0847-4954-af9c-b56718ddc429.png)
-
-You can list the users that belong to the local administrators’ group using the command net localgroup administrators.
-
-![image](https://user-images.githubusercontent.com/24814781/187423772-6bc3bfa6-b90a-40f8-941d-e279e6e0c650.png)
-
-Use net accounts to see the local settings on a machine; moreover, you can use net accounts /domain if the machine belongs to a domain. This command helps learn about password policy, such as minimum password length, maximum password age, and lockout duration.
-
-
-### Networking
-
-You can use the ipconfig command to learn about your system network configuration. If you want to know all network-related settings, you can use ipconfig /all. The terminal output below shows the output when using ipconfig. For instance, we could have used ipconfig /all if we wanted to learn the DNS servers.
-
-![image](https://user-images.githubusercontent.com/24814781/187423900-1a34657c-80d0-4f9f-9d92-43f6152c6aa7.png)
-
-On MS Windows, we can use netstat to get various information, such as which ports the system is listening on, which connections are active, and who is using them. In this example, we use the options -a to display all listening ports and active connections. The -b lets us find the binary involved in the connection, while -n is used to avoid resolving IP addresses and port numbers. Finally, -o display the process ID (PID).
-
-In the partial output shown below, we can see that netstat -abno showed that the server is listening on TCP ports 22, 135, 445 and 3389. The processessshd.exe, RpcSs, and TermService are on ports 22, 135, and 3389, respectively. Moreover, we can see two established connections to the SSH server as indicated by the state ESTABLISHED.
-
-![image](https://user-images.githubusercontent.com/24814781/187424208-ab6bbd63-103e-4c95-bbde-005eb15e1fbf.png)
-
-You might think that you can get an identical result by port scanning the target system; however, this is inaccurate for two reasons. A firewall might be blocking the scanning host from reaching specific network ports. Moreover, port scanning a system generates a considerable amount of traffic, unlike netstat, which makes zero noise.
-
-Finally, it is worth mentioning that using arp -a helps you discover other systems on the same LAN that recently communicated with your system. ARP stands for Address Resolution Protocol; arp -a shows the current ARP entries, i.e., the physical addresses of the systems on the same LAN that communicated with your system. An example output is shown below. This indicates that these IP addresses have communicated somehow with our system; the communication can be an attempt to connect or even a simple ping. Note that 10.10.255.255 does not represent a system as it is the subnet broadcast address.
-  
-![image](https://user-images.githubusercontent.com/24814781/187424350-ec45e0b2-38a9-42b5-ba72-bca022a4b9d4.png)
-
-### DNS
-We are all familiar with Domain Name System (DNS) queries where we can look up A, AAAA, CName, and TXT records, among others.
-If we can get a “copy” of all the records that a DNS server is responsible for answering, we might discover hosts we didn’t know existed.
-
-One easy way to try DNS zone transfer is via the dig command.
-
-Depending on the DNS server configuration, DNS zone transfer might be restricted. If it is not restricted, it should be achievable using 
-```
-dig -t AXFR DOMAIN_NAME @DNS_SERVER
-```
-The -t AXFR indicates that we are requesting a zone transfer, while @ precedes the DNS_SERVER that we want to query regarding the records related to the specified DOMAIN_NAME.
-
-
-### SMB
-
-Server Message Block (SMB) is a communication protocol that provides shared access to files and printers. We can check shared folders using net share. Here is an example of the output. We can see that C:\Internal Files is shared under the name Internal.
-
-![image](https://user-images.githubusercontent.com/24814781/187435886-2cf6ba25-0b84-4b41-8666-cea49a0e246c.png)
-
-
-### SNMP
-
-Simple Network Management Protocol (SNMP) was designed to help collect information about different devices on the network. It lets you know about various network events, from a server with a faulty disk to a printer out of ink. Consequently, SNMP can hold a trove of information for the attacker. One simple tool to query servers related to SNMP is snmpcheck. You can find it on the AttackBox at the /opt/snmpcheck/ directory; the syntax is quite simple: /opt/snmpcheck/snmpcheck.rb 10.10.215.169 -c COMMUNITY_STRING.
-If you would like to install snmpcheck on your local Linux box, consider the following commands. 
-
-![image](https://user-images.githubusercontent.com/24814781/187435981-6446e39a-c9b5-4810-8989-e6f16d3cc9f8.png)
-
-#### accesschk
-AccessChk is an old but still trustworthy tool for checking user access
-control rights.
-You can use it to check whether a user or group has access to files,
-directories, services, and registry keys.
-The downside is more recent versions of the program spawn a GUI
-“accept EULA” popup window. When using the command line, we have
-to use an older version which still has an /accepteula command line
-option.
-
-## Privilege Escalation Techniques
 
 ### Kernel Exploits
 #### What is a Kernel?
