@@ -105,7 +105,7 @@ Local Windows
 ------------------------------------------------------------------------------------------------
 
 - [Local Persistence](#Local-Persistence)
-  - [persistence Introduction](#)persistence-Introduction
+  - [persistence Introduction](#persistence-Introduction)
   - [Tampering With Unprivileged Accounts](#Tampering-With-Unprivileged-Accounts)
     - [Assign Group Memberships](#Assign-Group-Memberships)
     - [Special Privileges and Security Descriptors](#Special-Privileges-and-Security-Descriptors)
