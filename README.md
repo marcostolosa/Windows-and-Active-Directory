@@ -82,6 +82,8 @@
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
 ------------------------------------------------------------------------------------
+Local Windows
+------------------------------------------------------------------------------------
 ## 3. Local Privilige Escalation
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
   - [Genereal Concepts](#Genereal-Concepts)
@@ -101,6 +103,21 @@
   - [accesschk](#accesschk)
 
 ------------------------------------------------------------------------------------------------
+
+- [Local Persistence](#Local-Persistence)
+  - [persistence Introduction](#)persistence-Introduction
+  - [Tampering With Unprivileged Accounts](#Tampering-With-Unprivileged-Accounts)
+  - [Backdooring Files](#Backdooring-Files)
+  - [Abusing Services](#Abusing-Services)
+  - [Abusing Scheduled Tasks](#Abusing-Scheduled-Tasks)
+  - [Logon Triggered Persistence](#Logon-Triggered-Persistence)
+  - [Backdooring the Login Screen RDP](#Backdooring-the-Login-Screen-RDP)
+  - [Persisting Through Existing Services](#Persisting-Through-Existing-Services)
+  - [](#)
+  - [](#)
+  
+  
+  ------------------------------------------------------------------------------------------------
   
 - [basic local machine enumeration](#basic-local-machine-enumeration)
   - [System](#System)
@@ -149,6 +166,8 @@
 - [privilege escalation strategy](#privilege-escalation-strategy)
 - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
 - [user privileges](#user-privileges)
+------------------------------------------------------------------------------------
+Active Directory 
 ------------------------------------------------------------------------------------
 ## 4. Basic AD machine Enumeration
 - [Basic AD machine Enumeration](#Basic-AD-machine-Enumeration)
@@ -1895,6 +1914,96 @@ The downside is more recent versions of the program spawn a GUI
 to use an older version which still has an /accepteula command line
 option.
 
+----------------------------------------------------------------------------------------------------------------------------------
+### Local Persistence
+![image](https://user-images.githubusercontent.com/24814781/188224196-0cccf974-9cb2-4873-9047-a67c30199f92.png)
+
+### persistence Introduction
+
+After gaining the first foothold on your target's internal network, you'll want to ensure you don't lose access to it before actually getting to the crown jewels. Establishing persistence is one of the first tasks we'll have as attackers when gaining access to a network. In simple terms, persistence refers to creating alternate ways to regain access to a host without going through the exploitation phase all over again.
+
+There are many reasons why you'd want to establish persistence as quick as possible, including:
+
+*   Re-exploitation isn't always possible: Some unstable exploits might kill the vulnerable process during exploitation, getting you a single shot at some of them.
+*   Gaining a foothold is hard to reproduce: For example, if you used a phishing campaign to get your first access, repeating it to regain access to a host is simply too much work. Your second campaign might also not be as effective, leaving you with no access to the network.
+*   The blue team is after you: Any vulnerability used to gain your first access might be patched if your actions get detected. You are in a race against the clock!
+
+
+While you could do with keeping some administrator's password hash and reusing it to connect back, you always risk those credentials getting rotated at some point. Plus, there are sneakier ways in which you could regain access to a compromised machine, making life harder for the blue team.
+
+
+
+### Tampering With Unprivileged Accounts
+Having an administrator's credential would be the easiest way to achieve persistence in a machine. However, to make it harder for the blue team to detect us, we can manipulate unprivileged users, which usually won't be monitored as much as administrators, and grant them administrative privileges somehow.
+
+#### Assign Group Memberships
+
+For this part of the task, we will assume you have dumped the password hashes of the victim machine and successfully cracked the passwords for the unprivileged accounts in use.
+
+The direct way to make an unprivileged user gain administrative privileges is to make it part of the Administrators group. We can easily achieve this with the following command:
+```
+C:\> net localgroup administrators <user> /add
+```
+
+This will allow you to access the server by using RDP, WinRM or any other remote administration service available.
+
+If this looks too suspicious, you can use the Backup Operators group. Users in this group won't have administrative privileges but will be allowed to read/write any file or registry key on the system, ignoring any configured DACL. This would allow us to copy the content of the SAM and SYSTEM registry hives, which we can then use to recover the password hashes for all the users, enabling us to escalate to any administrative account trivially.
+
+To do so, we begin by adding the account to the Backup Operators group:
+```
+C:\> net localgroup "Backup Operators" <user> /add
+```
+Since this is an unprivileged account, it cannot RDP or WinRM back to the machine unless we add it to the Remote Desktop Users (RDP) or Remote Management Users (WinRM) groups. We'll use WinRM for this task:
+```
+C:\> net localgroup "Remote Management Users" <user> /add
+```
+
+If you tried to connect right now from your attacker machine, you'd be surprised to see that even if you are on the Backups Operators group, you wouldn't be able to access all files as expected. A quick check on our assigned groups would indicate that we are a part of Backup Operators, but the group is disabled:
+
+![image](https://user-images.githubusercontent.com/24814781/188226047-0b307a8c-7cef-4259-b97d-552da1c0449f.png)
+
+This is due to User Account Control (UAC). One of the features implemented by UAC, LocalAccountTokenFilterPolicy, strips any local account of its administrative privileges when logging in remotely. While you can elevate your privileges through UAC from a graphical user session, if you are using WinRM, you are confined to a limited access token with no administrative privileges.
+
+To be able to regain administration privileges from your user, we'll have to disable LocalAccountTokenFilterPolicy by changing the following registry key to 1:
+![image](https://user-images.githubusercontent.com/24814781/188227068-9ec17624-cd93-4105-890f-c3b3d4f820f0.png)
+
+
+Once all of this has been set up, we are ready to use our backdoor user. First, let's establish a WinRM connection and check that the Backup Operators group is enabled for our user:
+
+![image](https://user-images.githubusercontent.com/24814781/188226312-1f9a60b0-9f89-427c-955c-ed9f5036519c.png)
+
+We then proceed to make a backup of SAM and SYSTEM files and download them to our attacker machine:
+
+![image](https://user-images.githubusercontent.com/24814781/188226396-3c868f78-686a-4a8e-a4dc-119a7825148f.png)
+
+Note: If Evil-WinRM takes too long to download the files, feel free to use any other transfer method.
+
+With those files, we can dump the password hashes for all users using secretsdump.py or other similar tools:
+![image](https://user-images.githubusercontent.com/24814781/188230598-22db53df-6636-44fd-a941-c586fe364a2c.png)
+
+
+And finally, perform Pass-the-Hash to connect to the victim machine with Administrator privileges:
+![image](https://user-images.githubusercontent.com/24814781/188230617-f85af7c5-5c22-419f-87e1-d11c9c7aeba2.png)
+
+
+#### Special Privileges and Security Descriptors
+
+A similar result to adding a user to the Backup Operators group can be achieved without modifying any group membership. Special groups are only special because the operating system assigns them specific privileges by default. Privileges are simply the capacity to do a task on the system itself. They include simple things like having the capabilities to shut down the server up to very privileged operations like being able to take ownership of any file on the system. A complete list of available privileges can be found here for reference.
+```
+https://docs.microsoft.com/en-us/windows/win32/secauthz/privilege-constants
+```
+
+
+In the case of the Backup Operators group, it has the following two privileges assigned by default:
+
+    SeBackupPrivilege: The user can read any file in the system, ignoring any DACL in place.
+    SeRestorePrivilege: The user can write any file in the system, ignoring any DACL in place.
+
+We can assign such privileges to any user, independent of their group memberships. To do so, we can use the secedit command. First, we will export the current configuration to a temporary file:
+![image](https://user-images.githubusercontent.com/24814781/188230341-abb1fe71-6c1c-4e2c-a0e7-35161bd99bb9.png)
+
+
+----------------------------------------------------------------------------------------------------------------------------------
 ## Privilege Escalation Techniques
 
 ### Harvesting Passwords from Usual Spots
