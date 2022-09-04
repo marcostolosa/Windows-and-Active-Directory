@@ -115,8 +115,16 @@ Local Windows
     - [Shortcut Files](#Shortcut-Files)
     - [Hijacking File Associations](#Hijacking-File-Associations)
   - [Abusing Services](#Abusing-Services)
+    - [Creating backdoor services](#Creating-backdoor-services)
+    - [Modifying existing services](#Modifying-existing-services)
   - [Abusing Scheduled Tasks](#Abusing-Scheduled-Tasks)
+      - [Task Scheduler](#Task-Scheduler)
+      - [Making Our Task Invisible](#Making-Our-Task-Invisible)
   - [Logon Triggered Persistence](#Logon-Triggered-Persistence)
+      - [Startup folder](#Startup-folder)
+      - [Run or RunOnce](#Run-or-RunOnce)
+      - [Winlogon](#Winlogon)
+      - [Logon scripts](#Logon-scripts)
   - [Backdooring the Login Screen RDP](#Backdooring-the-Login-Screen-RDP)
   - [Persisting Through Existing Services](#Persisting-Through-Existing-Services)
   
@@ -2129,6 +2137,215 @@ Now let's change the registry key to run our backdoor script in a hidden window:
 
 Finally, create a listener for your reverse shell and try to open any .txt file on the victim machine (create one if needed). You should receive a reverse shell with the privileges of the user opening the file.
 
+### Abusing Services 
+Windows services offer a great way to establish persistence since they can be configured to run in the background whenever the victim machine is started. If we can leverage any service to run something for us, we can regain control of the victim machine each time it is started.
+
+A service is basically an executable that runs in the background. When configuring a service, you define which executable will be used and select if the service will automatically run when the machine starts or should be manually started.
+
+There are two main ways we can abuse services to establish persistence: either create a new service or modify an existing one to execute our payload.
+
+### Creating backdoor services
+
+We can create and start a service named "THMservice" using the following commands:
+example:
+```
+sc.exe create THMservice binPath= "net user Administrator Passwd123" start= auto
+sc.exe start THMservice
+```
+Note: There must be a space after each equal sign for the command to work.
+
+The "net user" command will be executed when the service is started, resetting the Administrator's password to Passwd123. Notice how the service has been set to start automatically (start= auto), so that it runs without requiring user interaction.
+
+Resetting a user's password works well enough, but we can also create a reverse shell with msfvenom and associate it with the created service. Notice, however, that service executables are unique since they need to implement a particular protocol to be handled by the system. If you want to create an executable that is compatible with Windows services, you can use the exe-service format in msfvenom:
+![image](https://user-images.githubusercontent.com/24814781/188330996-77f5f21a-9595-4ffb-b092-44a64483570c.png)
+
+You can then copy the executable to your target system, say in C:\Windows and point the service's binPath to it:
+```
+sc.exe create THMservice2 binPath= "C:\windows\rev-svc.exe" start= auto
+sc.exe start THMservice2
+```
+
+### Modifying existing services
+
+While creating new services for persistence works quite well, the blue team may monitor new service creation across the network. We may want to reuse an existing service instead of creating one to avoid detection. Usually, any disabled service will be a good candidate, as it could be altered without the user noticing it.
+
+You can get a list of available services using the following command:
+```
+C:\> sc.exe query state=all
+SERVICE_NAME: THMService1
+DISPLAY_NAME: THMService1
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 1  STOPPED
+        WIN32_EXIT_CODE    : 1077  (0x435)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+```
+
+You should be able to find a stopped service called THMService3 (as in this example). To query the service's configuration, you can use the following command:
+```
+C:\> sc.exe qc THMService3
+[SC] QueryServiceConfig SUCCESS
+
+SERVICE_NAME: THMService3
+        TYPE               : 10  WIN32_OWN_PROCESS
+        START_TYPE         : 2 AUTO_START
+        ERROR_CONTROL      : 1   NORMAL
+        BINARY_PATH_NAME   : C:\MyService\THMService.exe
+        LOAD_ORDER_GROUP   :
+        TAG                : 0
+        DISPLAY_NAME       : THMService3
+        DEPENDENCIES       : 
+        SERVICE_START_NAME : NT AUTHORITY\Local Service
+```
+
+There are three things we care about when using a service for persistence:
+
+*    The executable (BINARY_PATH_NAME) should point to our payload.
+*    The service START_TYPE should be automatic so that the payload runs without user interaction.
+*    The SERVICE_START_NAME, which is the account under which the service will run, should preferably be set to LocalSystem to gain SYSTEM privileges.
+
+Let's start by creating a new reverse shell with msfvenom:
+![image](https://user-images.githubusercontent.com/24814781/188331270-9f487f2e-e8a9-49fc-b7d5-8631b494e6b3.png)
+
+To reconfigure "THMservice3" parameters, we can use the following command:
+![image](https://user-images.githubusercontent.com/24814781/188331365-61d5ed34-3804-4a1e-8321-181b0ba4918a.png)
+
+### Abusing Scheduled Tasks
+We can also use scheduled tasks to establish persistence if needed. There are several ways to schedule the execution of a payload in Windows systems. Let's look at some of them:
+
+### Task Scheduler
+
+The most common way to schedule tasks is using the built-in Windows task scheduler. The task scheduler allows for granular control of when your task will start, allowing you to configure tasks that will activate at specific hours, repeat periodically or even trigger when specific system events occur. From the command line, you can use schtasks to interact with the task scheduler. A complete reference for the command can be found on Microsoft's website.
+```
+https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks
+```
+
+Let's create a task that runs a reverse shell every single minute. In a real-world scenario, you wouldn't want your payload to run so often, but we don't want to wait too long for this room:
+![image](https://user-images.githubusercontent.com/24814781/188331518-fae78dd5-2783-484b-b881-70dc71f07538.png)
+
+Note: Be sure to use THM-TaskBackdoor as the name of your task, or you won't get the flag.
+
+The previous command will create a "THM-TaskBackdoor" task and execute an nc64 reverse shell back to the attacker. The /sc and /mo options indicate that the task should be run every single minute. The /ru option indicates that the task will run with SYSTEM privileges.
+
+To check if our task was successfully created, we can use the following command:
+![image](https://user-images.githubusercontent.com/24814781/188331528-57910186-11ad-42b0-9ef0-87772a30223d.png)
+
+### Making Our Task Invisible
+
+Our task should be up and running by now, but if the compromised user tries to list its scheduled tasks, our backdoor will be noticeable. To further hide our scheduled task, we can make it invisible to any user in the system by deleting its Security Descriptor (SD). The security descriptor is simply an ACL that states which users have access to the scheduled task. If your user isn't allowed to query a scheduled task, you won't be able to see it anymore, as Windows only shows you the tasks that you have permission to use. Deleting the SD is equivalent to disallowing all users' access to the scheduled task, including administrators.
+
+The security descriptors of all scheduled tasks are stored in HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\. You will find a registry key for every task, under which a value named "SD" contains the security descriptor. You can only erase the value if you hold SYSTEM privileges.
+
+To hide our task, let's delete the SD value for the "THM-TaskBackdoor" task we created before. To do so, we will use psexec (available in C:\tools) to open Regedit with SYSTEM privileges:
+![image](https://user-images.githubusercontent.com/24814781/188331704-eb03198d-39a6-4474-bb75-18c9a6f72df0.png)
+
+
+We will then delete the security descriptor for our task:
+![image](https://user-images.githubusercontent.com/24814781/188331694-4c005a85-4ff6-4bab-9b87-2fb9c2bbebe3.png)
+
+
+If we try to query our service again, the system will tell us there is no such task:
+![image](https://user-images.githubusercontent.com/24814781/188331730-faff0ae7-cf47-4ada-8f5e-b8459dc09b24.png)
+
+If we start an nc listener in our attacker's machine, we should get a shell back after a minute:
+![image](https://user-images.githubusercontent.com/24814781/188331756-5f7ec58e-97ee-4666-9813-d1e3c549ff27.png)
+
+### Logon Triggered Persistence
+Some actions performed by a user might also be bound to executing specific payloads for persistence. Windows operating systems present several ways to link payloads with particular interactions. This task will look at ways to plant payloads that will get executed when a user logs into the system.
+
+### Startup folder
+
+Each user has a folder under C:\Users\<your_username>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup where you can put executables to be run whenever the user logs in. An attacker can achieve persistence just by dropping a payload in there. Notice that each user will only run whatever is available in their folder.
+
+If we want to force all users to run a payload while logging in, we can use the folder under C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp in the same way.
+
+For this task, let's generate a reverse shell payload using msfvenom:
+![image](https://user-images.githubusercontent.com/24814781/188331900-7a676c61-b127-4350-b590-69155fe4f0d2.png)
+
+We will then copy our payload into the victim machine. You can spawn an http.server with Python3 and use wget on the victim machine to pull your file:
+![image](https://user-images.githubusercontent.com/24814781/188331923-c43a90b2-ddf7-420b-9b93-8402c0d46b0a.png)
+
+We then store the payload into the C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp folder to get a shell back for any user logging into the machine.
+
+![image](https://user-images.githubusercontent.com/24814781/188331939-3fdf4cf6-23be-477a-8272-df7b287b0372.png)
+
+Now be sure to sign out of your session from the start menu (closing the RDP window is not enough as it leaves your session open):
+
+![image](https://user-images.githubusercontent.com/24814781/188331944-0992b644-0b57-4920-a916-7e9346a9259e.png)
+
+And log back via RDP. You should immediately receive a connection back to your attacker's machine.
+
+### Run / RunOnce
+
+You can also force a user to execute a program on logon via the registry. Instead of delivering your payload into a specific directory, you can use the following registry entries to specify applications to run at logon:
+
+*    HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+*    HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce
+*    HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+*    HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce
+
+The registry entries under HKCU will only apply to the current user, and those under HKLM will apply to everyone. Any program specified under the Run keys will run every time the user logs on. Programs specified under the RunOnce keys will only be executed a single time.
+
+For this task, let's create a new reverse shell with msfvenom:
+![image](https://user-images.githubusercontent.com/24814781/188332919-6b88bcde-de7f-4793-8108-3b60f93c66a7.png)
+
+After transferring it to the victim machine, let's move it to C:\Windows\:
+![image](https://user-images.githubusercontent.com/24814781/188332927-117e4384-d2ad-4791-a4bd-d22824fce5b7.png)
+
+Let's then create a REG_EXPAND_SZ registry entry under HKLM\Software\Microsoft\Windows\CurrentVersion\Run. The entry's name can be anything you like, and the value will be the command we want to execute.
+
+Note: While in a real-world set-up you could use any name for your registry entry, for this task you are required to use MyBackdoor to receive the flag.
+
+![image](https://user-images.githubusercontent.com/24814781/188332932-66fa2bb6-95c9-41b9-8ef4-0e0197ab3b45.png)
+
+
+After doing this, sign out of your current session and log in again, and you should receive a shell (it will probably take around 10-20 seconds).
+
+
+### Winlogon
+
+Another alternative to automatically start programs on logon is abusing Winlogon, the Windows component that loads your user profile right after authentication (amongst other things).
+
+Winlogon uses some registry keys under HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ that could be interesting to gain persistence:
+
+*    Userinit points to userinit.exe, which is in charge of restoring your user profile preferences.
+*    shell points to the system's shell, which is usually explorer.exe.
+
+![image](https://user-images.githubusercontent.com/24814781/188332947-5075430e-5911-4429-8ad8-ee3e73ef545c.png)
+
+If we'd replace any of the executables with some reverse shell, we would break the logon sequence, which isn't desired. Interestingly, you can append commands separated by a comma, and Winlogon will process them all.
+
+Let's start by creating a shell:
+![image](https://user-images.githubusercontent.com/24814781/188332996-7f3c9047-bca1-4a5b-9f91-a03c7cdab413.png)
+
+We'll transfer the shell to our victim machine as we did previously. We can then copy the shell to any directory we like. In this case, we will use C:\Windows:
+
+![image](https://user-images.githubusercontent.com/24814781/188333004-4b6a4ae4-f4d9-4cc2-8307-622461361ba2.png)
+
+We then alter either shell or Userinit in HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\. In this case we will use Userinit, but the procedure with shell is the same.
+
+![image](https://user-images.githubusercontent.com/24814781/188333054-00292966-199b-4931-8b86-a6df05bd750f.png)
+
+
+### Logon scripts
+
+One of the things userinit.exe does while loading your user profile is to check for an environment variable called UserInitMprLogonScript. We can use this environment variable to assign a logon script to a user that will get run when logging into the machine. The variable isn't set by default, so we can just create it and assign any script we like.
+
+Notice that each user has its own environment variables; therefore, you will need to backdoor each separately.
+
+Let's first create a reverse shell to use for this technique:
+![image](https://user-images.githubusercontent.com/24814781/188333227-823869f4-1385-45c3-8125-b51158fd89bf.png)
+
+We'll transfer the shell to our victim machine as we did previously. We can then copy the shell to any directory we like. In this case, we will use C:\Windows:
+![image](https://user-images.githubusercontent.com/24814781/188333231-20967737-45b9-4fc7-9c45-673d38ecbfbc.png)
+
+To create an environment variable for a user, you can go to its HKCU\Environment in the registry. We will use the UserInitMprLogonScript entry to point to our payload so it gets loaded when the users logs in:
+![image](https://user-images.githubusercontent.com/24814781/188333237-eff3d6e0-6a2d-4d84-897d-e331a16f840d.png)
+
+Notice that this registry key has no equivalent in HKLM, making your backdoor apply to the current user only.
+
+After doing this, sign out of your current session and log in again, and you should receive a shell (it will probably take around 10 seconds).
 
 ----------------------------------------------------------------------------------------------------------------------------------
 ## Privilege Escalation Techniques
