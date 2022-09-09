@@ -5040,6 +5040,11 @@ Powershell is the Windows Scripting Language and shell environment that is built
 
 This also allows Powershell to execute .NET functions directly from it's shell. Most Powershell commands, called cmdlets, are written in .NET. Unlike other scripting languages and shell environments, the output of these cmdlets and objects - making Powershell somewhat object oriented. This also means that running cmdlets allows you to perform actions on the output object (which makes it convenient to pass output from one cmdlet to another). The normal format of a cmdlet is represented using Verb-Noun; for example the cmdlet to list commands is Get-Command.
 
+As an example of a history command, a PowerShell saves executed PowerShell commands in a history file in a user profile in the following path: 
+```
+C:\Users\<USER>\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+```
+
 Common verbs to include
 
     Get
