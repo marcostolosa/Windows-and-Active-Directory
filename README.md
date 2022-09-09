@@ -112,7 +112,7 @@ Local Windows
   - [What is the LSASS](#What-is-the-LSASS)
   - [Graphic User Interface GUI](#Graphic-User-Interface-GUI)
   - [Sysinternals Suite](#Sysinternals-Suite)
-  - [MimiKatz](#MimiKatz)
+  - [local MimiKatz](#local MimiKatz)
   - [Protected LSASS](#Protected-LSASS)
 - [Windows Credential Manager](#Windows-Credential-Manager)
   - [What is Credentials Manager](#What-is-Credentials-Manager)
