@@ -108,6 +108,30 @@ Local Windows
   - [Metasploits HashDump](#Metasploits-HashDump)
   - [Volume Shadow Copy Service](#Volume-Shadow-Copy-Service)
   - [Registry Hives](#Registry-Hives)
+- [Local Security Authority Subsystem Service LSASS](#Local-Security-Authority-Subsystem-Service-LSASS)
+  - [What is the LSASS](#What-is-the-LSASS)
+  - [Graphic User Interface GUI](#Graphic-User-Interface-GUI)
+  - [Sysinternals Suite](#Sysinternals-Suite)
+  - [MimiKatz](#MimiKatz)
+  - [Protected LSASS](#Protected-LSASS)
+- [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+- [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+- [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
 
 ------------------------------------------------------------------------------------------------
 
@@ -1938,7 +1962,7 @@ to use an older version which still has an /accepteula command line
 option.
 
 ----------------------------------------------------------------------------------------------------------------------------------
-### Local Windows Credentials
+### Local Windows Credentials 
 In general, Windows operating system provides two types of user accounts: Local and Domain. Local users' details are stored locally within the Windows file system, while domain users' details are stored in the centralized Active Directory. This task discusses credentials for local user accounts and demonstrates how they can be obtained.
 
 
