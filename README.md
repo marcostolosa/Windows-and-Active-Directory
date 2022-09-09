@@ -5045,6 +5045,19 @@ As an example of a history command, a PowerShell saves executed PowerShell comma
 C:\Users\<USER>\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
 ```
 
+It might be worth checking what users are working on or finding sensitive information. Another example would be finding interesting information. For example, the following command is to look for the "password" keyword in the Window registry.
+```
+c:\Users\user> reg query HKLM /f password /t REG_SZ /s
+#OR
+C:\Users\user> reg query HKCU /f password /t REG_SZ /s
+```
+  
+enum users and their description
+```
+Get-ADUser -Filter * -Properties * | select Name,SamAccountName,Description
+```
+
+
 Common verbs to include
 
     Get
