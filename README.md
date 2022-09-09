@@ -112,14 +112,14 @@ Local Windows
   - [What is the LSASS](#What-is-the-LSASS)
   - [Graphic User Interface GUI](#Graphic-User-Interface-GUI)
   - [Sysinternals Suite](#Sysinternals-Suite)
-  - [local MimiKatz](#local MimiKatz)
+  - [local MimiKatz](#local-MimiKatz)
   - [Protected LSASS](#Protected-LSASS)
 - [Windows Credential Manager](#Windows-Credential-Manager)
   - [What is Credentials Manager](#What-is-Credentials-Manager)
   - [Accessing Credential Manager](#Accessing-Credential-Manager)
   - [Credential Dumping](#Credential-Dumping)
   - [RunAs](#RunAs)
-  - [local Mimikatz](#local Mimikatz)
+  - [local Mimikatz2](#local-Mimikatz2)
 
 - [](#)
   - [](#)
@@ -2139,7 +2139,7 @@ Sysinternals - www.sysinternals.com
 ```
 Note that the dump process is writing to disk. Dumping the LSASS process is a known technique used by adversaries. Thus, AV products may flag it as malicious. In the real world, you may be more creative and write code to encrypt or implement a method to bypass AV products.
 
-### MimiKatz
+### local MimiKatz
 
 Mimikatz 
 ```
