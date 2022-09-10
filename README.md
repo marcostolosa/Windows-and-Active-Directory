@@ -248,6 +248,7 @@ Active Directory
   - [genericpotato](#genericpotato)
   - [printnightmare](#printnightmare)
 ------------------------------------------------------------------------------------
+- [extra tools](#extra-tools)
 - [Domain Controller cred dump](#Domain-Controller)
   - [NTDS Domain Controller](#NTDS-Domain-Controller)
   - [Ntdsutil](#Ntdsutil)
@@ -5990,6 +5991,22 @@ Run the command "whoami /groups" in the new window. You should see "BUILTIN\Admi
   
 
 -----------------------------------------------------------------------------------------------------------------------------
+### extra tools
+The following tools may be worth trying to scan a target machine (files, memory, etc.) for hunting sensitive information. We suggest trying them out in the enumeration stage.
+
+*    Snaffler
+```
+https://github.com/SnaffCon/Snaffler
+```
+*    Seatbelt (which we already know further up)
+```
+https://github.com/GhostPack/Seatbelt
+```
+*    Lazagne
+```
+https://www.hackingarticles.in/post-exploitation-on-saved-password-with-lazagne/
+```
+
 ### local Domain Controller
 This task discusses the required steps to dump Domain Controller Hashes locally and remotely.
   
@@ -6277,3 +6294,4 @@ Link-Local Multicast Name Resolution (LLMNR) and NetBIOS Name Service (NBT-NS) h
 The NBNS/LLMNR Poisoning occurs when an attacker spoofs an authoritative source on the network and responds to the Link-Local Multicast Name Resolution (LLMNR) and NetBIOS Name Service (NBT-NS) traffic to the requested host with host identification service.
 
 The end goal for SMB relay and LLMNR/NBNS Poisoning attacks is to capture authentication NTLM hashes for a victim, which helps obtain access to the victim's account or machine. 
+
