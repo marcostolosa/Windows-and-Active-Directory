@@ -5375,7 +5375,7 @@ The value of -Report will be used as the base name for the final report, the ext
 ```
 Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME%
 Invoke-PrivescCheck -Report PrivescCheck_%COMPUTERNAME% -Format TXT,CSV,HTML,XML
-
+```
 
 ### Enumeration through WES NG Windows Exploit Suggester the Next Generation
 Some exploit suggesting scripts (e.g. winPEAS) will require you to upload them to the target system and run them there. This may cause antivirus software to detect and delete them. To avoid making unnecessary noise that can attract attention, you may prefer to use WES-NG, which will run on your attacking machine (e.g. Kali or TryHackMe AttackBox).
