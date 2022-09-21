@@ -1252,6 +1252,13 @@ SNMP Community strings provide information and statistics about a router or devi
 
 ![image](https://user-images.githubusercontent.com/24814781/191623228-bb8fe234-399e-4dfb-8185-f5c3f650cb71.png)
 
+A tool such as onesixtyone
+```
+https://github.com/trailofbits/onesixtyone
+```
+can be used to brute force the community string names using a dictionary file of common community strings such as the dict.txt file included in the GitHub repo for the tool.
+
+![image](https://user-images.githubusercontent.com/24814781/191627067-8be7f4e0-1aa1-4372-bf2c-569d07765350.png)
 
 
 -------------------------------------------------------------------------------------
