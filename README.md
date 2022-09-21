@@ -68,6 +68,7 @@
   - [Invoke PowerShellTcp ps1](#Invoke-PowerShellTcp-ps1)
   - [nishang](#nishang)
   - [winexe](#winexe)
+  - [snmpwalk](#snmpwalk)
   - ------------------------------------------------------------------------------------
 ## 2. Pivoting Tunneling and Port Forwarding
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
@@ -1243,6 +1244,16 @@ so for an example:
 # winexe -U 'admin%password123' --system //192.168.1.22 cmd.exe
 ```
 to spawn a system shell
+
+### snmpwalk
+SNMP Community strings provide information and statistics about a router or device, helping us gain access to it. The manufacturer default community strings of public and private are often unchanged. In SNMP versions 1 and 2c, access is controlled using a plaintext community string, and if we know the name, we can gain access to it. Encryption and authentication were only added in SNMP version 3. Much information can be gained from SNMP. Examination of process parameters might reveal credentials passed on the command line, which might be possible to reuse for other externally accessible services given the prevalence of password reuse in enterprise environments. Routing information, services bound to additional interfaces, and the version of installed software can also be revealed.
+
+![image](https://user-images.githubusercontent.com/24814781/191623204-8939db84-f6f2-4005-9082-0f12dfef6507.png)
+
+![image](https://user-images.githubusercontent.com/24814781/191623228-bb8fe234-399e-4dfb-8185-f5c3f650cb71.png)
+
+
+
 -------------------------------------------------------------------------------------
 
 
