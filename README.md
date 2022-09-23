@@ -261,7 +261,7 @@ Active Directory
   - [Local Administrator Password Solution LAPS2](#Local-Administrator-Password-Solution-LAPS2)
   - [Enumerate for LAPS](#Enumerate-for-LAPS)
   - [Getting the Password](#Getting-the-Password)
-- [Kerberoasting](#Kerberoasting)
+- [AD Kerberoasting](#AD-Kerberoasting)
 - [AS REP Roasting](#AS-REP-Roasting)
 - [SMB Relay Attack](#SMB-Relay-Attack)
 - [LLMNR NBNS Poisoning](#LLMNR-NBNS-Poisoning)
@@ -6231,7 +6231,7 @@ https://github.com/leoloobeek/LAPSToolkit
 ```
 
 
-### Kerberoasting
+### AD Kerberoasting
 Kerberoasting is a common AD attack to obtain AD tickets that helps with persistence. In order for this attack to work, an adversary must have access to SPN (Service Principal Name) accounts such as IIS User, MSSQL, etc. The Kerberoasting attack involves requesting a Ticket Granting Ticket (TGT) and Ticket Granting Service (TGS). This attack's end goal is to enable privilege escalation and lateral network movement. 
 
 Let's do a quick demo about the attack. First, we need to find an SPN account(s), and then we can send a request to get a TGS ticket. We will perform the Kerberoasting attack from the AttackBox using the GetUserSPNs.py python script. Remember to use the THM.red/thm account with Passw0rd! as a password.
