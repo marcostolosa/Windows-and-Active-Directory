@@ -137,6 +137,11 @@
 - [Privilege Escalation Strategy](#Privilege-Escalation-Strategy)
 
 ------------------------------------------------------------------------------------------------
+# Credentials Harvesting tryhackme 
+```
+https://tryhackme.com/room/credharvesting
+```
+
 - [Local Windows Credentials](#Local-Windows-Credentials)
   - [Keystrokes](#Keystrokes)
   - [Security Account Manager SAM](#Security-Account-Manager-SAM)
@@ -2652,6 +2657,11 @@ spawn a command prompt using the admin user’s hash.
 
   
 -------------------------------------------------------------------------------------------------------------------
+# Credentials Harvesting tryhackme 
+```
+https://tryhackme.com/room/credharvesting
+```
+
 ### Local Windows Credentials 
 In general, Windows operating system provides two types of user accounts: Local and Domain. Local users' details are stored locally within the Windows file system, while domain users' details are stored in the centralized Active Directory. This task discusses credentials for local user accounts and demonstrates how they can be obtained.
 
