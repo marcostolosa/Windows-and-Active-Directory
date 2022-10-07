@@ -157,7 +157,10 @@
   - [local Mimikatz2](#local-Mimikatz2)
 
 ------------------------------------------------------------------------------------------------
-
+## Windows Local Persistence tryhackme
+```
+https://tryhackme.com/room/windowslocalpersistence
+```
 - [Local Persistence](#Local-Persistence)
   - [persistence Introduction](#persistence-Introduction)
   - [Tampering With Unprivileged Accounts](#Tampering-With-Unprivileged-Accounts)
@@ -3044,8 +3047,12 @@ mimikatz # sekurlsa::credman
 
 
 
-----------------------------------------------------------------------------------------------------------------------------------
-### Local Persistence
+------------------------------------------------------------------------------------------------------------------
+## Windows Local Persistence tryhackme
+```
+https://tryhackme.com/room/windowslocalpersistence
+```
+# Local Persistence
 ![image](https://user-images.githubusercontent.com/24814781/188224196-0cccf974-9cb2-4873-9047-a67c30199f92.png)
 
 ### persistence Introduction
@@ -3604,10 +3611,14 @@ We will need to open two terminals to handle the connections involved in this ex
 
 With all that ready, let's navigate to http://10.10.234.126/ and insert an employee into the web application. Since the web application will send an INSERT statement to the database, our TRIGGER will provide us access to the system's console.
 
-----------------------------------------------------------------------------------------------------------------------------------
-## Privilege Escalation Techniques
+-------------------------------------------------------------------------------------------------------------------
+# Privilege Escalation Techniques
+### Windows priv esc Tryhackme 1
+```
+https://tryhackme.com/room/windowsprivesc20
+```
 
-### Harvesting Passwords from Usual Spots
+## Harvesting Passwords from Usual Spots
 
 #### Unattended Windows Installations
 
