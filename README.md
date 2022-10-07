@@ -87,7 +87,7 @@ Local Windows
 ------------------------------------------------------------------------------------
 ## 3. Local Privilige Escalation
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
-  - [Genereal Concepts](#Genereal-Concepts)
+  - [General Concepts](#General-Concepts)
 - [understanding permissions in windows](#understanding-permissions-in-windows)
   - [user accounts](#user-accounts)
   - [service accounts](#service-accounts)
@@ -1705,7 +1705,7 @@ and if a command start with PS> its from a powershell in windows
 > = windows/cmd
 PS> = windwos poershell
 ```
-#### Genereal Concepts
+#### General Concepts
 
 Our goal in privilege escalation in windows is to gain a shell running as an administrator or the system user. 
 
