@@ -112,7 +112,7 @@ https://tryhackme.com/room/enumerationpe
   - [msfvenom](#msfvenom)
   - [RDP](#RDP)
 - [Privilege Escalation Tools](#Privilege-Escalation-Tools)
-  -[winpeas](#winpeas) 
+  - [winpeas](#winpeas) 
   - [PowerUpp and SharpUp](#PowerUpp-and-SharpUp)
   - [Seatbelt](#Seatbelt)
   - [Winpeas](#Winpeas)
