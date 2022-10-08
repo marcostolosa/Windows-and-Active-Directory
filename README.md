@@ -221,9 +221,9 @@ https://tryhackme.com/room/windowsprivesc20
 
 
 ------------------------------------------------------------------------------------
-Active Directory 
+# Active Directory 
 ------------------------------------------------------------------------------------
-## 4. Basic AD machine Enumeration
+## Basic AD machine Enumeration
 - [Basic AD machine Enumeration](#Basic-AD-machine-Enumeration)
   - [Credential Injection](#Credential-Injection)
   - [Enumeration through Microsoft Management Console](#Enumeration-through-Microsoft-Management-Console)
@@ -241,7 +241,7 @@ Active Directory
   - [Enumeration through PrivescCheck](#Enumeration-through-PrivescCheck)
   - [Enumeration through WES NG Windows Exploit Suggester the Next Generation](#Enumeration-through-WES-NG-Windows-Exploit-Suggester-the-Next-Generation)
 ------------------------------------------------------------------------------------
-## 5. AD focused Privilige Escalation
+## AD focused Privilige Escalation
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
   - [AD resources](#AD-resources)
   - [basic](#basic)
@@ -284,7 +284,7 @@ Active Directory
 - [SMB Relay Attack](#SMB-Relay-Attack)
 - [LLMNR NBNS Poisoning](#LLMNR-NBNS-Poisoning)
  
-
+------------------------------------------------------------------------------------
 
 # Its you versus them
 
