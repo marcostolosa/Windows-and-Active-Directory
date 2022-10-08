@@ -196,7 +196,11 @@ https://tryhackme.com/room/windowslocalpersistence
   
   
   ------------------------------------------------------------------------------------------------
-  
+# basic machine enum tryhackme (windows) 
+```
+https://tryhackme.com/room/enumerationpe
+```
+
 - [basic local machine enumeration](#basic-local-machine-enumeration)
   - [System](#System)
   - [Users](#Users)
@@ -1899,9 +1903,16 @@ if you run seatbelt with the flag "all" it will run all enumeration checks
 .\SeatBelt.exe all
 ```
 
+---------------------------------------------------------------------------------------------------
   
-### basic local machine enumeration
+## basic machine enum tryhackme (windows) 
+```
+https://tryhackme.com/room/enumerationpe
+```  
+# basic local machine enumeration
 
+
+  
 ### System
 One command that can give us detailed information about the system, such as its build number and installed patches, would be systeminfo. In the example below, we can see which hotfixes have been installed.
 
