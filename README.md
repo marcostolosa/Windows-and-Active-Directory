@@ -148,7 +148,7 @@ https://tryhackme.com/room/enumerationpe
   - [L Service Accounts](#L-Service-Accounts)
   - [L Rotten Potato](#L-Rotten-Potato)
   - [SeImpersonate and or SeAssignPrimaryToken](#SeImpersonate-and-or-SeAssignPrimaryToken)
-  - [L + E Juicy Potato](#L-+-E-Juicy-Potato)
+  - [L plus E Juicy Potato](#L-plus-E-Juicy-Potato)
   - [E Rogue Potato](#E-Rogue-Potato)
   - [E PrintSpoofer](#E-PrintSpoofer)
 - [port forwarding](#port-forwarding)
@@ -2918,7 +2918,7 @@ other users (including the SYSTEM user).
 Any user with these privileges can run the token
 impersonation exploits in this lecture.
 
-#### L + E Juicy Potato
+#### L plus E Juicy Potato
 Rotten Potato was quite a limited exploit.
 Juicy Potato works in the same way as Rotten Potato,
 but the authors did extensive research and found many
