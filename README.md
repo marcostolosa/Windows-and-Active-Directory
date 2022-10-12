@@ -147,7 +147,7 @@ https://tryhackme.com/room/enumerationpe
 - [token impersonation](#token-impersonation)
   - [L Service Accounts](#L-Service-Accounts)
   - [L Rotten Potato](#L-Rotten-Potato)
-  - [SeImpersonate and or SeAssignPrimaryToken](SeImpersonate-and-or-SeAssignPrimaryToken)
+  - [SeImpersonate and or SeAssignPrimaryToken](#SeImpersonate-and-or-SeAssignPrimaryToken)
   - [L + E Juicy Potato](#L-Juicy-Potato)
   - [E Rogue Potato](#E-Rogue-Potato)
   - [E PrintSpoofer](#E-PrintSpoofer)
