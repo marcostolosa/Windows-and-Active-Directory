@@ -3113,7 +3113,7 @@ Impersonation Access Token – Created when a process or thread needs
 to temporarily run with the security context of another user.
 
 
-#### Token Duplication
+#### L Token Duplication
 Windows allows processes/threads to duplicate their access
 tokens.
 An impersonation access token can be duplicated into a
