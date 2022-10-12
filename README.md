@@ -156,7 +156,7 @@ https://tryhackme.com/room/enumerationpe
 - [Privilege Escalation Strategy](#Privilege-Escalation-Strategy)
   - [L Enumeration](#L-Enumeration)
   - [Strategy](#Strategy)
-  - [Don’t Panic](#Don’t-Panic)
+  - [Dont Panic](#Dont-Panic)
 - [getsystem Named Pipes and Token Duplication](#getsystem-Named-Pipes-and-Token-Duplication)
   - [L Access Tokens](#L-Access-Tokens)
   - [L Token Duplication](#L-Token-Duplication)
@@ -3064,7 +3064,7 @@ online (e.g.)
 https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md
 ```
 
-#### Strategy
+### Strategy
 Spend some time and read over the results of your
 enumeration.
 If WinPEAS or another tool finds something interesting, make
@@ -3094,7 +3094,7 @@ This might be a process or file name you aren’t familiar with
 or even a username.
 At this stage you can also start to think about Kernel Exploits.
 
-#### Don’t Panic
+### Dont Panic
 Privilege Escalation is tricky.
 Practice makes perfect.
 Remember: in an exam setting, it might take a while to
