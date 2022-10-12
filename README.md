@@ -172,7 +172,7 @@ https://tryhackme.com/room/enumerationpe
   - [SeBackupPrivilege](#SeBackupPrivilege)
   - [SeRestorePrivilege](#SeRestorePrivilege)
   - [SeTakeOwnershipPrivilege](#SeTakeOwnershipPrivilege)
-  - [Other Privileges More Advanced](#Other Privileges More Advanced)
+  - [Other Privileges More Advanced](#Other-Privileges-More-Advanced)
 
 ------------------------------------------------------------------------------------------------
 
