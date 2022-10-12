@@ -3239,8 +3239,11 @@ The same methods used with SeRestorePrivilege then apply.
 
 #### Other Privileges More Advanced
 • SeTcbPrivilege
+  
 • SeCreateTokenPrivilege
+  
 • SeLoadDriverPrivilege
+  
 • SeDebugPrivilege (used by getsystem)
 
 
