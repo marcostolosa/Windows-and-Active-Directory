@@ -2738,7 +2738,7 @@ Use echo to append a call to our reverse shell executable to the end of the scri
 Wait for the scheduled task to run (it should run every minute) to complete the
 exploit.
 
-### insecure GUI apps
+## insecure GUI apps
 
 On some (older) versions of Windows, users could be granted the
 permission to run certain GUI apps with administrator privileges.
@@ -2774,7 +2774,7 @@ Press Enter. A command prompt should open
 running with admin privileges.
 
 
-### startup apps
+## startup apps
 
 Each user can define apps that start when they log in, by placing
 shortcuts to them in a specific directory.
@@ -2818,7 +2818,7 @@ Run the script using cscript:
 Start a listener on Kali, then log in as the admin user to
 trigger the exploit.
 
-### installed apps
+## installed apps
 
 Most privilege escalations relating to installed
 applications are based on misconfigurations we have
@@ -2844,7 +2844,7 @@ winPEAS also has this ability (note the misspelling):
 > .\winPEASany.exe quiet procesinfo
 ```
 
-#### Exploit-DB
+## Exploit-DB
 
 Once you find an interesting process, try to identify its
 version. You can try running the executable with /? or -h, as
@@ -2868,7 +2868,7 @@ we can also use winpeas:
 ```
 obs: yes currently thw word "procesinfo" is spelled wrong but can change later just keep that in mind
 
-### hot potato
+## hot potato
 
 Hot Potato is the name of an attack that uses a spoofing attack
 along with an NTLM relay attack to gain SYSTEM privileges.
@@ -2892,7 +2892,7 @@ and their server counterparts.
 
 
 
-### token impersonation
+## token impersonation
 
 #### L Service Accounts
 We briefly talked about service accounts at the start of the
@@ -2949,7 +2949,7 @@ https://github.com/ohpe/juicy-potato/blob/master/CLSID/README.md
 ```
 or run the GetCLSID.ps1 PowerShell script.
 
-#### E Rogue Potato
+## E Rogue Potato
 Latest of the “Potato” exploits.
 GitHub: https://github.com/antonioCoco/RoguePotato
 Blog: https://decoder.cloud/2020/05/11/no-more-
@@ -3006,7 +3006,7 @@ reverse shell running with SYSTEM privileges:
 > C:\PrivEsc\PrintSpoofer.exe –i -c "C:\PrivEsc\reverse.exe"
 ```
 
-### port forwarding
+## port forwarding
 
 Sometimes it is easier to run exploit code on Kali, but the
 vulnerable program is listening on an internal port.
@@ -3101,7 +3101,7 @@ Remember: in an exam setting, it might take a while to
 find the method, but the exam is always intended to be
 completed within a timeframe. Keep searching!
 
-### getsystem Named Pipes and Token Duplication
+## getsystem Named Pipes and Token Duplication
 
 #### L Access Tokens
 Access Tokens are special objects in Windows which store a user’s
@@ -3184,7 +3184,7 @@ privilege, but is also limited to x86 architectures.
 getsystem should not be thought of as a user -> admin privilege
 escalation method in modern systems.
 
-### user privileges
+## user privileges
 In Windows, user accounts and groups can be assigned
 specific “privileges”.
 These privileges grant access to certain abilities.
