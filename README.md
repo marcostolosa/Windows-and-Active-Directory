@@ -6240,6 +6240,8 @@ I have already taken the time to put Rubeus on the machine for you, it is locate
 
 #### Method 1 Rubeus
 
+### Kerberoasting with Rubeus
+
 ```
 Rubeus.exe kerberoast 
 ```
