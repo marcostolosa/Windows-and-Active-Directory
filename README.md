@@ -276,11 +276,14 @@ https://tryhackme.com/room/windowslocalpersistence
     - [Harvesting Tickets with Rubeus](#Harvesting-Tickets-with-Rubeus)
     - [Brute-Forcing and Password-Spraying with Rubeus](#Brute-Forcing-and-Password-Spraying-with-Rubeus)
   - [Kerberoasting with Rubeus and Impacket](#Kerberoasting-with-Rubeus-and-Impacket)
+  - [AS-REP Roasting with Rubeus](#AS-REP-Roasting-with-Rubeus)
     - [Method 1 Rubeus](#Method-1-Rubeus)
     - [Kerberoasting with Rubeus](#Kerberoasting-with-Rubeus)
     - [Method 2 Impacket](#Method-2-Impacket)
     - [Kerberoasting with Impacket](#Kerberoasting-with-Impacket)
     - [What Can a Service Account do](#What-Can-a-Service-Account-do)
+  - [AS-REP Roasting with Rubeus](#AS-REP-Roasting-with-Rubeus)
+    - [Dumping KRBASREP5 Hashes with Rubeus](#Dumping-KRBASREP5-Hashes-with-Rubeus)
 ------------------------------------------------------------------------------------
 ## AD focused Privilige Escalation
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
@@ -6290,6 +6293,47 @@ After cracking the service account password there are various ways of exfiltrati
 
 *     Strong Service Passwords - If the service account passwords are strong then kerberoasting will be ineffective
 *     Don't Make Service Accounts Domain Admins - Service accounts don't need to be domain admins, kerberoasting won't be as effective if you don't make service accounts domain admins.
+
+
+### AS-REP Roasting with Rubeus
+
+Very similar to Kerberoasting, AS-REP Roasting dumps the krbasrep5 hashes of user accounts that have Kerberos pre-authentication disabled. Unlike Kerberoasting these users do not have to be service accounts the only requirement to be able to AS-REP roast a user is the user must have pre-authentication disabled.
+
+We'll continue using Rubeus same as we have with kerberoasting and harvesting since Rubeus has a very simple and easy to understand command to AS-REP roast and attack users with Kerberos pre-authentication disabled. After dumping the hash from Rubeus we'll use hashcat in order to crack the krbasrep5 hash.
+
+There are other tools out as well for AS-REP Roasting such as kekeo and Impacket's GetNPUsers.py. Rubeus is easier to use because it automatically finds AS-REP Roastable users whereas with GetNPUsers you have to enumerate the users beforehand and know which users may be AS-REP Roastable.
+
+#### AS-REP Roasting Overview
+
+During pre-authentication, the users hash will be used to encrypt a timestamp that the domain controller will attempt to decrypt to validate that the right hash is being used and is not replaying a previous request. After validating the timestamp the KDC will then issue a TGT for the user. If pre-authentication is disabled you can request any authentication data for any user and the KDC will return an encrypted TGT that can be cracked offline because the KDC skips the step of validating that the user is really who they say that they are.
+
+![image](https://user-images.githubusercontent.com/24814781/199628221-46f2097e-88a3-4918-9410-2f8fd29406d1.png)
+
+### Dumping KRBASREP5 Hashes with Rubeus
+
+```
+Rubeus.exe asreproast 
+```
+- This will run the AS-REP roast command looking for vulnerable users and then dump found vulnerable user hashes.
+
+![image](https://user-images.githubusercontent.com/24814781/199628379-e446c3f5-986c-431c-aa5b-8d3ebdadd275.png)
+
+#### Crack those Hashes with hashcat
+
+1.) Transfer the hash from the target machine over to your attacker machine and put the hash into a txt file
+
+2.) Insert 23$ after $krb5asrep$ so that the first line will be $krb5asrep$23$User.....
+
+Use the same wordlist that you downloaded in task 4
+
+3.) hashcat -m 18200 hash.txt Pass.txt - crack those hashes! Rubeus AS-REP Roasting uses hashcat mode 18200 
+
+![image](https://user-images.githubusercontent.com/24814781/199628429-97047147-ff6c-4f0c-9086-55ff168dcf6d.png)
+
+#### AS-REP Roasting Mitigations - 
+
+*    Have a strong password policy. With a strong password, the hashes will take longer to crack making this attack less effective*
+*    Don't turn off Kerberos Pre-Authentication unless it's necessary there's almost no other way to completely mitigate this attack other than keeping Pre-Authentication on.
 -------------------------------------------------------------------------------------
 
 ## AD focused Privilige Escalation and enumeration
