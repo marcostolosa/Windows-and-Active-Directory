@@ -1,4 +1,4 @@
-# Windwos and Active Directory cheat sheet
+# Windows and Active Directory cheat sheet
 
 # Table of content 
 
