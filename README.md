@@ -6421,7 +6421,7 @@ A golden ticket attack works by dumping the ticket-granting ticket of any user o
 
 ![image](https://user-images.githubusercontent.com/24814781/200065024-0ad541fc-b0f7-453f-bd79-53562f4d4ced.png)
 
-Dump the krbtgt hash -
+## Dump the krbtgt hash 
 
 1.) navigate to the directory mimikatz is in and run mimikatz
 
