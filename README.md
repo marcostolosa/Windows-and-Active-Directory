@@ -292,6 +292,7 @@ https://tryhackme.com/room/windowslocalpersistence
     - [Dump the krbtgt hash](#Dump-the-krbtgt-hash)
     - [Create a Golden and Silver Ticket](#Create-a-Golden-and-Silver-Ticket)
     - [Use the Golden and Silver Ticket to access other machines](#Use-the-Golden-and-Silver-Ticket-to-access-other-machines)
+  - [Kerberos Backdoors with mimikatz](#Kerberos-Backdoors-with-mimikatz)
 ------------------------------------------------------------------------------------
 ## AD focused Privilige Escalation
 - [AD focused Privilige Escalation and enumeration](#AD-focused-Privilige-Escalation-and-enumeration)
@@ -6451,7 +6452,45 @@ I'll show you a demo of creating a golden ticket it is up to you to create a sil
 
 ![image](https://user-images.githubusercontent.com/24814781/200065276-77eb6008-77cd-4754-abab-7aa09502975c.png)
 
+## Kerberos Backdoors with mimikatz
 
+Along with maintaining access using golden and silver tickets mimikatz has one other trick up its sleeves when it comes to attacking Kerberos. Unlike the golden and silver ticket attacks a Kerberos backdoor is much more subtle because it acts similar to a rootkit by implanting itself into the memory of the domain forest allowing itself access to any of the machines with a master password. 
+
+The Kerberos backdoor works by implanting a skeleton key that abuses the way that the AS-REQ validates encrypted timestamps. A skeleton key only works using Kerberos RC4 encryption. 
+
+The default hash for a mimikatz skeleton key is 60BA4FCADC466C7A033C178194C03DF6 which makes the password -"mimikatz"
+
+This will only be an overview section and will not require you to do anything on the machine however I encourage you to continue yourself and add other machines and test using skeleton keys with mimikatz.
+
+### Skeleton Key Overview
+
+The skeleton key works by abusing the AS-REQ encrypted timestamps as I said above, the timestamp is encrypted with the users NT hash. The domain controller then tries to decrypt this timestamp with the users NT hash, once a skeleton key is implanted the domain controller tries to decrypt the timestamp using both the user NT hash and the skeleton key NT hash allowing you access to the domain forest.
+
+![image](https://user-images.githubusercontent.com/24814781/200137212-9bd897f6-d357-42d8-bb39-1c5b6a3d89ef.png)
+
+### Preparing Mimikatz 
+
+1.) Navigate to the directory mimikatz is in and run mimikatz
+
+2.) privilege::debug - This should be a standard for running mimikatz as mimikatz needs local administrator access
+
+![image](https://user-images.githubusercontent.com/24814781/200137224-7b41d526-9eae-4fd4-8c7f-c17a8c65dbcc.png)
+
+### Installing the Skeleton Key with mimikatz 
+
+1.) misc::skeleton - Yes! that's it but don't underestimate this small command it is very powerful
+
+![image](https://user-images.githubusercontent.com/24814781/200137241-ace79b57-5c5b-4acd-aeb0-34afe8eda747.png)
+
+### Accessing the forest 
+
+The default credentials will be: "mimikatz"
+
+example: net use c:\\DOMAIN-CONTROLLER\admin$ /user:Administrator mimikatz - The share will now be accessible without the need for the Administrators password
+
+example: dir \\Desktop-1\c$ /user:Machine1 mimikatz - access the directory of Desktop-1 without ever knowing what users have access to Desktop-1
+
+The skeleton key will not persist by itself because it runs in the memory, it can be scripted or persisted using other tools and techniques however that is out of scope for this room.
 -------------------------------------------------------------------------------------
 
 ## AD focused Privilige Escalation and enumeration
