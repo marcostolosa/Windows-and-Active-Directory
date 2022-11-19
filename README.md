@@ -440,7 +440,7 @@ A collection of tools written in Python for interacting with network protocols. 
 https://github.com/SecureAuthCorp/impacket
 ```
 
-### Responder
+### AD Responder
 Responder is a purpose-built tool to poison LLMNR, NBT-NS, and MDNS, with many different functions.
 
 ```
