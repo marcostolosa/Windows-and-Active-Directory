@@ -252,8 +252,29 @@ https://tryhackme.com/room/windowslocalpersistence
   - [Persisting Through Existing Services](#Persisting-Through-Existing-Services)
     - [Using Web Shells](#Using-Web-Shells)
     - [Using MSSQL as a Backdoor](#Using-MSSQL-as-a-Backdoor)
-  
-
+------------------------------------------------------------------------------------------------
+## windows local password attacks hackthebox 
+- [windows local password attacks](#windows-local-password-attacks)
+  - [attacking SAM](#attacking-SAM)
+    - [](#)
+    - [](#)
+    - [](#)
+    - [](#)
+  - [attacking LSASS](#attacking-LSASS)
+    - [](#)
+    - [](#)
+    - [](#)
+    - [](#)
+  - [attacking active directory and NTDS](#attacking-active-directory-and-NTDS)
+    - [](#)
+    - [](#)
+    - [](#)
+    - [](#)
+  - [credential hunting in windows](#credential-hunting-in-windows)
+    - [](#)
+    - [](#)
+    - [](#)
+    - [](#)
 
 ------------------------------------------------------------------------------------
 # Active Directory 
@@ -5114,7 +5135,15 @@ We will need to open two terminals to handle the connections involved in this ex
 With all that ready, let's navigate to http://10.10.234.126/ and insert an employee into the web application. Since the web application will send an INSERT statement to the database, our TRIGGER will provide us access to the system's console.
 
 -------------------------------------------------------------------------------------------------------------------
+## windows local password attacks
 
+## attacking SAM
+
+## attacking LSASS
+
+## attacking active directory and NTDS
+
+## credential hunting in windows
 
 -------------------------------------------------------------------------------------
 ### Basic AD machine Enumeration
