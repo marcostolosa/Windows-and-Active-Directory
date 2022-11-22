@@ -1271,6 +1271,9 @@ openssl pkcs12 -in cert.pfx -out crt.pem -clcerts -nokeys
   
 then use the certs to being able to use example responder to catch a request. But Before you start responder you’ll want to copy the two certs generated earlier to "/usr/share/responder/certs" or wherever "/certs" lives on your machine so copy them over there and then change the responder config in the https part.
 
+using:
+/usr/share/responder/Responder.conf
+
 from:
 ```
 [HTTPS Server]
