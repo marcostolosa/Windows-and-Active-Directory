@@ -106,6 +106,24 @@ https://tryhackme.com/room/enumerationpe
   - [SNMP](#SNMP)
   
 ------------------------------------------------------------------------------------
+## Password Attacks
+- [Windows Password Attacks](#Windows-Password-Attacks)
+- [Windows Authentication Process](#Windows-Authentication-Process)
+- [Windows Authentication Process Diagram](#Windows-Authentication-Process-Diagram)
+- [LSASS](#LSASS)
+- [SAM Database](#SAM-Database)
+- [Credential Manager](#Credential-Manager)
+- [NTDS](#NTDS)
+- [](#)
+- [](#)
+- [](#)
+- [](#)
+- [](#)
+- [](#)
+- [](#)
+- [](#)
+  
+------------------------------------------------------------------------------------
 ## Tib3rius ⁣Privilege Escalation
 - [Local Privilige Escalation](#Local-Privilige-Escalation)
   - [General Concepts](#General-Concepts)
@@ -1904,7 +1922,107 @@ Simple Network Management Protocol (SNMP) was designed to help collect informati
 If you would like to install snmpcheck on your local Linux box, consider the following commands. 
 
 ![image](https://user-images.githubusercontent.com/24814781/187435981-6446e39a-c9b5-4810-8989-e6f16d3cc9f8.png)
- 
+-------------------------------------------------------------------------------------
+
+## Windows Password Attacks
+
+### Windows Authentication Process
+
+The Windows client authentication process 
+```
+https://learn.microsoft.com/en-us/windows-server/security/windows-authentication/credentials-processes-in-windows-authentication
+```
+can oftentimes be more complicated than with Linux systems and consists of many different modules that perform the entire logon, retrieval, and verification processes. In addition, there are many different and complex authentication procedures on the Windows system, such as Kerberos authentication. The Local Security Authority (LSA) 
+```
+https://ldapwiki.com/wiki/Local%20Security%20Authority
+```
+is a protected subsystem that authenticates users and logs them into the local computer. In addition, the LSA maintains information about all aspects of local security on a computer. It also provides various services for translating between names and security IDs (SIDs).
+
+The security subsystem keeps track of the security policies and accounts that reside on a computer system. In the case of a Domain Controller, these policies and accounts apply to the domain where the Domain Controller is located. These policies and accounts are stored in Active Directory. In addition, the LSA subsystem provides services for checking access to objects, checking user permissions, and generating monitoring messages.
+
+### Windows Authentication Process Diagram
+![image](https://user-images.githubusercontent.com/24814781/203432661-6c715a42-64c0-4b77-abcd-09d2e47fa6b9.png)
+
+Local interactive logon is performed by the interaction between the logon process (WinLogon), the logon user interface process (LogonUI), the credential providers, LSASS, one or more authentication packages, and SAM or Active Directory. Authentication packages, in this case, are the Dynamic-Link Libraries (DLLs) that perform authentication checks. For example, for non-domain joined and interactive logins, the authentication package Msv1_0.dll is used.
+
+Winlogon is a trusted process responsible for managing security-related user interactions. These include:
+
+*    Launching LogonUI to enter passwords at login
+
+*    Changing passwords
+
+*    Locking and unlocking the workstation
+
+It relies on credential providers installed on the system to obtain a user's account name or password. Credential providers are COM objects that are located in DLLs.
+
+Winlogon is the only process that intercepts login requests from the keyboard sent via an RPC message from Win32k.sys. Winlogon immediately launches the LogonUI application at logon to display the user interface for logon. After Winlogon obtains a user name and password from the credential providers, it calls LSASS to authenticate the user attempting to log in.
+
+
+### LSASS
+
+Local Security Authority Subsystem Service (LSASS) 
+```
+https://en.wikipedia.org/wiki/Local_Security_Authority_Subsystem_Service
+```
+is a collection of many modules and has access to all authentication processes that can be found in %SystemRoot%\System32\Lsass.exe. This service is responsible for the local system security policy, user authentication, and sending security audit logs to the Event log. In other words, it is the vault for Windows-based operating systems, and we can find a more detailed illustration of the LSASS architecture here.
+```
+https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-2000-server/cc961760(v=technet.10)?redirectedfrom=MSDN
+```
+![image](https://user-images.githubusercontent.com/24814781/203432898-e3e9afb2-e141-4481-9a99-47236b111388.png)
+
+Source: https://docs.microsoft.com/en-us/windows-server/security/windows-authentication/credentials-processes-in-windows-authentication
+
+Each interactive logon session creates a separate instance of the Winlogon service. The Graphical Identification and Authentication (GINA)
+```
+https://learn.microsoft.com/en-us/windows/win32/secauthn/gina
+```
+architecture is loaded into the process area used by Winlogon, receives and processes the credentials, and invokes the authentication interfaces via the LSALogonUser function.
+
+```
+https://docs.microsoft.com/en-us/windows/win32/api/ntsecapi/nf-ntsecapi-lsalogonuser
+```
+
+### SAM Database
+
+The Security Account Manager (SAM) 
+```
+https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc756748(v=ws.10)?redirectedfrom=MSDN
+```
+is a database file in Windows operating systems that stores users' passwords. It can be used to authenticate local and remote users. SAM uses cryptographic measures to prevent unauthenticated users from accessing the system. User passwords are stored in a hash format in a registry structure as either an LM hash or an NTLM hash. This file is located in %SystemRoot%/system32/config/SAM and is mounted on HKLM/SAM. SYSTEM level permissions are required to view it.
+
+Windows systems can be assigned to either a workgroup or domain during setup. If the system has been assigned to a workgroup, it handles the SAM database locally and stores all existing users locally in this database. However, if the system has been joined to a domain, the Domain Controller (DC) must validate the credentials from the Active Directory database (ntds.dit), which is stored in %SystemRoot%\ntds.dit.
+
+Microsoft introduced a security feature in Windows NT 4.0 to help improve the security of the SAM database against offline software cracking. This is the SYSKEY (syskey.exe) feature, which, when enabled, partially encrypts the hard disk copy of the SAM file so that the password hash values for all local accounts stored in the SAM are encrypted with a key.
+
+### Credential Manager
+
+![image](https://user-images.githubusercontent.com/24814781/203433089-8e9473f7-ee21-4116-9222-75ba65c49cf7.png)
+
+Source: https://docs.microsoft.com/en-us/windows-server/security/windows-authentication/credentials-processes-in-windows-authentication
+
+
+Credential Manager is a feature built-in to all Windows operating systems that allows users to save the credentials they use to access various network resources and websites. Saved credentials are stored based on user profiles in each user's Credential Locker. Credentials are encrypted and stored at the following location:
+
+```
+PS C:\Users\[Username]\AppData\Local\Microsoft\[Vault/Credentials]\
+```
+
+There are various methods to decrypt credentials saved using Credential Manager. We will practice hands-on with some of these methods in this module.
+
+### NTDS
+
+It is very common to come across network environments where Windows systems are joined to a Windows domain. This is common because it makes it easier for admins to manage all the systems owned by their respective organizations (centralized management). In these cases, the Windows systems will send all logon requests to Domain Controllers that belong to the same Active Directory forest. Each Domain Controller hosts a file called NTDS.dit that is kept synchronized across all Domain Controllers with the exception of Read-Only Domain Controllers.
+```
+https://learn.microsoft.com/en-us/windows/win32/ad/rodc-and-active-directory-schema
+```
+NTDS.dit is a database file that stores the data in Active Directory, including but not limited to:
+
+*    User accounts (username & password hash)
+*    Group accounts
+*    Computer accounts
+*    Group policy objects
+
+
 -------------------------------------------------------------------------------------
 ## Tib3rius ⁣Privilege Escalation
 # Local Privilige Escalation
