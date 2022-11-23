@@ -117,7 +117,7 @@ https://tryhackme.com/room/enumerationpe
   - [Credential Stuffing](#Credential-Stuffing)
   - [Credential Stuffing - Hydra Syntax](#Credential-Stuffing---Hydra-Syntax)
   - [Credential Stuffing - Hydra](#Credential-Stuffing---Hydra)
-  - [Google Search - Default Credentials](#Google-earch ---Default-Credentials)
+  - [Google Search - Default Credentials](#Google-Search---Default-Credentials)
 - [Windows Password Attacks](#Windows-Password-Attacks)
 - [Windows Authentication Process](#Windows-Authentication-Process)
 - [Windows Authentication Process Diagram](#Windows-Authentication-Process-Diagram)
