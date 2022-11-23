@@ -113,6 +113,11 @@ https://tryhackme.com/room/enumerationpe
   - [Generating Rule-based Wordlist](#Generating-Rule-based-Wordlist)
   - [Hashcat Existing Rules](#Hashcat-Existing-Rules)
   - [Generating Wordlists Using CeWL](#Generating-Wordlists-Using-CeWL)
+- [Password Reuse and Default Passwords](#Password-Reuse-and-Default-Passwords)
+  - [Credential Stuffing](#Credential-Stuffing)
+  - [Credential Stuffing - Hydra Syntax](#Credential-Stuffing---Hydra-Syntax)
+  - [Credential Stuffing - Hydra](#Credential-Stuffing---Hydra)
+  - [Google Search - Default Credentials](#Google-earch ---Default-Credentials)
 - [Windows Password Attacks](#Windows-Password-Attacks)
 - [Windows Authentication Process](#Windows-Authentication-Process)
 - [Windows Authentication Process Diagram](#Windows-Authentication-Process-Diagram)
@@ -2057,6 +2062,65 @@ Suljov@htb[/htb]$ wc -l inlane.wordlist
 
 326
 ```
+-----
+
+## Password Reuse andfault Passwords
+
+It is common for both users and administrators to leave defaults in place. Administrators have to keep track of all the technology, infrastructure, and applications along with the data being accessed. In this case, the same password is often used for configuration purposes, and then the password is forgotten to be changed for one interface or another. In addition, many applications that work with authentication mechanisms, basically almost all, often come with default credentials after installation. These default credentials may be forgotten to be changed after configuration, especially when it comes to internal applications where the administrators assume that no one else will find them and do not even try to use them.
+
+In addition, easy-to-remember passwords that can be typed quickly instead of typing 15-character long passwords are often used repeatedly because Single-Sign-On (SSO)
+```
+https://en.wikipedia.org/wiki/Single_sign-on
+```
+
+is not always immediately available during initial installation, and configuration in internal networks requires significant changes. When configuring networks, we sometimes work with vast infrastructures (depending on the company's size) that can have many hundreds of interfaces. Often one network device, such as a router, printer, or a firewall, is overlooked, and the default credentials are used, or the same password is reused.
+
+## Credential Stuffing
+
+There are various databases that keep a running list of known default credentials. One of them is the DefaultCreds-Cheat-Sheet.
+
+```
+https://github.com/ihebski/DefaultCreds-cheat-sheet
+```
+Here is a small excerpt from the entire table of this cheat sheet:
+
+
+![image](https://user-images.githubusercontent.com/24814781/203636551-c04ce3b0-b130-4da4-a900-1285d9041ec1.png)
+
+Default credentials can also be found in the product documentation, as they contain the steps necessary to set up the service successfully. Some devices/applications require the user to set up a password at install, but others use a default, weak password. Attacking those services with the default or obtained credentials is called Credential Stuffing.
+
+```
+https://owasp.org/www-community/attacks/Credential_stuffing
+```
+This is a simplified variant of brute-forcing because only composite usernames and the associated passwords are used.
+
+We can imagine that we have found some applications used in the network by our customers. After searching the internet for the default credentials, we can create a new list that separates these composite credentials with a colon (username:password). In addition, we can select the passwords and mutate them by our rules to increase the probability of hits.
+
+### Credential Stuffing - Hydra Syntax
+
+```
+Suljov@htb[/htb]$ hydra -C <user_pass.list> <protocol>://<IP>
+```
+### Credential Stuffing - Hydra
+
+```
+Suljov@htb[/htb]$ hydra -C user_pass.list ssh://10.129.42.197
+...
+
+```
+
+Here, OSINT plays another significant role. Because OSINT gives us a "feel" for how the company and its infrastructure are structured, we will understand which passwords and user names we can combine. We can then store these in our lists and use them afterward. In addition, we can use Google to see if the applications we find have hardcoded credentials that can be used.
+
+### Google Search - Default Credentials
+
+![image](https://user-images.githubusercontent.com/24814781/203636820-19ca5c50-da00-43a1-85f4-c0e2dd8505cf.png)
+
+Besides the default credentials for applications, some lists offer them for routers. One of these lists can be found here. It is much less likely that the default credentials for routers are left unchanged. Since these are the central interfaces for networks, administrators typically pay much closer attention to hardening them. Nevertheless, it is still possible that a router is overlooked or is currently only being used in the internal network for test purposes, which we can then exploit for further attacks.
+
+![image](https://user-images.githubusercontent.com/24814781/203636874-ff8bd3f8-9e83-4f7f-98e6-78d246a77575.png)
+
+
+-------
 
 ### Windows Authentication Process
 
