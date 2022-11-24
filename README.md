@@ -107,6 +107,7 @@ https://tryhackme.com/room/enumerationpe
   
 ------------------------------------------------------------------------------------
 ## Password Attacks
+- [Windows Password Attacks](#Windows-Password-Attacks)
 - [Password Mutations](#Password-Mutations)
   - [Password List](#Password-List)
   - [Hashcat Rule File](#Hashcat-Rule-File)
@@ -118,7 +119,6 @@ https://tryhackme.com/room/enumerationpe
   - [Credential Stuffing - Hydra Syntax](#Credential-Stuffing---Hydra-Syntax)
   - [Credential Stuffing - Hydra](#Credential-Stuffing---Hydra)
   - [Google Search - Default Credentials](#Google-Search---Default-Credentials)
-- [Windows Password Attacks](#Windows-Password-Attacks)
 - [Windows Authentication Process](#Windows-Authentication-Process)
 - [Windows Authentication Process Diagram](#Windows-Authentication-Process-Diagram)
 - [LSASS](#LSASS)
