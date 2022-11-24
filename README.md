@@ -108,7 +108,7 @@ https://tryhackme.com/room/enumerationpe
 ------------------------------------------------------------------------------------
 ## Password Attacks
 - [Windows Password Attacks](#Windows-Password-Attacks)
-- [Credential Storage](#Credential-torage)
+- [Credential Storage](#Credential-storage)
   - [Windows Authentication Process](#Windows-Authentication-Process)
   - [Windows Authentication Process Diagram](#Windows-Authentication-Process-Diagram)
   - [LSASS](#LSASS)
