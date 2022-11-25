@@ -360,7 +360,7 @@ https://tryhackme.com/room/windowslocalpersistence
 ------------------------------------------------------------------------------------
 # Active Directory 
 ------------------------------------------------------------------------------------
-## .Basic AD machine Enumeration.
+## AD Basic AD machine Enumeration
 - [Basic AD machine Enumeration](#Basic-AD-machine-Enumeration)
   - [Credential Injection](#Credential-Injection)
   - [Enumeration through Microsoft Management Console](#Enumeration-through-Microsoft-Management-Console)
@@ -6476,7 +6476,7 @@ With all that ready, let's navigate to http://10.10.234.126/ and insert an emplo
 
 
 -------------------------------------------------------------------------------------
-## Basic AD machine Enumeration
+## Basic AD machine Enumeration.
 ## OBS: the examples here is done in tryhackme ofc you will change some parts like domain etc but you probably know that ;)
 
 ### Credential Injection
