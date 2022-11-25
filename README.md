@@ -142,7 +142,7 @@ https://tryhackme.com/room/enumerationpe
 - [Attacking LSASS](#Attacking-LSASS)
   - [Dumping LSASS Process Memory](#Dumping-LSASS-Process-Memory)
   - [Task Manager Method](#Task-Manager-Method)
-  - [Rundll32 exe & Comsvcs dll Method](#Rundll32-exe-and-Comsvcs-dll-Method)
+  - [Rundll32 exe and Comsvcs dll Method](#Rundll32-exe-and-Comsvcs-dll-Method)
   - [Finding LSASS PID in cmd](#Finding-LSASS-PID-in-cmd)
   - [Finding LSASS PID in PowerShell](#Finding-LSASS-PID-in-PowerShell)
   - [Creating lsass dmp using PowerShell](#Creating-lsass-dmp-using-PowerShell)
@@ -2564,7 +2564,7 @@ C:\Users\loggedonusersdirectory\AppData\Local\Temp
 
 This is the file we will transfer to our attack host. We can use the file transfer method discussed in the Attacking SAM section of this module to transfer the dump file to our attack host.
 
-## Rundll32 exe & Comsvcs dll Method
+## Rundll32 exe and Comsvcs dll Method
 
 The Task Manager method is dependent on us having a GUI-based interactive session with a target. We can use an alternative method to dump LSASS process memory through a command-line utility called rundll32.exe
 ```
