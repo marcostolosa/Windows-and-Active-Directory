@@ -142,7 +142,7 @@ https://tryhackme.com/room/enumerationpe
 - [Attacking LSASS](#Attacking-LSASS)
   - [Dumping LSASS Process Memory](#Dumping-LSASS-Process-Memory)
   - [Task Manager Method](#Task-Manager-Method)
-  - [Rundll32.exe & Comsvcs.dll Method](#Rundll32-exe-and-Comsvcs-dll-Method)
+  - [Rundll32 exe & Comsvcs.dll Method](#Rundll32-exe-and-Comsvcs-dll-Method)
   - [Finding LSASS PID in cmd](#Finding-LSASS-PID-in-cmd)
   - [Finding LSASS PID in PowerShell](#Finding-LSASS-PID-in-PowerShell)
   - [Creating lsass dmp using PowerShell](#Creating-lsass-dmp-using-PowerShell)
