@@ -360,7 +360,7 @@ https://tryhackme.com/room/windowslocalpersistence
 ------------------------------------------------------------------------------------
 # Active Directory 
 ------------------------------------------------------------------------------------
-## Basic AD machine Enumeration
+## .Basic AD machine Enumeration.
 - [Basic AD machine Enumeration](#Basic-AD-machine-Enumeration)
   - [Credential Injection](#Credential-Injection)
   - [Enumeration through Microsoft Management Console](#Enumeration-through-Microsoft-Management-Console)
@@ -6474,19 +6474,9 @@ We will need to open two terminals to handle the connections involved in this ex
 
 With all that ready, let's navigate to http://10.10.234.126/ and insert an employee into the web application. Since the web application will send an INSERT statement to the database, our TRIGGER will provide us access to the system's console.
 
--------------------------------------------------------------------------------------------------------------------
-## windows local password attacks
-
-## attacking SAM
-
-## attacking LSASS
-
-## attacking active directory and NTDS
-
-## credential hunting in windows
 
 -------------------------------------------------------------------------------------
-### Basic AD machine Enumeration
+## Basic AD machine Enumeration
 ## OBS: the examples here is done in tryhackme ofc you will change some parts like domain etc but you probably know that ;)
 
 ### Credential Injection
