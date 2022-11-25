@@ -132,7 +132,7 @@ https://tryhackme.com/room/enumerationpe
   - [Using reg exe save to Copy Registry Hives](#Using-reg-exe-save-to-Copy-Registry-Hives)
   - [Creating a Share with smbserver py](#Creating-a-Share-with-smbserver-py)
   - [Moving Hive Copies to Share](#Moving-Hive-Copies-to-Share)
-  - [Dumping Hashes with Impackets secretsdump py](#Dumping Hashes-with-Impackets-secretsdump-py)
+  - [Dumping Hashes with Impackets secretsdump py](#Dumping-Hashes-with-Impackets-secretsdump-py)
   - [Running secretsdump py](#Running-secretsdump-py)
   - [Cracking Hashes with Hashcat](#Cracking-Hashes-with-Hashcat)
   - [Running Hashcat against NT Hashes](#Running-Hashcat-against-NT-Hashes)
