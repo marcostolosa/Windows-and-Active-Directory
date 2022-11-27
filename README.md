@@ -3399,7 +3399,7 @@ https://github.com/Porchetta-Industries/CrackMapExec
 ```
 is a post-exploitation tool that helps automate assessing the security of large Active Directory networks. We can use CrackMapExec to try to authenticate to some or all hosts in a network looking for one host where we can authenticate successfully as a local admin. This method is also called "Password Spraying" and is covered in-depth in the Active Directory Enumeration & Attacks module. Note that this method can lock out domain accounts, so keep the target domain's account lockout policy in mind and make sure to use the local account method, which will try just one login attempt on a host in a given range using the credentials provided if that is your intent.
 
-## Pass the Hash with CrackMapExec
+## Pass the Hash with CrackMapExec example
 ``` 
 Suljov@htb[/htb]# crackmapexec smb --redacted--/24 -u --redacted-- -d . -H --redacted--
 
