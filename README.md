@@ -178,13 +178,22 @@ https://tryhackme.com/room/enumerationpe
   - [Lazagne Output](#Lazagne-Output)
   - [Using findstr](#Using-findstr)
   - [Additional Considerations](#Additional-Considerations)
+- [Pass the Hash - PtH](#Pass-the-Hash---PtH)
   - [](#)
   - [](#)
   - [](#)
-  - 
-- [](#)
-- [](#)
-- [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+  - [](#)
+
   
 ------------------------------------------------------------------------------------
 ## Tib3rius ⁣Privilege Escalation
@@ -3211,7 +3220,7 @@ Here are some other places we should keep in mind when credential hunting:
 *    Found on user systems and shares
 *    Files such as pass.txt, passwords.docx, passwords.xlsx found on user systems, shares, Sharepoint
 
-
+## Pass the Hash - PtH
 
 -------------------------------------------------------------------------------------
 ## Tib3rius ⁣Privilege Escalation
