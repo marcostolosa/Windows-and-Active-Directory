@@ -3463,7 +3463,7 @@ Info: Establishing connection to remote endpoint
 Note: When using a domain account, we need to include the domain name, for example: administrator@inlanefreight.htb
 ```
 
-## Pass the Hash with RDP (Linux)
+## Pass the Hash with RDP 
 
 We can perform an RDP PtH attack to gain GUI access to the target system using tools like xfreerdp.
 
