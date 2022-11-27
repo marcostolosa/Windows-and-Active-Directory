@@ -182,7 +182,7 @@ https://tryhackme.com/room/enumerationpe
   - [Windows NTLM Introduction](#Windows-NTLM-Introduction)
   - [Pass the Hash with Mimikatz](#Pass-the-Hash-with-Mimikatz)
   - [Pass the Hash from Windows Using Mimikatz](#Pass-the-Hash-from-Windows-Using-Mimikatz)
-  - [Pass the Hash with PowerShell Invoke-TheHash](#Pass-the-Hash-with-PowerShell-Invoke--TheHash)
+  - [Pass the Hash with PowerShell Invoke-TheHash](#Pass-the-Hash-with-PowerShell-Invoke-TheHash)
   - [Invoke-TheHash with SMB](#Invoke-TheHash-with-SMB)
   - [Invoke-TheHash with WMI](#Invoke-TheHash-with-WMI)
   - [Pass the Hash with Impacket](#Pass-the-Hash-with-Impacket)
