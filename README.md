@@ -194,7 +194,7 @@ https://tryhackme.com/room/enumerationpe
   - [Pass the Hash Using RDP](#Pass-the-Hash-Using-RDP)
   - [UAC Limits Pass the Hash for Local Accounts](#UAC-Limits-Pass-the-Hash-for-Local-Accounts)
 - [Pass the Ticket PtT from Windows](#Pass-the-Ticket-PtT-from-Windows)
-  - Kerberos Protocol Refresher](#Kerberos-Protocol-Refresher)
+  - [Kerberos Protocol Refresher](#Kerberos-Protocol-Refresher)
   - [Pass the Ticket PtT Attack](#Pass-the-Ticket-PtT-Attack)
   - [Harvesting Kerberos Tickets from Windows](#Harvesting-Kerberos-Tickets-from-Windows)
   - [Mimikatz - Export Tickets](#Mimikatz---Export-Tickets)
