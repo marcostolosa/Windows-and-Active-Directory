@@ -210,7 +210,7 @@ https://tryhackme.com/room/enumerationpe
   - [Pass the Ticket - Base64 Format](#Pass-the-Ticket---Base64-Format)
   - [Mimikatz - Pass the Ticket](#Mimikatz---Pass-the-Ticket)
   - [Pass The Ticket with PowerShell Remoting Windows](#Pass-The-Ticket-with-PowerShell-Remoting-Windows)
-  - [Mimikatz - PowerShell Remoting with Pass the Ticket](#Mimikatz---PowerShell-Remoting-with-Pass -the-Ticket)
+  - [Mimikatz - PowerShell Remoting with Pass the Ticket](#Mimikatz---PowerShell-Remoting-with-Pass-the-Ticket)
   - [Mimikatz - Pass the Ticket for Lateral Movement](#Mimikatz---Pass-the-Ticket-for-Lateral-Movement)
   - [Rubeus - PowerShell Remoting with Pass the Ticket](#Rubeus---PowerShell-Remoting-with-Pass-the-Ticket)
   - [Create a Sacrificial Process with Rubeus](#Create-a-Sacrificial-Process-with-Rubeus)
