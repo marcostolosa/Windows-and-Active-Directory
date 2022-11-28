@@ -3665,7 +3665,7 @@ Another way is to import the ticket into the current session using the .kirbi fi
 
 Let's use a ticket exported from Mimikatz and import it using Pass the Ticket.
 
-## Rubeus - Pass the Ticket 2
+## Rubeus Pass the Ticket 2
 ```
 Rubeus.exe ptt /ticket:<ticket file>
 ```
